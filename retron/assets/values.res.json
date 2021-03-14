@@ -1,0 +1,87 @@
+{
+  "game_spec":
+  {
+    "res:type": "resource_values",
+
+    "global":
+    {
+      "app":
+      {
+        "allow_debug": false,
+        "joystick_min": 0.3,
+        "joystick_max": 0.9
+      },
+
+      "difficulties":
+      {
+        "default":
+        {
+          "lives": 3,
+          "grunt_tick_frames": 4,
+          "grunt_max_ticks": 32,
+          "grunt_min_ticks": 1,
+          "grunt_max_ticks_rate": 75,
+          "grunt_move": 4,
+          "player_move": 1,
+          "player_shot_move": 6,
+          "player_shot_counter": 8
+        },
+
+        "easy":
+        {
+          "name": "Easy",
+          "level_set": "easy",
+          "lives": 6
+        },
+        "normal":
+        {
+          "name": "Normal",
+          "level_set": "normal"
+        },
+        "hard":
+        {
+          "name": "Hard",
+          "level_set": "hard"
+        }
+      },
+
+      "levels":
+      {
+        "1":
+        {
+          "res:import": "file:levels/level_001.json"
+        }
+      },
+
+      "level_sets":
+      {
+        "easy":
+        {
+          "levels":
+          [
+            "1"
+          ],
+          "loop_start": 0
+        },
+
+        "normal":
+        {
+          "levels":
+          [
+            "1"
+          ],
+          "loop_start": 0
+        },
+
+        "hard":
+        {
+          "levels":
+          [
+            "1"
+          ],
+          "loop_start": 0
+        }
+      }
+    }
+  }
+}

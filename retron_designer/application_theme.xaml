@@ -1,0 +1,462 @@
+<ResourceDictionary
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:local="clr-namespace:NoesisGUIExtensions;assembly=Noesis.GUI.Extensions"
+    xmlns:sys="clr-namespace:System;assembly=mscorlib"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <!-- Font -->
+    <FontFamily x:Key="Font.Family.Default">Fonts/#Robotron 2084</FontFamily>
+    <FontFamily x:Key="Font.Family.Small">Fonts/#Robotron 2084 Small</FontFamily>
+    <sys:Double x:Key="Font.Size.Header">8</sys:Double>
+    <sys:Double x:Key="Font.Size.Normal">8</sys:Double>
+    <sys:Double x:Key="Font.Size.Small">8</sys:Double>
+
+    <!-- Palette in RGB -->
+    <Color x:Key="Color.224">#000000</Color>
+    <Color x:Key="Color.225">#1D2B53</Color>
+    <Color x:Key="Color.226">#7E2553</Color>
+    <Color x:Key="Color.227">#008751</Color>
+    <Color x:Key="Color.228">#AB5236</Color>
+    <Color x:Key="Color.229">#5F574F</Color>
+    <Color x:Key="Color.230">#C2C3C7</Color>
+    <Color x:Key="Color.231">#FFF1E8</Color>
+    <Color x:Key="Color.232">#FF004D</Color>
+    <Color x:Key="Color.233">#FFA300</Color>
+    <Color x:Key="Color.234">#FFEC27</Color>
+    <Color x:Key="Color.235">#00E436</Color>
+    <Color x:Key="Color.236">#29ADFF</Color>
+    <Color x:Key="Color.237">#83769C</Color>
+    <Color x:Key="Color.238">#FF77A8</Color>
+    <Color x:Key="Color.239">#FFCCAA</Color>
+    <Color x:Key="Color.240">#291814</Color>
+    <Color x:Key="Color.241">#111D35</Color>
+    <Color x:Key="Color.242">#422136</Color>
+    <Color x:Key="Color.243">#125359</Color>
+    <Color x:Key="Color.244">#742F29</Color>
+    <Color x:Key="Color.245">#49333B</Color>
+    <Color x:Key="Color.246">#A28879</Color>
+    <Color x:Key="Color.247">#F3EF7D</Color>
+    <Color x:Key="Color.248">#BE1250</Color>
+    <Color x:Key="Color.249">#FF6C24</Color>
+    <Color x:Key="Color.250">#A8E72E</Color>
+    <Color x:Key="Color.251">#00B543</Color>
+    <Color x:Key="Color.252">#065AB5</Color>
+    <Color x:Key="Color.253">#754665</Color>
+    <Color x:Key="Color.254">#FF6E59</Color>
+    <Color x:Key="Color.255">#FF9D81</Color>
+
+    <SolidColorBrush x:Key="Brush.224" Color="{StaticResource Color.224}" />
+    <SolidColorBrush x:Key="Brush.225" Color="{StaticResource Color.225}" />
+    <SolidColorBrush x:Key="Brush.226" Color="{StaticResource Color.226}" />
+    <SolidColorBrush x:Key="Brush.227" Color="{StaticResource Color.227}" />
+    <SolidColorBrush x:Key="Brush.228" Color="{StaticResource Color.228}" />
+    <SolidColorBrush x:Key="Brush.229" Color="{StaticResource Color.229}" />
+    <SolidColorBrush x:Key="Brush.230" Color="{StaticResource Color.230}" />
+    <SolidColorBrush x:Key="Brush.231" Color="{StaticResource Color.231}" />
+    <SolidColorBrush x:Key="Brush.232" Color="{StaticResource Color.232}" />
+    <SolidColorBrush x:Key="Brush.233" Color="{StaticResource Color.233}" />
+    <SolidColorBrush x:Key="Brush.234" Color="{StaticResource Color.234}" />
+    <SolidColorBrush x:Key="Brush.235" Color="{StaticResource Color.235}" />
+    <SolidColorBrush x:Key="Brush.236" Color="{StaticResource Color.236}" />
+    <SolidColorBrush x:Key="Brush.237" Color="{StaticResource Color.237}" />
+    <SolidColorBrush x:Key="Brush.238" Color="{StaticResource Color.238}" />
+    <SolidColorBrush x:Key="Brush.239" Color="{StaticResource Color.239}" />
+    <SolidColorBrush x:Key="Brush.240" Color="{StaticResource Color.240}" />
+    <SolidColorBrush x:Key="Brush.241" Color="{StaticResource Color.241}" />
+    <SolidColorBrush x:Key="Brush.242" Color="{StaticResource Color.242}" />
+    <SolidColorBrush x:Key="Brush.243" Color="{StaticResource Color.243}" />
+    <SolidColorBrush x:Key="Brush.244" Color="{StaticResource Color.244}" />
+    <SolidColorBrush x:Key="Brush.245" Color="{StaticResource Color.245}" />
+    <SolidColorBrush x:Key="Brush.246" Color="{StaticResource Color.246}" />
+    <SolidColorBrush x:Key="Brush.247" Color="{StaticResource Color.247}" />
+    <SolidColorBrush x:Key="Brush.248" Color="{StaticResource Color.248}" />
+    <SolidColorBrush x:Key="Brush.249" Color="{StaticResource Color.249}" />
+    <SolidColorBrush x:Key="Brush.250" Color="{StaticResource Color.250}" />
+    <SolidColorBrush x:Key="Brush.251" Color="{StaticResource Color.251}" />
+    <SolidColorBrush x:Key="Brush.252" Color="{StaticResource Color.252}" />
+    <SolidColorBrush x:Key="Brush.253" Color="{StaticResource Color.253}" />
+    <SolidColorBrush x:Key="Brush.254" Color="{StaticResource Color.254}" />
+    <SolidColorBrush x:Key="Brush.255" Color="{StaticResource Color.255}" />
+
+    <!-- Theme colors -->
+    <Color x:Key="Color.Black">#000000</Color> <!-- Color.224 -->
+    <Color x:Key="Color.White">#FFF1E8</Color> <!-- Color.231 -->
+    
+    <Color x:Key="Color.Gray0">#422136</Color> <!-- Color.242 -->
+    <Color x:Key="Color.Gray1">#422136</Color> <!-- Color.242 -->
+    <Color x:Key="Color.Gray2">#49333B</Color> <!-- Color.245 -->
+    <Color x:Key="Color.Gray3">#49333B</Color> <!-- Color.245 -->
+    <Color x:Key="Color.Gray4">#A28879</Color> <!-- Color.246 -->
+    <Color x:Key="Color.Gray5">#A28879</Color> <!-- Color.246 -->
+    <Color x:Key="Color.Gray6">#C2C3C7</Color> <!-- Color.230 -->
+    <Color x:Key="Color.Gray7">#C2C3C7</Color> <!-- Color.230 -->
+    <Color x:Key="Color.Gray9">#FFF1E8</Color> <!-- Color.231 -->
+    <Color x:Key="Color.Gray8">#FFF1E8</Color> <!-- Color.231 -->
+    
+    <Color x:Key="Color.Accent">#29ADFF</Color> <!-- Color.236 -->
+    <Color x:Key="Color.Accent0">#111D35</Color> <!-- Color.241 -->
+    <Color x:Key="Color.Accent1">#1D2B53</Color> <!-- Color.225 -->
+    <Color x:Key="Color.Accent2">#065AB5</Color> <!-- Color.252 -->
+    <Color x:Key="Color.Accent3">#29ADFF</Color> <!-- Color.236 -->
+
+    <!-- Theme brushes -->
+    <SolidColorBrush x:Key="Brush.Window.Background" Color="{StaticResource Color.White}" />
+
+    <SolidColorBrush x:Key="Brush.Glyph.Normal" Color="{StaticResource Color.Gray0}" />
+    <SolidColorBrush x:Key="Brush.Glyph.Over" Color="{StaticResource Color.Black}" />
+    <SolidColorBrush x:Key="Brush.Glyph.Pressed" Color="{StaticResource Color.White}" />
+    <SolidColorBrush x:Key="Brush.Glyph.Checked" Color="{StaticResource Color.White}" />
+    <SolidColorBrush x:Key="Brush.Glyph.Disabled" Color="{StaticResource Color.Gray2}" />
+    <SolidColorBrush x:Key="Brush.Glyph.DisabledChecked" Color="{StaticResource Color.Gray8}" />
+
+    <SolidColorBrush x:Key="Brush.Foreground.Normal" Color="{StaticResource Color.White}" />
+    <SolidColorBrush x:Key="Brush.Foreground.Placeholder" Color="{StaticResource Color.Gray2}" />
+    <SolidColorBrush x:Key="Brush.Foreground.Disabled" Color="{StaticResource Color.Gray2}" />
+    <SolidColorBrush x:Key="Brush.Foreground.DisabledChecked" Color="{StaticResource Color.Accent0}" />
+    <SolidColorBrush x:Key="Brush.Foreground.DisabledPlaceholder" Color="{StaticResource Color.Gray4}" />
+
+    <SolidColorBrush x:Key="Brush.Background.Normal" Color="{StaticResource Color.Gray5}" />
+    <SolidColorBrush x:Key="Brush.Background.Pressed" Color="{StaticResource Color.Gray3}" />
+    <SolidColorBrush x:Key="Brush.Background.Checked" Color="{StaticResource Color.Accent2}" />
+    <SolidColorBrush x:Key="Brush.Background.Popup" Color="{StaticResource Color.Gray9}" />
+
+    <SolidColorBrush x:Key="Brush.Border.Normal" Color="{StaticResource Color.Gray3}" />
+    <SolidColorBrush x:Key="Brush.Border.Over" Color="{StaticResource Color.Gray1}" />
+    <SolidColorBrush x:Key="Brush.Border.Pressed" Color="{StaticResource Color.Gray2}" />
+    <SolidColorBrush x:Key="Brush.Border.Checked" Color="{StaticResource Color.Accent1}" />
+    <SolidColorBrush x:Key="Brush.Border.Focus" Color="{StaticResource Color.White}" />
+    <SolidColorBrush x:Key="Brush.Border.Disabled" Color="{StaticResource Color.Gray5}" />
+    <SolidColorBrush x:Key="Brush.Border.DisabledChecked" Color="{StaticResource Color.Accent3}" />
+    <SolidColorBrush x:Key="Brush.Border.Popup" Color="{StaticResource Color.Gray6}" />
+
+    <SolidColorBrush x:Key="Brush.Track.Normal" Color="{StaticResource Color.Gray7}" />
+
+    <SolidColorBrush x:Key="Brush.Thumb.Normal" Color="{StaticResource Color.Gray3}" />
+    <SolidColorBrush x:Key="Brush.Thumb.Over" Color="{StaticResource Color.Gray1}" />
+    <SolidColorBrush x:Key="Brush.Thumb.Pressed" Color="{StaticResource Color.Gray1}" />
+    <SolidColorBrush x:Key="Brush.Thumb.Disabled" Color="{StaticResource Color.Gray5}" />
+
+    <SolidColorBrush x:Key="Brush.Header.Normal" Color="{StaticResource Color.Gray7}" />
+    <SolidColorBrush x:Key="Brush.Header.Over" Color="{StaticResource Color.Gray6}" />
+    <SolidColorBrush x:Key="Brush.Header.Pressed" Color="{StaticResource Color.Gray5}" />
+    <SolidColorBrush x:Key="Brush.Header.Checked" Color="{StaticResource Color.Accent3}" />
+    <SolidColorBrush x:Key="Brush.Header.CheckedOver" Color="{StaticResource Color.Accent2}" />
+    <SolidColorBrush x:Key="Brush.Header.CheckedPressed" Color="{StaticResource Color.Accent}" />
+
+    <SolidColorBrush x:Key="Brush.Hyperlink.Normal" Color="{StaticResource Color.Accent2}" />
+    <SolidColorBrush x:Key="Brush.Hyperlink.Over" Color="{StaticResource Color.Accent}" />
+
+    <SolidColorBrush x:Key="Brush.TextBox.Normal" Color="{StaticResource Color.Gray9}" />
+    <SolidColorBrush x:Key="Brush.TextBox.Focused" Color="{StaticResource Color.White}" />
+
+    <SolidColorBrush x:Key="Brush.Item.Over" Color="{StaticResource Color.Gray6}" />
+    <SolidColorBrush x:Key="Brush.Item.Selected" Color="{StaticResource Color.Accent3}" />
+    <SolidColorBrush x:Key="Brush.Item.SelectedOver" Color="{StaticResource Color.Accent2}" />
+
+    <SolidColorBrush x:Key="Brush.ComboBox.Normal" Color="{StaticResource Color.Gray9}" />
+    <SolidColorBrush x:Key="Brush.ComboBox.Over" Color="{StaticResource Color.Gray6}" />
+    <SolidColorBrush x:Key="Brush.ComboBox.Pressed" Color="{StaticResource Color.Gray5}" />
+    <SolidColorBrush x:Key="Brush.ComboBox.Edit" Color="{StaticResource Color.White}" />
+
+    <SolidColorBrush x:Key="Brush.TabControl.Normal" Color="{StaticResource Color.Gray8}" />
+    <SolidColorBrush x:Key="Brush.TabControl.Over" Color="{StaticResource Color.Gray9}" />
+    <SolidColorBrush x:Key="Brush.TabControl.Selected" Color="{StaticResource Color.Accent2}" />
+
+    <SolidColorBrush x:Key="Brush.TreeView.Collapsed" Color="{StaticResource Color.Gray1}" />
+    <SolidColorBrush x:Key="Brush.TreeView.Expanded" Color="{StaticResource Color.Black}" />
+    <SolidColorBrush x:Key="Brush.TreeView.Over" Color="{StaticResource Color.Accent}" />
+    <SolidColorBrush x:Key="Brush.TreeView.SelectedOver" Color="{StaticResource Color.Accent0}" />
+
+    <SolidColorBrush x:Key="Brush.ToolBar.Normal" Color="{StaticResource Color.Gray8}" />
+    <SolidColorBrush x:Key="Brush.ToolBar.Over" Color="{StaticResource Color.Gray6}" />
+    <SolidColorBrush x:Key="Brush.ToolBar.Pressed" Color="{StaticResource Color.Gray5}" />
+    <SolidColorBrush x:Key="Brush.ToolBar.Checked" Color="{StaticResource Color.Accent2}" />
+
+    <sys:Double x:Key="Size.ScrollBar">17</sys:Double>
+    <sys:Double x:Key="Size.GroupBox.Border">1</sys:Double>
+
+    <Thickness x:Key="Border.Normal">0</Thickness>
+    <Thickness x:Key="Border.Box">1</Thickness>
+    <Thickness x:Key="Border.Over">1</Thickness>
+    <Thickness x:Key="Border.Focus">1</Thickness>
+
+    <Thickness x:Key="Margin.Focus.Uniform">-2</Thickness>
+    <Thickness x:Key="Margin.Focus.Padded">-2</Thickness>
+
+    <CornerRadius x:Key="Corner.Border0">0</CornerRadius>
+    <CornerRadius x:Key="Corner.Border0.Top">0</CornerRadius>
+    <CornerRadius x:Key="Corner.Border0.Bottom">0</CornerRadius>
+    <CornerRadius x:Key="Corner.Border0.Left">0</CornerRadius>
+    <CornerRadius x:Key="Corner.Border0.Right">0</CornerRadius>
+    <CornerRadius x:Key="Corner.Border1">0</CornerRadius>
+    <CornerRadius x:Key="Corner.Border1.Top">0</CornerRadius>
+    <CornerRadius x:Key="Corner.Border1.Bottom">0</CornerRadius>
+    <CornerRadius x:Key="Corner.Border1.Left">0</CornerRadius>
+    <CornerRadius x:Key="Corner.Border1.Right">0</CornerRadius>
+    <CornerRadius x:Key="Corner.Border2">0</CornerRadius>
+    <CornerRadius x:Key="Corner.Border2.Top">0</CornerRadius>
+    <CornerRadius x:Key="Corner.Border2.Bottom">0</CornerRadius>
+    <CornerRadius x:Key="Corner.Border2.Left">0</CornerRadius>
+    <CornerRadius x:Key="Corner.Border2.Right">0</CornerRadius>
+    <CornerRadius x:Key="Corner.Focus">0</CornerRadius>
+    <CornerRadius x:Key="Corner.Popup">0</CornerRadius>
+
+    <!-- Focus Styles -->
+    <Style x:Key="Style.Focus.Outer.Uniform" TargetType="Control">
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="Control">
+                    <Border BorderThickness="{StaticResource Border.Focus}" BorderBrush="{StaticResource Brush.Border.Focus}" Margin="{StaticResource Margin.Focus.Uniform}" CornerRadius="{StaticResource Corner.Focus}"/>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+    <Style x:Key="Style.Focus.Outer.Padded" TargetType="Control">
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="Control">
+                    <Border BorderThickness="{StaticResource Border.Focus}" BorderBrush="{StaticResource Brush.Border.Focus}" Margin="{StaticResource Margin.Focus.Padded}" CornerRadius="{StaticResource Corner.Focus}"/>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+    <Style x:Key="Style.Focus.Inner.Uniform" TargetType="Control">
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="Control">
+                    <Border BorderThickness="{StaticResource Border.Focus}" BorderBrush="{StaticResource Brush.Border.Focus}" CornerRadius="{StaticResource Corner.Focus}"/>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <!-- Base Control Styles -->
+    <Style x:Key="Style.Base">
+        <Setter Property="Control.Foreground" Value="{StaticResource Brush.Foreground.Normal}"/>
+        <Setter Property="Control.HorizontalContentAlignment" Value="Stretch"/>
+        <Setter Property="Control.VerticalContentAlignment" Value="Stretch"/>
+        <Setter Property="FrameworkElement.FocusVisualStyle" Value="{x:Null}"/>
+    </Style>
+    <Style TargetType="Control" BasedOn="{StaticResource Style.Base}"/>
+    <Style TargetType="ContentControl" BasedOn="{StaticResource Style.Base}"/>
+    <Style TargetType="HeaderedContentControl" BasedOn="{StaticResource Style.Base}"/>
+    <Style TargetType="ItemsControl" BasedOn="{StaticResource Style.Base}">
+        <Setter Property="ScrollViewer.PanningMode" Value="VerticalFirst"/>
+    </Style>
+    <Style TargetType="HeaderedItemsControl" BasedOn="{StaticResource Style.Base}">
+        <Setter Property="ScrollViewer.PanningMode" Value="VerticalFirst"/>
+    </Style>
+    <Style TargetType="UserControl" BasedOn="{StaticResource Style.Base}"/>
+    <Style TargetType="Page" BasedOn="{StaticResource Style.Base}"/>
+    <Style TargetType="Separator">
+        <Setter Property="Background" Value="{StaticResource Brush.Background.Normal}"/>
+    </Style>
+
+    <!-- Label -->
+    <ControlTemplate x:Key="Template.Label" TargetType="Label">
+        <Border Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Padding="{TemplateBinding Padding}">
+            <ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}" Margin="{TemplateBinding Padding}"/>
+        </Border>
+        <ControlTemplate.Triggers>
+            <Trigger Property="IsEnabled" Value="False">
+                <Setter Property="Foreground" Value="{StaticResource Brush.Foreground.Disabled}"/>
+            </Trigger>
+        </ControlTemplate.Triggers>
+    </ControlTemplate>
+    <Style TargetType="Label" BasedOn="{StaticResource {x:Type Control}}">
+        <Setter Property="OverridesDefaultStyle" Value="True"/>
+        <Setter Property="Background" Value="Transparent"/>
+        <Setter Property="BorderBrush" Value="Transparent"/>
+        <Setter Property="UseLayoutRounding" Value="True"/>
+        <Setter Property="Template" Value="{StaticResource Template.Label}"/>
+    </Style>
+
+    <!-- Button/RepeatButton -->
+    <ControlTemplate x:Key="Template.ButtonBase" TargetType="ButtonBase">
+        <Grid x:Name="TemplateRoot">
+            <Border x:Name="Border" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" CornerRadius="{StaticResource Corner.Border0}"/>
+            <ContentPresenter x:Name="PART_ContentPresenter" HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}" Margin="{TemplateBinding Padding}"/>
+        </Grid>
+        <ControlTemplate.Triggers>
+            <Trigger Property="IsMouseOver" Value="True">
+                <Setter Property="BorderBrush" Value="{StaticResource Brush.Border.Over}" TargetName="Border"/>
+                <Setter Property="BorderThickness" Value="{StaticResource Border.Over}" TargetName="Border"/>
+                <Setter Property="CornerRadius" Value="{StaticResource Corner.Border2}" TargetName="Border"/>
+            </Trigger>
+            <Trigger Property="IsPressed" Value="True">
+                <Setter Property="Background" Value="{StaticResource Brush.Background.Pressed}" TargetName="Border"/>
+                <Setter Property="BorderBrush" Value="{StaticResource Brush.Border.Pressed}" TargetName="Border"/>
+                <Setter Property="BorderThickness" Value="{StaticResource Border.Normal}" TargetName="Border"/>
+                <Setter Property="CornerRadius" Value="{StaticResource Corner.Border0}" TargetName="Border"/>
+            </Trigger>
+            <Trigger Property="IsEnabled" Value="False">
+                <Setter Property="Foreground" Value="{StaticResource Brush.Foreground.Disabled}"/>
+                <Setter Property="BorderBrush" Value="{StaticResource Brush.Border.Disabled}" TargetName="Border"/>
+            </Trigger>
+        </ControlTemplate.Triggers>
+    </ControlTemplate>
+    <Style x:Key="Style.ButtonBase" TargetType="ButtonBase" BasedOn="{StaticResource {x:Type ContentControl}}">
+        <Setter Property="OverridesDefaultStyle" Value="True"/>
+        <Setter Property="Background" Value="{StaticResource Brush.Background.Normal}"/>
+        <Setter Property="BorderBrush" Value="{StaticResource Brush.Border.Normal}"/>
+        <Setter Property="BorderThickness" Value="{StaticResource Border.Normal}"/>
+        <Setter Property="HorizontalContentAlignment" Value="Center"/>
+        <Setter Property="VerticalContentAlignment" Value="Center"/>
+        <Setter Property="Padding" Value="8,7"/>
+        <Setter Property="UseLayoutRounding" Value="True"/>
+        <Setter Property="Template" Value="{StaticResource Template.ButtonBase}"/>
+        <Setter Property="FocusVisualStyle" Value="{StaticResource Style.Focus.Outer.Uniform}"/>
+    </Style>
+    <Style TargetType="Button" BasedOn="{StaticResource Style.ButtonBase}"/>
+    <Style TargetType="RepeatButton" BasedOn="{StaticResource Style.ButtonBase}"/>
+
+    <!-- Hyperlink -->
+    <Style TargetType="Hyperlink">
+        <Setter Property="OverridesDefaultStyle" Value="True"/>
+        <Setter Property="Foreground" Value="{StaticResource Brush.Hyperlink.Normal}"/>
+        <Setter Property="TextDecorations" Value="None"/>
+        <Style.Triggers>
+            <Trigger Property="IsMouseOver" Value="True">
+                <Setter Property="Foreground" Value="{StaticResource Brush.Hyperlink.Over}"/>
+            </Trigger>
+            <Trigger Property="IsEnabled" Value="False">
+                <Setter Property="Foreground" Value="{StaticResource Brush.Foreground.Disabled}"/>
+            </Trigger>
+            <Trigger Property="IsEnabled" Value="True">
+                <Setter Property="Cursor" Value="Hand"/>
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+
+    <!-- TextBox -->
+    <Style x:Key="Style.TextBox.Placeholder" TargetType="TextBlock">
+        <Setter Property="Foreground" Value="{StaticResource Brush.Foreground.Placeholder}"/>
+        <Style.Triggers>
+            <Trigger Property="IsEnabled" Value="False">
+                <Setter Property="Foreground" Value="{StaticResource Brush.Foreground.DisabledPlaceholder}"/>
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+    <ControlTemplate x:Key="Template.TextBox" TargetType="TextBox">
+        <Grid>
+            <Border Background="{TemplateBinding Background}" CornerRadius="{StaticResource Corner.Border0}"/>
+            <Grid>
+                <Border x:Name="Placeholder" Padding="{TemplateBinding Padding}" Margin="2,0" Visibility="Collapsed">
+                    <TextBlock Text="{Binding (local:Text.Placeholder), RelativeSource={RelativeSource TemplatedParent}}" Style="{StaticResource Style.TextBox.Placeholder}"/>
+                </Border>
+                <ScrollViewer x:Name="PART_ContentHost" Focusable="False" Padding="{TemplateBinding Padding}" Foreground="{TemplateBinding Foreground}"/>
+            </Grid>
+            <Border x:Name="Border" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" CornerRadius="{StaticResource Corner.Border1}"/>
+        </Grid>
+        <ControlTemplate.Triggers>
+            <Trigger Property="Text" Value="">
+                <Setter Property="Visibility" Value="Visible" TargetName="Placeholder"/>
+            </Trigger>
+            <Trigger Property="IsMouseOver" Value="True">
+                <Setter Property="BorderBrush" Value="{StaticResource Brush.Border.Over}"/>
+                <Setter Property="BorderThickness" Value="{StaticResource Border.Over}" TargetName="Border"/>
+                <Setter Property="CornerRadius" Value="{StaticResource Corner.Border2}" TargetName="Border"/>
+            </Trigger>
+            <Trigger Property="IsKeyboardFocused" Value="True">
+                <Setter Property="Background" Value="{StaticResource Brush.TextBox.Focused}"/>
+                <Setter Property="BorderBrush" Value="{StaticResource Brush.Border.Checked}"/>
+                <Setter Property="BorderThickness" Value="{StaticResource Border.Focus}" TargetName="Border"/>
+                <Setter Property="CornerRadius" Value="{StaticResource Corner.Border2}" TargetName="Border"/>
+            </Trigger>
+            <Trigger Property="IsEnabled" Value="False">
+                <Setter Property="BorderBrush" Value="{StaticResource Brush.Border.Disabled}"/>
+                <Setter Property="Foreground" Value="{StaticResource Brush.Foreground.Disabled}"/>
+            </Trigger>
+        </ControlTemplate.Triggers>
+    </ControlTemplate>
+    <Style TargetType="TextBox" BasedOn="{StaticResource {x:Type Control}}">
+        <Setter Property="OverridesDefaultStyle" Value="True"/>
+        <Setter Property="Background" Value="{StaticResource Brush.TextBox.Normal}"/>
+        <Setter Property="BorderBrush" Value="{StaticResource Brush.Border.Normal}"/>
+        <Setter Property="BorderThickness" Value="{StaticResource Border.Box}"/>
+        <Setter Property="CaretBrush" Value="{StaticResource Brush.Foreground.Normal}"/>
+        <Setter Property="SelectionBrush" Value="{StaticResource Brush.Background.Checked}"/>
+        <Setter Property="SelectionOpacity" Value="0.25"/>
+        <Setter Property="Padding" Value="6,7"/>
+        <Setter Property="KeyboardNavigation.TabNavigation" Value="None"/>
+        <Setter Property="ScrollViewer.PanningMode" Value="VerticalFirst"/>
+        <Setter Property="AllowDrop" Value="True"/>
+        <Setter Property="Template" Value="{StaticResource Template.TextBox}"/>
+        <Setter Property="ContextMenu">
+            <Setter.Value>
+                <ContextMenu>
+                    <MenuItem Command="ApplicationCommands.Cut"/>
+                    <MenuItem Command="ApplicationCommands.Copy"/>
+                    <MenuItem Command="ApplicationCommands.Paste"/>
+                </ContextMenu>
+            </Setter.Value>
+        </Setter>
+        <Style.Triggers>
+            <Trigger Property="IsEnabled" Value="True">
+                <Setter Property="Cursor" Value="IBeam"/>
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+
+    <!-- ListBox -->
+    <ControlTemplate x:Key="Template.ListBox" TargetType="ListBox">
+        <!-- Was ScrollViewer -->
+        <Border Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Padding="{TemplateBinding Padding}" Focusable="False">
+            <ItemsPresenter />
+        </Border>
+    </ControlTemplate>
+    <Style TargetType="ListBox" BasedOn="{StaticResource {x:Type ItemsControl}}">
+        <Setter Property="OverridesDefaultStyle" Value="True"/>
+        <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Auto"/>
+        <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Auto"/>
+        <Setter Property="ScrollViewer.CanContentScroll" Value="True"/>
+        <Setter Property="ScrollViewer.PanningMode" Value="VerticalFirst"/>
+        <Setter Property="VirtualizingPanel.VirtualizationMode" Value="Recycling"/>
+        <Setter Property="VirtualizingPanel.ScrollUnit" Value="Pixel"/>
+        <Setter Property="VerticalContentAlignment" Value="Center"/>
+        <Setter Property="Template" Value="{StaticResource Template.ListBox}"/>
+        <Setter Property="FocusVisualStyle" Value="{StaticResource Style.Focus.Outer.Uniform}"/>
+        <Style.Triggers>
+            <Trigger Property="IsEnabled" Value="False">
+                <Setter Property="Foreground" Value="{StaticResource Brush.Foreground.Disabled}"/>
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+
+    <!-- ListBoxItem -->
+    <ControlTemplate x:Key="Template.ListBoxItem" TargetType="ListBoxItem">
+        <Border x:Name="Border" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Padding="{TemplateBinding Padding}">
+            <ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}"/>
+        </Border>
+        <ControlTemplate.Triggers>
+            <Trigger Property="IsMouseOver" Value="True">
+                <Setter Property="Background" Value="{StaticResource Brush.Item.Over}" TargetName="Border"/>
+            </Trigger>
+            <Trigger Property="IsSelected" Value="True">
+                <Setter Property="Background" Value="{StaticResource Brush.Item.Selected}" TargetName="Border"/>
+            </Trigger>
+            <MultiTrigger>
+                <MultiTrigger.Conditions>
+                    <Condition Property="IsMouseOver" Value="True"/>
+                    <Condition Property="IsSelected" Value="True"/>
+                </MultiTrigger.Conditions>
+                <Setter Property="Background" Value="{StaticResource Brush.Item.SelectedOver}" TargetName="Border"/>
+            </MultiTrigger>
+        </ControlTemplate.Triggers>
+    </ControlTemplate>
+    <Style TargetType="ListBoxItem" BasedOn="{StaticResource {x:Type ContentControl}}">
+        <Setter Property="OverridesDefaultStyle" Value="True"/>
+        <Setter Property="Background" Value="Transparent"/>
+        <Setter Property="HorizontalContentAlignment" Value="{Binding HorizontalContentAlignment, RelativeSource={RelativeSource AncestorType={x:Type ListBox}}}"/>
+        <Setter Property="VerticalContentAlignment" Value="{Binding VerticalContentAlignment, RelativeSource={RelativeSource AncestorType={x:Type ListBox}}}"/>
+        <Setter Property="Padding" Value="12,8.5"/>
+        <Setter Property="Template" Value="{StaticResource Template.ListBoxItem}"/>
+        <Setter Property="FocusVisualStyle" Value="{StaticResource Style.Focus.Inner.Uniform}"/>
+        <Style.Triggers>
+            <Trigger Property="IsEnabled" Value="False">
+                <Setter Property="Foreground" Value="{StaticResource Brush.Foreground.Disabled}"/>
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+
+</ResourceDictionary>

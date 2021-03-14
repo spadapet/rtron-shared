@@ -1,0 +1,10 @@
+{
+    "automappingRulesFile": "",
+    "commands": [
+    ],
+    "extensionsPath": "extensions",
+    "folders": [
+        "../retron/assets/levels"
+    ],
+    "objectTypesFile": ""
+}

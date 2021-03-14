@@ -1,0 +1,17 @@
+000: Transparent
+001: Fast flashy
+002: Fast dark flashy
+003-010: Slow flashy
+011-018: Slow dark flashy
+019-026: Slow flashy offset
+027-034: Slow dark flashy offset
+035: Red orange flash
+036: Red orange flash dark
+037-040: Rainbow smooth slow-fast
+041-044: Red-white flash slow-fast
+045-076: Rainbow abrupt end (red, orange, yellow, green, blue, purple)
+077: Level border
+078: Title text inside
+079: Title text border (red/orange/yellow)
+080-111: Darker rainbow abrupt end (red, orange, yellow, green, blue, purple)
+112: Player glasses

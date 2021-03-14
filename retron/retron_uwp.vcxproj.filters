@@ -1,0 +1,351 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="pch.cpp" />
+    <ClCompile Include="source\main.cpp">
+      <Filter>source</Filter>
+    </ClCompile>
+    <ClCompile Include="source\core\globals.cpp">
+      <Filter>source\core</Filter>
+    </ClCompile>
+    <ClCompile Include="source\core\audio.cpp">
+      <Filter>source\core</Filter>
+    </ClCompile>
+    <ClCompile Include="source\core\game_spec.cpp">
+      <Filter>source\core</Filter>
+    </ClCompile>
+    <ClCompile Include="source\core\options.cpp">
+      <Filter>source\core</Filter>
+    </ClCompile>
+    <ClCompile Include="source\core\render_targets.cpp">
+      <Filter>source\core</Filter>
+    </ClCompile>
+    <ClCompile Include="source\states\app_state.cpp">
+      <Filter>source\states</Filter>
+    </ClCompile>
+    <ClCompile Include="source\states\debug_state.cpp">
+      <Filter>source\states</Filter>
+    </ClCompile>
+    <ClCompile Include="source\states\game_state.cpp">
+      <Filter>source\states</Filter>
+    </ClCompile>
+    <ClCompile Include="source\states\level_state.cpp">
+      <Filter>source\states</Filter>
+    </ClCompile>
+    <ClCompile Include="source\states\title_state.cpp">
+      <Filter>source\states</Filter>
+    </ClCompile>
+    <ClCompile Include="source\states\transition_state.cpp">
+      <Filter>source\states</Filter>
+    </ClCompile>
+    <ClCompile Include="source\ui\debug_page.xaml.cpp">
+      <Filter>source\ui</Filter>
+    </ClCompile>
+    <ClCompile Include="source\ui\title_page.xaml.cpp">
+      <Filter>source\ui</Filter>
+    </ClCompile>
+    <ClCompile Include="source\level\collision.cpp">
+      <Filter>source\level</Filter>
+    </ClCompile>
+    <ClCompile Include="source\level\entities.cpp">
+      <Filter>source\level</Filter>
+    </ClCompile>
+    <ClCompile Include="source\level\level.cpp">
+      <Filter>source\level</Filter>
+    </ClCompile>
+    <ClCompile Include="source\level\particles.cpp">
+      <Filter>source\level</Filter>
+    </ClCompile>
+    <ClCompile Include="source\level\position.cpp">
+      <Filter>source\level</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="pch.h" />
+    <ClInclude Include="source\main.h">
+      <Filter>source</Filter>
+    </ClInclude>
+    <ClInclude Include="source\core\globals.h">
+      <Filter>source\core</Filter>
+    </ClInclude>
+    <ClInclude Include="source\core\app_service.h">
+      <Filter>source\core</Filter>
+    </ClInclude>
+    <ClInclude Include="source\core\audio.h">
+      <Filter>source\core</Filter>
+    </ClInclude>
+    <ClInclude Include="source\core\game_service.h">
+      <Filter>source\core</Filter>
+    </ClInclude>
+    <ClInclude Include="source\core\game_spec.h">
+      <Filter>source\core</Filter>
+    </ClInclude>
+    <ClInclude Include="source\core\level_service.h">
+      <Filter>source\core</Filter>
+    </ClInclude>
+    <ClInclude Include="source\core\options.h">
+      <Filter>source\core</Filter>
+    </ClInclude>
+    <ClInclude Include="source\core\render_targets.h">
+      <Filter>source\core</Filter>
+    </ClInclude>
+    <ClInclude Include="source\states\app_state.h">
+      <Filter>source\states</Filter>
+    </ClInclude>
+    <ClInclude Include="source\states\debug_state.h">
+      <Filter>source\states</Filter>
+    </ClInclude>
+    <ClInclude Include="source\states\game_state.h">
+      <Filter>source\states</Filter>
+    </ClInclude>
+    <ClInclude Include="source\states\level_state.h">
+      <Filter>source\states</Filter>
+    </ClInclude>
+    <ClInclude Include="source\states\title_state.h">
+      <Filter>source\states</Filter>
+    </ClInclude>
+    <ClInclude Include="source\states\transition_state.h">
+      <Filter>source\states</Filter>
+    </ClInclude>
+    <ClInclude Include="source\ui\debug_page.xaml.h">
+      <Filter>source\ui</Filter>
+    </ClInclude>
+    <ClInclude Include="source\ui\title_page.xaml.h">
+      <Filter>source\ui</Filter>
+    </ClInclude>
+    <ClInclude Include="source\level\collision.h">
+      <Filter>source\level</Filter>
+    </ClInclude>
+    <ClInclude Include="source\level\entities.h">
+      <Filter>source\level</Filter>
+    </ClInclude>
+    <ClInclude Include="source\level\level.h">
+      <Filter>source\level</Filter>
+    </ClInclude>
+    <ClInclude Include="source\level\particles.h">
+      <Filter>source\level</Filter>
+    </ClInclude>
+    <ClInclude Include="source\level\position.h">
+      <Filter>source\level</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="assets\logo\SplashScreen.scale-100.png">
+      <Filter>assets\logo</Filter>
+    </Image>
+    <Image Include="assets\logo\SplashScreen.scale-125.png">
+      <Filter>assets\logo</Filter>
+    </Image>
+    <Image Include="assets\logo\SplashScreen.scale-150.png">
+      <Filter>assets\logo</Filter>
+    </Image>
+    <Image Include="assets\logo\SplashScreen.scale-200.png">
+      <Filter>assets\logo</Filter>
+    </Image>
+    <Image Include="assets\logo\SplashScreen.scale-400.png">
+      <Filter>assets\logo</Filter>
+    </Image>
+    <Image Include="assets\logo\Square44x44Logo.altform-lightunplated_targetsize-16.png">
+      <Filter>assets\logo</Filter>
+    </Image>
+    <Image Include="assets\logo\Square44x44Logo.altform-lightunplated_targetsize-24.png">
+      <Filter>assets\logo</Filter>
+    </Image>
+    <Image Include="assets\logo\Square44x44Logo.altform-lightunplated_targetsize-32.png">
+      <Filter>assets\logo</Filter>
+    </Image>
+    <Image Include="assets\logo\Square44x44Logo.altform-lightunplated_targetsize-48.png">
+      <Filter>assets\logo</Filter>
+    </Image>
+    <Image Include="assets\logo\Square44x44Logo.altform-lightunplated_targetsize-256.png">
+      <Filter>assets\logo</Filter>
+    </Image>
+    <Image Include="assets\logo\Square44x44Logo.altform-unplated_targetsize-16.png">
+      <Filter>assets\logo</Filter>
+    </Image>
+    <Image Include="assets\logo\Square44x44Logo.altform-unplated_targetsize-24.png">
+      <Filter>assets\logo</Filter>
+    </Image>
+    <Image Include="assets\logo\Square44x44Logo.altform-unplated_targetsize-32.png">
+      <Filter>assets\logo</Filter>
+    </Image>
+    <Image Include="assets\logo\Square44x44Logo.altform-unplated_targetsize-48.png">
+      <Filter>assets\logo</Filter>
+    </Image>
+    <Image Include="assets\logo\Square44x44Logo.altform-unplated_targetsize-256.png">
+      <Filter>assets\logo</Filter>
+    </Image>
+    <Image Include="assets\logo\Square44x44Logo.scale-100.png">
+      <Filter>assets\logo</Filter>
+    </Image>
+    <Image Include="assets\logo\Square44x44Logo.scale-125.png">
+      <Filter>assets\logo</Filter>
+    </Image>
+    <Image Include="assets\logo\Square44x44Logo.scale-150.png">
+      <Filter>assets\logo</Filter>
+    </Image>
+    <Image Include="assets\logo\Square44x44Logo.scale-200.png">
+      <Filter>assets\logo</Filter>
+    </Image>
+    <Image Include="assets\logo\Square44x44Logo.scale-400.png">
+      <Filter>assets\logo</Filter>
+    </Image>
+    <Image Include="assets\logo\Square44x44Logo.targetsize-16.png">
+      <Filter>assets\logo</Filter>
+    </Image>
+    <Image Include="assets\logo\Square44x44Logo.targetsize-24.png">
+      <Filter>assets\logo</Filter>
+    </Image>
+    <Image Include="assets\logo\Square44x44Logo.targetsize-32.png">
+      <Filter>assets\logo</Filter>
+    </Image>
+    <Image Include="assets\logo\Square44x44Logo.targetsize-48.png">
+      <Filter>assets\logo</Filter>
+    </Image>
+    <Image Include="assets\logo\Square44x44Logo.targetsize-256.png">
+      <Filter>assets\logo</Filter>
+    </Image>
+    <Image Include="assets\logo\Square71x71Logo.scale-100.png">
+      <Filter>assets\logo</Filter>
+    </Image>
+    <Image Include="assets\logo\Square71x71Logo.scale-125.png">
+      <Filter>assets\logo</Filter>
+    </Image>
+    <Image Include="assets\logo\Square71x71Logo.scale-150.png">
+      <Filter>assets\logo</Filter>
+    </Image>
+    <Image Include="assets\logo\Square71x71Logo.scale-200.png">
+      <Filter>assets\logo</Filter>
+    </Image>
+    <Image Include="assets\logo\Square71x71Logo.scale-400.png">
+      <Filter>assets\logo</Filter>
+    </Image>
+    <Image Include="assets\logo\Square150x150Logo.scale-100.png">
+      <Filter>assets\logo</Filter>
+    </Image>
+    <Image Include="assets\logo\Square150x150Logo.scale-125.png">
+      <Filter>assets\logo</Filter>
+    </Image>
+    <Image Include="assets\logo\Square150x150Logo.scale-150.png">
+      <Filter>assets\logo</Filter>
+    </Image>
+    <Image Include="assets\logo\Square150x150Logo.scale-200.png">
+      <Filter>assets\logo</Filter>
+    </Image>
+    <Image Include="assets\logo\Square150x150Logo.scale-400.png">
+      <Filter>assets\logo</Filter>
+    </Image>
+    <Image Include="assets\logo\Square310x310Logo.scale-100.png">
+      <Filter>assets\logo</Filter>
+    </Image>
+    <Image Include="assets\logo\Square310x310Logo.scale-125.png">
+      <Filter>assets\logo</Filter>
+    </Image>
+    <Image Include="assets\logo\Square310x310Logo.scale-150.png">
+      <Filter>assets\logo</Filter>
+    </Image>
+    <Image Include="assets\logo\Square310x310Logo.scale-200.png">
+      <Filter>assets\logo</Filter>
+    </Image>
+    <Image Include="assets\logo\Square310x310Logo.scale-400.png">
+      <Filter>assets\logo</Filter>
+    </Image>
+    <Image Include="assets\logo\SquareLogo.png">
+      <Filter>assets\logo</Filter>
+    </Image>
+    <Image Include="assets\logo\StoreLogo.scale-100.png">
+      <Filter>assets\logo</Filter>
+    </Image>
+    <Image Include="assets\logo\StoreLogo.scale-125.png">
+      <Filter>assets\logo</Filter>
+    </Image>
+    <Image Include="assets\logo\StoreLogo.scale-150.png">
+      <Filter>assets\logo</Filter>
+    </Image>
+    <Image Include="assets\logo\StoreLogo.scale-200.png">
+      <Filter>assets\logo</Filter>
+    </Image>
+    <Image Include="assets\logo\StoreLogo.scale-400.png">
+      <Filter>assets\logo</Filter>
+    </Image>
+    <Image Include="assets\logo\Wide310x150Logo.scale-100.png">
+      <Filter>assets\logo</Filter>
+    </Image>
+    <Image Include="assets\logo\Wide310x150Logo.scale-125.png">
+      <Filter>assets\logo</Filter>
+    </Image>
+    <Image Include="assets\logo\Wide310x150Logo.scale-150.png">
+      <Filter>assets\logo</Filter>
+    </Image>
+    <Image Include="assets\logo\Wide310x150Logo.scale-200.png">
+      <Filter>assets\logo</Filter>
+    </Image>
+    <Image Include="assets\logo\Wide310x150Logo.scale-400.png">
+      <Filter>assets\logo</Filter>
+    </Image>
+    <Image Include="assets\logo\WideLogo.png">
+      <Filter>assets\logo</Filter>
+    </Image>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="$(NoesisDll)" />
+    <None Include="$(NoesisDll)" />
+    <None Include="retron_TemporaryKey.pfx">
+      <Filter>uwp</Filter>
+    </None>
+    <None Include="$(NoesisDll)" />
+    <None Include="$(NoesisDll)" />
+    <None Include="$(NoesisDll)" />
+    <None Include="$(NoesisDll)" />
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="source">
+      <UniqueIdentifier>{27a87e31-72a9-4c49-9d4c-d65443d6a408}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="assets">
+      <UniqueIdentifier>{521512b9-8c93-4aa6-9cbf-37f5b16f5cb7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="assets\logo">
+      <UniqueIdentifier>{c0b9fb09-d07c-41c8-a1fb-79065bce9c30}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="uwp">
+      <UniqueIdentifier>{5eaea3ff-b0b5-49df-8a89-3ba8c5fe6c4a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="source\core">
+      <UniqueIdentifier>{d37b410f-d99a-4dfd-bd24-87601d1bcd21}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="source\states">
+      <UniqueIdentifier>{4d8991f8-25c1-4e6f-8147-f198411e663b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="source\ui">
+      <UniqueIdentifier>{4b02b768-c731-4db0-b4c0-837764a32aee}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="source\level">
+      <UniqueIdentifier>{98c1530f-56f7-4ae8-b02b-4b41628a7882}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ApplicationDefinition Include="app.xaml">
+      <Filter>uwp</Filter>
+    </ApplicationDefinition>
+  </ItemGroup>
+  <ItemGroup>
+    <AppxManifest Include="Package.appxmanifest">
+      <Filter>uwp</Filter>
+    </AppxManifest>
+  </ItemGroup>
+  <ItemGroup>
+    <ResJson Include="assets\assets.graphics.res.json">
+      <Filter>assets</Filter>
+    </ResJson>
+    <ResJson Include="assets\assets.res.json">
+      <Filter>assets</Filter>
+    </ResJson>
+    <ResJson Include="assets\assets.xaml.res.json">
+      <Filter>assets</Filter>
+    </ResJson>
+    <ResJson Include="assets\values.res.json">
+      <Filter>assets</Filter>
+    </ResJson>
+  </ItemGroup>
+</Project>

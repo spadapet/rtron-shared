@@ -1,0 +1,581 @@
+{
+  "game_controls":
+  {
+    "res:type": "input",
+    "events":
+    {
+      "up":
+      [
+        {
+          "action":
+          [
+            "up"
+          ]
+        },
+        {
+          "action":
+          [
+            "gamepad_left_up"
+          ]
+        },
+        {
+          "action":
+          [
+            "gamepad_dpad_up"
+          ]
+        }
+      ],
+      "down":
+      [
+        {
+          "action":
+          [
+            "down"
+          ]
+        },
+        {
+          "action":
+          [
+            "gamepad_left_down"
+          ]
+        },
+        {
+          "action":
+          [
+            "gamepad_dpad_down"
+          ]
+        }
+      ],
+      "left":
+      [
+        {
+          "action":
+          [
+            "left"
+          ]
+        },
+        {
+          "action":
+          [
+            "gamepad_left_left"
+          ]
+        },
+        {
+          "action":
+          [
+            "gamepad_dpad_left"
+          ]
+        }
+      ],
+      "right":
+      [
+        {
+          "action":
+          [
+            "right"
+          ]
+        },
+        {
+          "action":
+          [
+            "gamepad_left_right"
+          ]
+        },
+        {
+          "action":
+          [
+            "gamepad_dpad_right"
+          ]
+        }
+      ],
+      "action":
+      [
+        {
+          "action":
+          [
+            "return"
+          ]
+        },
+        {
+          "action":
+          [
+            "space"
+          ]
+        },
+        {
+          "action":
+          [
+            "gamepad_a"
+          ]
+        }
+      ],
+      "cancel":
+      [
+        {
+          "action":
+          [
+            "escape"
+          ]
+        }
+      ],
+      "pause":
+      [
+        {
+          "action":
+          [
+            "p"
+          ]
+        }
+      ],
+      "start":
+      [
+        {
+          "action":
+          [
+            "gamepad_start"
+          ]
+        }
+      ]
+    },
+    "values":
+    {
+      "up":
+      [
+        {
+          "action": "up"
+        },
+        {
+          "action": "gamepad_left_up"
+        },
+        {
+          "action": "gamepad_dpad_up"
+        }
+      ],
+      "down":
+      [
+        {
+          "action": "down"
+        },
+        {
+          "action": "gamepad_left_down"
+        },
+        {
+          "action": "gamepad_dpad_down"
+        }
+      ],
+      "left":
+      [ 
+        {
+          "action": "left"
+        },
+        {
+          "action": "gamepad_left_left"
+        },
+        {
+          "action": "gamepad_dpad_left"
+        }
+      ],
+      "right":
+      [
+        {
+          "action": "right"
+        },
+        {
+          "action": "gamepad_left_right"
+        },
+        {
+          "action": "gamepad_dpad_right"
+        }
+      ],
+      "action":
+      [
+        {
+          "action": "return"
+        },
+        {
+          "action": "space"
+        },
+        {
+          "action": "gamepad_a"
+        }
+      ]
+    }
+  },
+
+  "player_controls":
+  {
+    "res:type": "input",
+    "events":
+    {
+      "up":
+      [
+        {
+          "action":
+          [
+            "w"
+          ]
+        },
+        {
+          "action":
+          [
+            "gamepad_left_up"
+          ]
+        },
+        {
+          "action":
+          [
+            "gamepad_dpad_up"
+          ]
+        }
+      ],
+      "down":
+      [
+        {
+          "action":
+          [
+            "s"
+          ]
+        },
+        {
+          "action":
+          [
+            "gamepad_left_down"
+          ]
+        },
+        {
+          "action":
+          [
+            "gamepad_dpad_down"
+          ]
+        }
+      ],
+      "left":
+      [
+        {
+          "action":
+          [
+            "a"
+          ]
+        },
+        {
+          "action":
+          [
+            "gamepad_left_left"
+          ]
+        },
+        {
+          "action":
+          [
+            "gamepad_dpad_left"
+          ]
+        }
+      ],
+      "right":
+      [
+        {
+          "action":
+          [
+            "d"
+          ]
+        },
+        {
+          "action":
+          [
+            "gamepad_left_right"
+          ]
+        },
+        {
+          "action":
+          [
+            "gamepad_dpad_right"
+          ]
+        }
+      ],
+      "shoot_up":
+      [
+        {
+          "action":
+          [
+            "up"
+          ]
+        },
+        {
+          "action":
+          [
+            "i"
+          ]
+        },
+        {
+          "action":
+          [
+            "gamepad_right_up"
+          ]
+        }
+      ],
+      "shoot_down":
+      [
+        {
+          "action":
+          [
+            "down"
+          ]
+        },
+        {
+          "action":
+          [
+            "k"
+          ]
+        },
+        {
+          "action":
+          [
+            "gamepad_right_down"
+          ]
+        }
+      ],
+      "shoot_left":
+      [
+        {
+          "action":
+          [
+            "left"
+          ]
+        },
+        {
+          "action":
+          [
+            "j"
+          ]
+        },
+        {
+          "action":
+          [
+            "gamepad_right_left"
+          ]
+        }
+      ],
+      "shoot_right":
+      [
+        {
+          "action":
+          [
+            "right"
+          ]
+        },
+        {
+          "action":
+          [
+            "l"
+          ]
+        },
+        {
+          "action":
+          [
+            "gamepad_right_right"
+          ]
+        }
+      ]
+    },
+    "values":
+    {
+      "up":
+      [
+        {
+          "action": "w"
+        },
+        {
+          "action": "gamepad_left_up"
+        },
+        {
+          "action": "gamepad_dpad_up"
+        }
+      ],
+      "down":
+      [
+        {
+          "action": "s"
+        },
+        {
+          "action": "gamepad_left_down"
+        },
+        {
+          "action": "gamepad_dpad_down"
+        }
+      ],
+      "left":
+      [
+        {
+          "action": "a"
+        },
+        {
+          "action": "gamepad_left_left"
+        },
+        {
+          "action": "gamepad_dpad_left"
+        }
+      ],
+      "right":
+      [
+        {
+          "action": "d"
+        },
+        {
+          "action": "gamepad_left_right"
+        },
+        {
+          "action": "gamepad_dpad_right"
+        }
+      ],
+      "shoot_up":
+      [
+        {
+          "action": "up"
+        },
+        {
+          "action": "i"
+        },
+        {
+          "action": "gamepad_right_up"
+        }
+      ],
+      "shoot_down":
+      [
+        {
+          "action": "down"
+        },
+        {
+          "action": "k"
+        },
+        {
+          "action": "gamepad_right_down"
+        }
+      ],
+      "shoot_left":
+      [
+        {
+          "action": "left"
+        },
+        {
+          "action": "j"
+        },
+        {
+          "action": "gamepad_right_left"
+        }
+      ],
+      "shoot_right":
+      [
+        {
+          "action": "right"
+        },
+        {
+          "action": "l"
+        },
+        {
+          "action": "gamepad_right_right"
+        }
+      ]
+    }
+  },
+
+  "game_debug_controls":
+  {
+    "res:type": "input",
+    "events":
+    {
+      "cancel_step_one_frame":
+      [
+        {
+          "action":
+          [
+            "escape"
+          ]
+        },
+        {
+          "action":
+          [
+            "tilde"
+          ]
+        }
+      ],
+      "step_one_frame":
+      [
+        {
+          "action":
+          [
+            "1"
+          ],
+          "repeat": 0.25
+        }
+      ],
+      "debug_render_toggle":
+      [
+        {
+          "action":
+          [
+            "0"
+          ]
+        }
+      ]
+    },
+    "values":
+    {
+      "speed_slow":
+      [
+        {
+          "action": "2"
+        }
+      ],
+      "speed_fast":
+      [
+        {
+          "action": "3"
+        }
+      ]
+    }
+  },
+
+  "palette_main":
+  {
+    "res:type": "palette",
+    "file": "file:palette_main.png",
+
+    "remaps":
+    {
+      "player_0":
+      [ ],
+      "player_1":
+      [
+        [ 232, 236 ],
+        [ 248, 252 ]
+      ]
+    }
+  },
+
+  "game_font_data":
+  {
+    "res:type": "font_file",
+    "file": "file:../../retron_designer/fonts/robotron_2084.ttf"
+  },
+
+  "game_font_small_data":
+  {
+    "res:type": "font_file",
+    "file": "file:../../retron_designer/fonts/robotron_2084_small.ttf"
+  },
+
+  "game_font":
+  {
+    "res:type": "font",
+    "data": "ref:game_font_data",
+    "size": 8,
+    "outline": 1
+  },
+
+  "game_font_small":
+  {
+    "res:type": "font",
+    "data": "ref:game_font_small_data",
+    "size": 6,
+    "outline": 1
+  }
+}

@@ -1,0 +1,772 @@
+<UserControl
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:ei="http://schemas.microsoft.com/expression/2010/interactions"
+    xmlns:ff="clr-namespace:ff"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:noesis="clr-namespace:NoesisGUIExtensions;assembly=Noesis.GUI.Extensions"
+    xmlns:local="clr-namespace:retron"
+    x:Class="retron.title_page"
+    mc:Ignorable="d"
+    d:DesignWidth="480"
+    d:DesignHeight="270"
+    d:Background="Black"
+    d:FontFamily="{StaticResource Font.Family.Default}"
+    d:FontSize="{StaticResource Font.Size.Normal}"
+    d:DataContext="{d:DesignInstance local:title_page_view_model, IsDesignTimeCreatable=True}"
+    DataContext="{Binding view_model, RelativeSource={RelativeSource Mode=Self}}"
+    Foreground="{StaticResource Brush.Foreground.Normal}"
+    UseLayoutRounding="True"
+    RenderOptions.BitmapScalingMode="NearestNeighbor">
+
+    <i:Interaction.Triggers>
+        <i:EventTrigger EventName="Loaded" SourceName="root_panel">
+            <ei:GoToStateAction TargetName="root_panel" StateName="initial_state" />
+        </i:EventTrigger>
+        <i:EventTrigger EventName="Completed" SourceName="initial_state_storyboard">
+            <ff:set_panel_child_focus_action TargetName="play_button" />
+        </i:EventTrigger>
+        <i:EventTrigger EventName="Completed" SourceName="play_to_initial_state_storyboard">
+            <ff:set_panel_child_focus_action TargetName="play_button" />
+        </i:EventTrigger>
+        <i:EventTrigger EventName="Completed" SourceName="options_to_initial_state_storyboard">
+            <ff:set_panel_child_focus_action TargetName="options_button" />
+        </i:EventTrigger>
+        <i:EventTrigger EventName="Completed" SourceName="about_to_initial_state_storyboard">
+            <ff:set_panel_child_focus_action TargetName="about_button" />
+        </i:EventTrigger>
+        <i:EventTrigger EventName="Completed" SourceName="initial_to_play_state_storyboard">
+            <ff:set_panel_child_focus_action TargetName="start_game_button" />
+        </i:EventTrigger>
+        <i:EventTrigger EventName="Completed" SourceName="initial_to_options_state_storyboard">
+            <ff:set_panel_child_focus_action TargetName="sound_button" />
+        </i:EventTrigger>
+        <i:EventTrigger EventName="Completed" SourceName="initial_to_about_state_storyboard">
+            <ff:set_panel_child_focus_action TargetName="about_back_button" />
+        </i:EventTrigger>
+    </i:Interaction.Triggers>
+
+    <UserControl.Resources>
+        <ControlTemplate x:Key="option_button_template" TargetType="{x:Type Button}">
+            <Grid x:Name="grid" Background="{TemplateBinding Background}">
+                <ContentPresenter HorizontalAlignment="Left" VerticalAlignment="Center" Margin="{TemplateBinding Padding}"/>
+            </Grid>
+            <ControlTemplate.Triggers>
+                <Trigger Property="IsFocused" Value="True">
+                    <Setter Property="Foreground" Value="{StaticResource Brush.Foreground.Normal}" />
+                    <Setter Property="Background" Value="{StaticResource Brush.Background.Checked}" />
+                </Trigger>
+            </ControlTemplate.Triggers>
+        </ControlTemplate>
+
+        <Style x:Key="option_button_style" TargetType="{x:Type Button}" BasedOn="{StaticResource {x:Type Button}}">
+            <Setter Property="OverridesDefaultStyle" Value="True"/>
+            <Setter Property="Foreground" Value="{StaticResource Brush.230}" />
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="Padding" Value="4" />
+            <Setter Property="FocusVisualStyle" Value="{x:Null}" />
+            <Setter Property="Template" Value="{StaticResource option_button_template}"/>
+            <Setter Property="noesis:StyleInteraction.Triggers">
+                <Setter.Value>
+                    <noesis:StyleTriggerCollection>
+                        <i:EventTrigger EventName="MouseEnter">
+                            <noesis:SetFocusAction />
+                        </i:EventTrigger>
+                        <ei:KeyTrigger Key="Left" ActiveOnFocus="True">
+                            <!-- The Command binding will fail until this collection is cloned into a Button -->
+                            <i:InvokeCommandAction Command="{Binding Command, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Button}}" CommandParameter="{StaticResource false_boolean}" />
+                        </ei:KeyTrigger>
+                        <ei:KeyTrigger Key="Right" ActiveOnFocus="True">
+                            <!-- The Command binding will fail until this collection is cloned into a Button -->
+                            <i:InvokeCommandAction Command="{Binding Command, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Button}}" CommandParameter="{StaticResource true_boolean}" />
+                        </ei:KeyTrigger>
+                    </noesis:StyleTriggerCollection>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+    </UserControl.Resources>
+
+    <Grid x:Name="root_panel">
+        <Grid.Background>
+            <ImageBrush ImageSource="title/title_bg.png"/>
+        </Grid.Background>
+        <i:Interaction.Triggers>
+            <ei:KeyTrigger Key="Esc">
+                <i:InvokeCommandAction Command="{Binding state_back_command}" />
+            </ei:KeyTrigger>
+        </i:Interaction.Triggers>
+
+        <Grid x:Name="initial_panel" Visibility="Collapsed">
+            <Grid.RenderTransform>
+                <TranslateTransform/>
+            </Grid.RenderTransform>
+            <StackPanel Orientation="Horizontal" Width="312" Height="32" VerticalAlignment="Top" Margin="0,60,0,0">
+                <StackPanel.Resources>
+                    <ImageBrush x:Key="logo_00" ImageSource="title/title_logo.png" ViewboxUnits="Absolute" Viewbox="0,0,28,32" />
+                    <ImageBrush x:Key="logo_01" ImageSource="title/title_logo.png" ViewboxUnits="Absolute" Viewbox="28,0,28,32" />
+                    <ImageBrush x:Key="logo_02" ImageSource="title/title_logo.png" ViewboxUnits="Absolute" Viewbox="56,0,28,32" />
+                    <ImageBrush x:Key="logo_03" ImageSource="title/title_logo.png" ViewboxUnits="Absolute" Viewbox="84,0,28,32" />
+                    <ImageBrush x:Key="logo_04" ImageSource="title/title_logo.png" ViewboxUnits="Absolute" Viewbox="112,0,28,32" />
+                    <ImageBrush x:Key="logo_05" ImageSource="title/title_logo.png" ViewboxUnits="Absolute" Viewbox="140,0,28,32" />
+                    <ImageBrush x:Key="logo_06" ImageSource="title/title_logo.png" ViewboxUnits="Absolute" Viewbox="168,0,33,32" />
+                    <ImageBrush x:Key="logo_07" ImageSource="title/title_logo.png" ViewboxUnits="Absolute" Viewbox="201,0,28,32" />
+                    <ImageBrush x:Key="logo_08" ImageSource="title/title_logo.png" ViewboxUnits="Absolute" Viewbox="229,0,28,32" />
+                    <ImageBrush x:Key="logo_09" ImageSource="title/title_logo.png" ViewboxUnits="Absolute" Viewbox="257,0,28,32" />
+                    <ImageBrush x:Key="logo_10" ImageSource="title/title_logo.png" ViewboxUnits="Absolute" Viewbox="285,0,27,32" />
+                </StackPanel.Resources>
+                <Rectangle x:Name="logo_00" Width="28" Height="32" Fill="{StaticResource logo_00}" RenderTransformOrigin="0.5,0.5">
+                    <Rectangle.RenderTransform>
+                        <ScaleTransform />
+                    </Rectangle.RenderTransform>
+                </Rectangle>
+                <Rectangle x:Name="logo_01" Width="28" Height="32" Fill="{StaticResource logo_01}" RenderTransformOrigin="0.5,0.5">
+                    <Rectangle.RenderTransform>
+                        <ScaleTransform />
+                    </Rectangle.RenderTransform>
+                </Rectangle>
+                <Rectangle x:Name="logo_02" Width="28" Height="32" Fill="{StaticResource logo_02}" RenderTransformOrigin="0.5,0.5">
+                    <Rectangle.RenderTransform>
+                        <ScaleTransform />
+                    </Rectangle.RenderTransform>
+                </Rectangle>
+                <Rectangle x:Name="logo_03" Width="28" Height="32" Fill="{StaticResource logo_03}" RenderTransformOrigin="0.5,0.5">
+                    <Rectangle.RenderTransform>
+                        <ScaleTransform />
+                    </Rectangle.RenderTransform>
+                </Rectangle>
+                <Rectangle x:Name="logo_04" Width="28" Height="32" Fill="{StaticResource logo_04}" RenderTransformOrigin="0.5,0.5">
+                    <Rectangle.RenderTransform>
+                        <ScaleTransform />
+                    </Rectangle.RenderTransform>
+                </Rectangle>
+                <Rectangle x:Name="logo_05" Width="28" Height="32" Fill="{StaticResource logo_05}" RenderTransformOrigin="0.5,0.5">
+                    <Rectangle.RenderTransform>
+                        <ScaleTransform />
+                    </Rectangle.RenderTransform>
+                </Rectangle>
+                <Rectangle x:Name="logo_06" Width="33" Height="32" Fill="{StaticResource logo_06}" RenderTransformOrigin="0.5,0.5">
+                    <Rectangle.RenderTransform>
+                        <ScaleTransform />
+                    </Rectangle.RenderTransform>
+                </Rectangle>
+                <Rectangle x:Name="logo_07" Width="28" Height="32" Fill="{StaticResource logo_07}" RenderTransformOrigin="0.5,0.5">
+                    <Rectangle.RenderTransform>
+                        <ScaleTransform />
+                    </Rectangle.RenderTransform>
+                </Rectangle>
+                <Rectangle x:Name="logo_08" Width="28" Height="32" Fill="{StaticResource logo_08}" RenderTransformOrigin="0.5,0.5">
+                    <Rectangle.RenderTransform>
+                        <ScaleTransform />
+                    </Rectangle.RenderTransform>
+                </Rectangle>
+                <Rectangle x:Name="logo_09" Width="28" Height="32" Fill="{StaticResource logo_09}" RenderTransformOrigin="0.5,0.5">
+                    <Rectangle.RenderTransform>
+                        <ScaleTransform />
+                    </Rectangle.RenderTransform>
+                </Rectangle>
+                <Rectangle x:Name="logo_10" Width="27" Height="32" Fill="{StaticResource logo_10}" RenderTransformOrigin="0.5,0.5">
+                    <Rectangle.RenderTransform>
+                        <ScaleTransform />
+                    </Rectangle.RenderTransform>
+                </Rectangle>
+            </StackPanel>
+            <StackPanel x:Name="initial_button_panel" Width="80" Margin="0,135,0,0">
+                <Button x:Name="play_button" Content="Play" Style="{StaticResource option_button_style}">
+                    <i:Interaction.Triggers>
+                        <i:EventTrigger EventName="Click">
+                            <ei:GoToStateAction StateName="play_state"/>
+                        </i:EventTrigger>
+                    </i:Interaction.Triggers>
+                </Button>
+                <Button x:Name="options_button" Content="Options" Style="{StaticResource option_button_style}">
+                    <i:Interaction.Triggers>
+                        <i:EventTrigger EventName="Click">
+                            <ei:GoToStateAction StateName="options_state"/>
+                        </i:EventTrigger>
+                    </i:Interaction.Triggers>
+                </Button>
+                <Button x:Name="about_button" Content="About" Style="{StaticResource option_button_style}">
+                    <i:Interaction.Triggers>
+                        <i:EventTrigger EventName="Click">
+                            <ei:GoToStateAction StateName="about_state"/>
+                        </i:EventTrigger>
+                    </i:Interaction.Triggers>
+                </Button>
+            </StackPanel>
+        </Grid>
+
+        <Grid x:Name="play_panel" Visibility="Collapsed">
+            <Grid.RenderTransform>
+                <TranslateTransform/>
+            </Grid.RenderTransform>
+            <Image x:Name="play_image" Source="title/title_play.png" Width="242" Height="32" VerticalAlignment="Top" Margin="0,60,0,0" />
+            <StackPanel Width="120" Margin="0,135,0,0">
+                <Button x:Name="start_game_button" Content="Start" Style="{StaticResource option_button_style}" Command="{Binding start_game_command}" />
+                <Button Style="{StaticResource option_button_style}" Command="{Binding players_command}">
+                    <TextBlock Text="{Binding players_text, StringFormat=Players: \{0\}}" />
+                </Button>
+                <Button Style="{StaticResource option_button_style}" Command="{Binding difficulty_command}">
+                    <TextBlock Text="{Binding difficulty_text, StringFormat=Difficulty: \{0\}}" />
+                </Button>
+                <Button Content="Back" Style="{StaticResource option_button_style}">
+                    <i:Interaction.Triggers>
+                        <i:EventTrigger EventName="Click">
+                            <ei:GoToStateAction StateName="initial_state"/>
+                        </i:EventTrigger>
+                    </i:Interaction.Triggers>
+                </Button>
+            </StackPanel>
+        </Grid>
+
+        <Grid x:Name="options_panel" Visibility="Collapsed">
+            <Grid.RenderTransform>
+                <TranslateTransform/>
+            </Grid.RenderTransform>
+            <Image x:Name="options_image" Source="title/title_options.png" Width="190" Height="32" VerticalAlignment="Top" Margin="0,60,0,0" />
+            <StackPanel Width="100" Margin="0,135,0,0">
+                <Button x:Name="sound_button" Style="{StaticResource option_button_style}" Command="{Binding sound_command}">
+                    <TextBlock Text="{Binding sound_text, StringFormat=Sound: \{0\}}" />
+                </Button>
+                <Button Style="{StaticResource option_button_style}" Command="{Binding full_screen_command}">
+                    <TextBlock Text="{Binding full_screen_text, StringFormat=Full Screen: \{0\}}" />
+                </Button>
+                <Button Content="Back" Style="{StaticResource option_button_style}">
+                    <i:Interaction.Triggers>
+                        <i:EventTrigger EventName="Click">
+                            <ei:GoToStateAction StateName="initial_state"/>
+                        </i:EventTrigger>
+                    </i:Interaction.Triggers>
+                </Button>
+            </StackPanel>
+        </Grid>
+
+        <Grid x:Name="about_panel" Visibility="Collapsed">
+            <Grid.RenderTransform>
+                <TranslateTransform/>
+            </Grid.RenderTransform>
+            <Image x:Name="about_image" Source="title/title_about.png" Width="139" Height="32" VerticalAlignment="Top" Margin="0,60,0,0" />
+            <Image Source="title/noesis_logo.png" Width="16" Height="16" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="0,0,28,28" />
+            <StackPanel Margin="0,120,0,0">
+                <StackPanel HorizontalAlignment="Center">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="4" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="12" />
+                            <RowDefinition Height="12" />
+                            <RowDefinition Height="12" />
+                        </Grid.RowDefinitions>
+                        <TextBlock Grid.Row="0" Grid.Column="0"><Run Text="Made by:" /></TextBlock>
+                        <TextBlock Grid.Row="0" Grid.Column="2"><Hyperlink NavigateUri="http://peterspada.com"><Run Text="Peter Spada" /></Hyperlink></TextBlock>
+                        <TextBlock Grid.Row="1" Grid.Column="0"><Run Text="Source Code:" /></TextBlock>
+                        <TextBlock Grid.Row="1" Grid.Column="2"><Hyperlink NavigateUri="https://github.com/spadapet/retron-shared"><Run Text="GitHub Repo" /></Hyperlink></TextBlock>
+                        <TextBlock Grid.Row="2" Grid.Column="0"><Run Text="Inspired by:" /></TextBlock>
+                        <TextBlock Grid.Row="2" Grid.Column="2"><Hyperlink NavigateUri="https://en.wikipedia.org/wiki/Robotron:_2084"><Run Text="Robotron: 2084" /></Hyperlink></TextBlock>
+                    </Grid>
+                    <TextBlock Margin="0,8,0,0" FontFamily="{StaticResource Font.Family.Small}">
+                        <Run Text="Libraries and Fonts:" />
+                    </TextBlock>
+                    <TextBlock Margin="8,4,0,0" FontFamily="{StaticResource Font.Family.Small}">
+                        <Hyperlink Focusable="True" NavigateUri="https://www.noesisengine.com"><Run Text="Noesis Gui" /></Hyperlink>
+                    </TextBlock>
+                    <TextBlock Margin="8,4,0,0" FontFamily="{StaticResource Font.Family.Small}">
+                        <Hyperlink NavigateUri="https://www.zlib.net"><Run Text="zlib, " /></Hyperlink>
+                        <Hyperlink NavigateUri="http://www.libpng.org/pub/png/libpng.html"><Run Text="libpng, " /></Hyperlink>
+                        <Hyperlink NavigateUri="https://github.com/microsoft/DirectXTex"><Run Text="DirectXTex" /></Hyperlink>
+                    </TextBlock>
+                    <TextBlock Margin="8,4,0,0" FontFamily="{StaticResource Font.Family.Small}">
+                        <Hyperlink NavigateUri="https://github.com/skypjack/entt"><Run Text="EnTT, " /></Hyperlink>
+                        <Hyperlink NavigateUri="https://github.com/erincatto/box2d"><Run Text="Box2D" /></Hyperlink>
+                    </TextBlock>
+                    <TextBlock Margin="8,4,0,0" FontFamily="{StaticResource Font.Family.Small}">
+                        <Hyperlink NavigateUri="https://fontstruct.com/fontstructions/show/474939/robotron_2084"><Run Text="Font by Patrick Lauke" /></Hyperlink>
+                    </TextBlock>
+                </StackPanel>
+                <StackPanel HorizontalAlignment="Center" Margin="0,8,0,0">
+                    <Button x:Name="about_back_button" Content="Back" Style="{StaticResource option_button_style}">
+                        <i:Interaction.Triggers>
+                            <i:EventTrigger EventName="Click">
+                                <ei:GoToStateAction StateName="initial_state"/>
+                            </i:EventTrigger>
+                        </i:Interaction.Triggers>
+                    </Button>
+                </StackPanel>
+            </StackPanel>
+        </Grid>
+
+        <VisualStateManager.VisualStateGroups>
+            <VisualStateGroup x:Name="main_group">
+                <VisualStateGroup.Transitions>
+                    <VisualTransition From="initial_state" GeneratedDuration="0" To="play_state">
+                        <Storyboard x:Name="initial_to_play_state_storyboard">
+                            <DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.RenderTransform).(TranslateTransform.X)" Storyboard.TargetName="initial_panel">
+                                <EasingDoubleKeyFrame KeyTime="0" Value="0"/>
+                                <EasingDoubleKeyFrame KeyTime="0:0:0.5" Value="100"/>
+                            </DoubleAnimationUsingKeyFrames>
+                            <DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.RenderTransform).(TranslateTransform.X)" Storyboard.TargetName="play_panel">
+                                <EasingDoubleKeyFrame KeyTime="0" Value="-100" />
+                                <EasingDoubleKeyFrame KeyTime="0:0:0.5" Value="0">
+                                    <EasingDoubleKeyFrame.EasingFunction>
+                                        <BackEase EasingMode="EaseOut" Amplitude="0.25"/>
+                                    </EasingDoubleKeyFrame.EasingFunction>
+                                </EasingDoubleKeyFrame>
+                            </DoubleAnimationUsingKeyFrames>
+                            <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Visibility)" Storyboard.TargetName="play_panel">
+                                <DiscreteObjectKeyFrame KeyTime="0" Value="{x:Static Visibility.Visible}"/>
+                                <DiscreteObjectKeyFrame KeyTime="0:0:0.5" Value="{x:Static Visibility.Visible}"/>
+                            </ObjectAnimationUsingKeyFrames>
+                            <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Visibility)" Storyboard.TargetName="initial_panel">
+                                <DiscreteObjectKeyFrame KeyTime="0" Value="{x:Static Visibility.Visible}"/>
+                                <DiscreteObjectKeyFrame KeyTime="0:0:0.5" Value="{x:Static Visibility.Visible}"/>
+                            </ObjectAnimationUsingKeyFrames>
+                            <DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Opacity)" Storyboard.TargetName="initial_panel">
+                                <EasingDoubleKeyFrame KeyTime="0" Value="1"/>
+                                <EasingDoubleKeyFrame KeyTime="0:0:0.5" Value="0"/>
+                            </DoubleAnimationUsingKeyFrames>
+                            <DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Opacity)" Storyboard.TargetName="play_panel">
+                                <EasingDoubleKeyFrame KeyTime="0" Value="0"/>
+                                <EasingDoubleKeyFrame KeyTime="0:0:0.5" Value="1"/>
+                            </DoubleAnimationUsingKeyFrames>
+                        </Storyboard>
+                    </VisualTransition>
+                    <VisualTransition From="play_state" GeneratedDuration="0" To="initial_state">
+                        <Storyboard x:Name="play_to_initial_state_storyboard">
+                            <DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.RenderTransform).(TranslateTransform.X)" Storyboard.TargetName="initial_panel">
+                                <EasingDoubleKeyFrame KeyTime="0" Value="100" />
+                                <EasingDoubleKeyFrame KeyTime="0:0:0.5" Value="0">
+                                    <EasingDoubleKeyFrame.EasingFunction>
+                                        <BackEase EasingMode="EaseOut" Amplitude="0.25"/>
+                                    </EasingDoubleKeyFrame.EasingFunction>
+                                </EasingDoubleKeyFrame>
+                            </DoubleAnimationUsingKeyFrames>
+                            <DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.RenderTransform).(TranslateTransform.X)" Storyboard.TargetName="play_panel">
+                                <EasingDoubleKeyFrame KeyTime="0" Value="0" />
+                                <EasingDoubleKeyFrame KeyTime="0:0:0.5" Value="-100" />
+                            </DoubleAnimationUsingKeyFrames>
+                            <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Visibility)" Storyboard.TargetName="play_panel">
+                                <DiscreteObjectKeyFrame KeyTime="0" Value="{x:Static Visibility.Visible}"/>
+                                <DiscreteObjectKeyFrame KeyTime="0:0:0.5" Value="{x:Static Visibility.Visible}"/>
+                            </ObjectAnimationUsingKeyFrames>
+                            <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Visibility)" Storyboard.TargetName="initial_panel">
+                                <DiscreteObjectKeyFrame KeyTime="0" Value="{x:Static Visibility.Visible}"/>
+                                <DiscreteObjectKeyFrame KeyTime="0:0:0.5" Value="{x:Static Visibility.Visible}"/>
+                            </ObjectAnimationUsingKeyFrames>
+                            <DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Opacity)" Storyboard.TargetName="initial_panel">
+                                <EasingDoubleKeyFrame KeyTime="0" Value="0"/>
+                                <EasingDoubleKeyFrame KeyTime="0:0:0.5" Value="1"/>
+                            </DoubleAnimationUsingKeyFrames>
+                            <DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Opacity)" Storyboard.TargetName="play_panel">
+                                <EasingDoubleKeyFrame KeyTime="0" Value="1"/>
+                                <EasingDoubleKeyFrame KeyTime="0:0:0.5" Value="0"/>
+                            </DoubleAnimationUsingKeyFrames>
+                        </Storyboard>
+                    </VisualTransition>
+                    <VisualTransition From="initial_state" GeneratedDuration="0" To="options_state">
+                        <Storyboard x:Name="initial_to_options_state_storyboard">
+                            <DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.RenderTransform).(TranslateTransform.X)" Storyboard.TargetName="initial_panel">
+                                <EasingDoubleKeyFrame KeyTime="0" Value="0"/>
+                                <EasingDoubleKeyFrame KeyTime="0:0:0.5" Value="100"/>
+                            </DoubleAnimationUsingKeyFrames>
+                            <DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.RenderTransform).(TranslateTransform.X)" Storyboard.TargetName="options_panel">
+                                <EasingDoubleKeyFrame KeyTime="0" Value="-100" />
+                                <EasingDoubleKeyFrame KeyTime="0:0:0.5" Value="0">
+                                    <EasingDoubleKeyFrame.EasingFunction>
+                                        <BackEase EasingMode="EaseOut" Amplitude="0.25"/>
+                                    </EasingDoubleKeyFrame.EasingFunction>
+                                </EasingDoubleKeyFrame>
+                            </DoubleAnimationUsingKeyFrames>
+                            <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Visibility)" Storyboard.TargetName="options_panel">
+                                <DiscreteObjectKeyFrame KeyTime="0" Value="{x:Static Visibility.Visible}"/>
+                                <DiscreteObjectKeyFrame KeyTime="0:0:0.5" Value="{x:Static Visibility.Visible}"/>
+                            </ObjectAnimationUsingKeyFrames>
+                            <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Visibility)" Storyboard.TargetName="initial_panel">
+                                <DiscreteObjectKeyFrame KeyTime="0" Value="{x:Static Visibility.Visible}"/>
+                                <DiscreteObjectKeyFrame KeyTime="0:0:0.5" Value="{x:Static Visibility.Visible}"/>
+                            </ObjectAnimationUsingKeyFrames>
+                            <DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Opacity)" Storyboard.TargetName="initial_panel">
+                                <EasingDoubleKeyFrame KeyTime="0" Value="1"/>
+                                <EasingDoubleKeyFrame KeyTime="0:0:0.5" Value="0"/>
+                            </DoubleAnimationUsingKeyFrames>
+                            <DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Opacity)" Storyboard.TargetName="options_panel">
+                                <EasingDoubleKeyFrame KeyTime="0" Value="0"/>
+                                <EasingDoubleKeyFrame KeyTime="0:0:0.5" Value="1"/>
+                            </DoubleAnimationUsingKeyFrames>
+                        </Storyboard>
+                    </VisualTransition>
+                    <VisualTransition From="options_state" GeneratedDuration="0" To="initial_state">
+                        <Storyboard x:Name="options_to_initial_state_storyboard">
+                            <DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.RenderTransform).(TranslateTransform.X)" Storyboard.TargetName="initial_panel">
+                                <EasingDoubleKeyFrame KeyTime="0" Value="100" />
+                                <EasingDoubleKeyFrame KeyTime="0:0:0.5" Value="0">
+                                    <EasingDoubleKeyFrame.EasingFunction>
+                                        <BackEase EasingMode="EaseOut" Amplitude="0.25"/>
+                                    </EasingDoubleKeyFrame.EasingFunction>
+                                </EasingDoubleKeyFrame>
+                            </DoubleAnimationUsingKeyFrames>
+                            <DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.RenderTransform).(TranslateTransform.X)" Storyboard.TargetName="options_panel">
+                                <EasingDoubleKeyFrame KeyTime="0" Value="0" />
+                                <EasingDoubleKeyFrame KeyTime="0:0:0.5" Value="-100" />
+                            </DoubleAnimationUsingKeyFrames>
+                            <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Visibility)" Storyboard.TargetName="options_panel">
+                                <DiscreteObjectKeyFrame KeyTime="0" Value="{x:Static Visibility.Visible}"/>
+                                <DiscreteObjectKeyFrame KeyTime="0:0:0.5" Value="{x:Static Visibility.Visible}"/>
+                            </ObjectAnimationUsingKeyFrames>
+                            <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Visibility)" Storyboard.TargetName="initial_panel">
+                                <DiscreteObjectKeyFrame KeyTime="0" Value="{x:Static Visibility.Visible}"/>
+                                <DiscreteObjectKeyFrame KeyTime="0:0:0.5" Value="{x:Static Visibility.Visible}"/>
+                            </ObjectAnimationUsingKeyFrames>
+                            <DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Opacity)" Storyboard.TargetName="initial_panel">
+                                <EasingDoubleKeyFrame KeyTime="0" Value="0"/>
+                                <EasingDoubleKeyFrame KeyTime="0:0:0.5" Value="1"/>
+                            </DoubleAnimationUsingKeyFrames>
+                            <DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Opacity)" Storyboard.TargetName="options_panel">
+                                <EasingDoubleKeyFrame KeyTime="0" Value="1"/>
+                                <EasingDoubleKeyFrame KeyTime="0:0:0.5" Value="0"/>
+                            </DoubleAnimationUsingKeyFrames>
+                        </Storyboard>
+                    </VisualTransition>
+                    <VisualTransition From="initial_state" GeneratedDuration="0" To="about_state">
+                        <Storyboard x:Name="initial_to_about_state_storyboard">
+                            <DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.RenderTransform).(TranslateTransform.X)" Storyboard.TargetName="initial_panel">
+                                <EasingDoubleKeyFrame KeyTime="0" Value="0"/>
+                                <EasingDoubleKeyFrame KeyTime="0:0:0.5" Value="100"/>
+                            </DoubleAnimationUsingKeyFrames>
+                            <DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.RenderTransform).(TranslateTransform.X)" Storyboard.TargetName="about_panel">
+                                <EasingDoubleKeyFrame KeyTime="0" Value="-100" />
+                                <EasingDoubleKeyFrame KeyTime="0:0:0.5" Value="0">
+                                    <EasingDoubleKeyFrame.EasingFunction>
+                                        <BackEase EasingMode="EaseOut" Amplitude="0.25"/>
+                                    </EasingDoubleKeyFrame.EasingFunction>
+                                </EasingDoubleKeyFrame>
+                            </DoubleAnimationUsingKeyFrames>
+                            <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Visibility)" Storyboard.TargetName="about_panel">
+                                <DiscreteObjectKeyFrame KeyTime="0" Value="{x:Static Visibility.Visible}"/>
+                                <DiscreteObjectKeyFrame KeyTime="0:0:0.5" Value="{x:Static Visibility.Visible}"/>
+                            </ObjectAnimationUsingKeyFrames>
+                            <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Visibility)" Storyboard.TargetName="initial_panel">
+                                <DiscreteObjectKeyFrame KeyTime="0" Value="{x:Static Visibility.Visible}"/>
+                                <DiscreteObjectKeyFrame KeyTime="0:0:0.5" Value="{x:Static Visibility.Visible}"/>
+                            </ObjectAnimationUsingKeyFrames>
+                            <DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Opacity)" Storyboard.TargetName="initial_panel">
+                                <EasingDoubleKeyFrame KeyTime="0" Value="1"/>
+                                <EasingDoubleKeyFrame KeyTime="0:0:0.5" Value="0"/>
+                            </DoubleAnimationUsingKeyFrames>
+                            <DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Opacity)" Storyboard.TargetName="about_panel">
+                                <EasingDoubleKeyFrame KeyTime="0" Value="0"/>
+                                <EasingDoubleKeyFrame KeyTime="0:0:0.5" Value="1"/>
+                            </DoubleAnimationUsingKeyFrames>
+                        </Storyboard>
+                    </VisualTransition>
+                    <VisualTransition From="about_state" GeneratedDuration="0" To="initial_state">
+                        <Storyboard x:Name="about_to_initial_state_storyboard">
+                            <DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.RenderTransform).(TranslateTransform.X)" Storyboard.TargetName="initial_panel">
+                                <EasingDoubleKeyFrame KeyTime="0" Value="100" />
+                                <EasingDoubleKeyFrame KeyTime="0:0:0.5" Value="0">
+                                    <EasingDoubleKeyFrame.EasingFunction>
+                                        <BackEase EasingMode="EaseOut" Amplitude="0.25"/>
+                                    </EasingDoubleKeyFrame.EasingFunction>
+                                </EasingDoubleKeyFrame>
+                            </DoubleAnimationUsingKeyFrames>
+                            <DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.RenderTransform).(TranslateTransform.X)" Storyboard.TargetName="about_panel">
+                                <EasingDoubleKeyFrame KeyTime="0" Value="0" />
+                                <EasingDoubleKeyFrame KeyTime="0:0:0.5" Value="-100" />
+                            </DoubleAnimationUsingKeyFrames>
+                            <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Visibility)" Storyboard.TargetName="about_panel">
+                                <DiscreteObjectKeyFrame KeyTime="0" Value="{x:Static Visibility.Visible}"/>
+                                <DiscreteObjectKeyFrame KeyTime="0:0:0.5" Value="{x:Static Visibility.Visible}"/>
+                            </ObjectAnimationUsingKeyFrames>
+                            <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Visibility)" Storyboard.TargetName="initial_panel">
+                                <DiscreteObjectKeyFrame KeyTime="0" Value="{x:Static Visibility.Visible}"/>
+                                <DiscreteObjectKeyFrame KeyTime="0:0:0.5" Value="{x:Static Visibility.Visible}"/>
+                            </ObjectAnimationUsingKeyFrames>
+                            <DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Opacity)" Storyboard.TargetName="initial_panel">
+                                <EasingDoubleKeyFrame KeyTime="0" Value="0"/>
+                                <EasingDoubleKeyFrame KeyTime="0:0:0.5" Value="1"/>
+                            </DoubleAnimationUsingKeyFrames>
+                            <DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Opacity)" Storyboard.TargetName="about_panel">
+                                <EasingDoubleKeyFrame KeyTime="0" Value="1"/>
+                                <EasingDoubleKeyFrame KeyTime="0:0:0.5" Value="0"/>
+                            </DoubleAnimationUsingKeyFrames>
+                        </Storyboard>
+                    </VisualTransition>
+                    <VisualTransition GeneratedDuration="0" To="initial_state">
+                        <Storyboard x:Name="initial_state_storyboard" SpeedRatio="1.75">
+                            <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Visibility)" Storyboard.TargetName="initial_panel">
+                                <DiscreteObjectKeyFrame KeyTime="0" Value="{x:Static Visibility.Visible}"/>
+                                <DiscreteObjectKeyFrame KeyTime="00:00:01.5" Value="{x:Static Visibility.Visible}"/>
+                            </ObjectAnimationUsingKeyFrames>
+                            <DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Opacity)" Storyboard.TargetName="initial_button_panel">
+                                <EasingDoubleKeyFrame KeyTime="0" Value="0"/>
+                                <EasingDoubleKeyFrame KeyTime="00:00:02" Value="1"/>
+                            </DoubleAnimationUsingKeyFrames>
+                            <DoubleAnimationUsingKeyFrames BeginTime="00:00:00" Storyboard.TargetName="logo_00" Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleY)">
+                                <EasingDoubleKeyFrame KeyTime="00:00:00" Value="0.0625" />
+                                <EasingDoubleKeyFrame KeyTime="00:00:01" Value="1">
+                                    <EasingDoubleKeyFrame.EasingFunction>
+                                        <BackEase EasingMode="EaseOut" Amplitude="0.75"/>
+                                    </EasingDoubleKeyFrame.EasingFunction>
+                                </EasingDoubleKeyFrame>
+                            </DoubleAnimationUsingKeyFrames>
+                            <DoubleAnimationUsingKeyFrames BeginTime="00:00:00" Storyboard.TargetName="logo_00" Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleX)">
+                                <EasingDoubleKeyFrame KeyTime="00:00:00" Value="0.0625" />
+                                <EasingDoubleKeyFrame KeyTime="00:00:01" Value="1">
+                                    <EasingDoubleKeyFrame.EasingFunction>
+                                        <BackEase EasingMode="EaseOut" Amplitude="0.75"/>
+                                    </EasingDoubleKeyFrame.EasingFunction>
+                                </EasingDoubleKeyFrame>
+                            </DoubleAnimationUsingKeyFrames>
+                            <DoubleAnimationUsingKeyFrames BeginTime="00:00:00" Storyboard.TargetName="logo_00" Storyboard.TargetProperty="(UIElement.Opacity)">
+                                <EasingDoubleKeyFrame KeyTime="00:00:00" Value="0"/>
+                                <EasingDoubleKeyFrame KeyTime="00:00:01" Value="1"/>
+                            </DoubleAnimationUsingKeyFrames>
+                            <DoubleAnimationUsingKeyFrames BeginTime="00:00:00.125" Storyboard.TargetName="logo_01" Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleY)">
+                                <EasingDoubleKeyFrame KeyTime="00:00:00" Value="0.0625" />
+                                <EasingDoubleKeyFrame KeyTime="00:00:01" Value="1">
+                                    <EasingDoubleKeyFrame.EasingFunction>
+                                        <BackEase EasingMode="EaseOut" Amplitude="0.75"/>
+                                    </EasingDoubleKeyFrame.EasingFunction>
+                                </EasingDoubleKeyFrame>
+                            </DoubleAnimationUsingKeyFrames>
+                            <DoubleAnimationUsingKeyFrames BeginTime="00:00:00.125" Storyboard.TargetName="logo_01" Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleX)">
+                                <EasingDoubleKeyFrame KeyTime="00:00:00" Value="0.0625" />
+                                <EasingDoubleKeyFrame KeyTime="00:00:01" Value="1">
+                                    <EasingDoubleKeyFrame.EasingFunction>
+                                        <BackEase EasingMode="EaseOut" Amplitude="0.75"/>
+                                    </EasingDoubleKeyFrame.EasingFunction>
+                                </EasingDoubleKeyFrame>
+                            </DoubleAnimationUsingKeyFrames>
+                            <DoubleAnimationUsingKeyFrames Storyboard.TargetName="logo_01" Storyboard.TargetProperty="(UIElement.Opacity)">
+                                <EasingDoubleKeyFrame KeyTime="00:00:00" Value="0"/>
+                                <EasingDoubleKeyFrame KeyTime="00:00:00.125" Value="0"/>
+                                <EasingDoubleKeyFrame KeyTime="00:00:01.125" Value="1"/>
+                            </DoubleAnimationUsingKeyFrames>
+                            <DoubleAnimationUsingKeyFrames BeginTime="00:00:00.25" Storyboard.TargetName="logo_02" Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleY)">
+                                <EasingDoubleKeyFrame KeyTime="00:00:00" Value="0.0625" />
+                                <EasingDoubleKeyFrame KeyTime="00:00:01" Value="1">
+                                    <EasingDoubleKeyFrame.EasingFunction>
+                                        <BackEase EasingMode="EaseOut" Amplitude="0.75"/>
+                                    </EasingDoubleKeyFrame.EasingFunction>
+                                </EasingDoubleKeyFrame>
+                            </DoubleAnimationUsingKeyFrames>
+                            <DoubleAnimationUsingKeyFrames BeginTime="00:00:00.25" Storyboard.TargetName="logo_02" Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleX)">
+                                <EasingDoubleKeyFrame KeyTime="00:00:00" Value="0.0625" />
+                                <EasingDoubleKeyFrame KeyTime="00:00:01" Value="1">
+                                    <EasingDoubleKeyFrame.EasingFunction>
+                                        <BackEase EasingMode="EaseOut" Amplitude="0.75"/>
+                                    </EasingDoubleKeyFrame.EasingFunction>
+                                </EasingDoubleKeyFrame>
+                            </DoubleAnimationUsingKeyFrames>
+                            <DoubleAnimationUsingKeyFrames Storyboard.TargetName="logo_02" Storyboard.TargetProperty="(UIElement.Opacity)">
+                                <EasingDoubleKeyFrame KeyTime="00:00:00" Value="0"/>
+                                <EasingDoubleKeyFrame KeyTime="00:00:00.25" Value="0"/>
+                                <EasingDoubleKeyFrame KeyTime="00:00:01.25" Value="1"/>
+                            </DoubleAnimationUsingKeyFrames>
+                            <DoubleAnimationUsingKeyFrames BeginTime="00:00:00.375" Storyboard.TargetName="logo_03" Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleY)">
+                                <EasingDoubleKeyFrame KeyTime="00:00:00" Value="0.0625" />
+                                <EasingDoubleKeyFrame KeyTime="00:00:01" Value="1">
+                                    <EasingDoubleKeyFrame.EasingFunction>
+                                        <BackEase EasingMode="EaseOut" Amplitude="0.75"/>
+                                    </EasingDoubleKeyFrame.EasingFunction>
+                                </EasingDoubleKeyFrame>
+                            </DoubleAnimationUsingKeyFrames>
+                            <DoubleAnimationUsingKeyFrames BeginTime="00:00:00.375" Storyboard.TargetName="logo_03" Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleX)">
+                                <EasingDoubleKeyFrame KeyTime="00:00:00" Value="0.0625" />
+                                <EasingDoubleKeyFrame KeyTime="00:00:01" Value="1">
+                                    <EasingDoubleKeyFrame.EasingFunction>
+                                        <BackEase EasingMode="EaseOut" Amplitude="0.75"/>
+                                    </EasingDoubleKeyFrame.EasingFunction>
+                                </EasingDoubleKeyFrame>
+                            </DoubleAnimationUsingKeyFrames>
+                            <DoubleAnimationUsingKeyFrames Storyboard.TargetName="logo_03" Storyboard.TargetProperty="(UIElement.Opacity)">
+                                <EasingDoubleKeyFrame KeyTime="00:00:00" Value="0"/>
+                                <EasingDoubleKeyFrame KeyTime="00:00:00.375" Value="0"/>
+                                <EasingDoubleKeyFrame KeyTime="00:00:01.375" Value="1"/>
+                            </DoubleAnimationUsingKeyFrames>
+                            <DoubleAnimationUsingKeyFrames BeginTime="00:00:00.5" Storyboard.TargetName="logo_04" Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleY)">
+                                <EasingDoubleKeyFrame KeyTime="00:00:00" Value="0.0625" />
+                                <EasingDoubleKeyFrame KeyTime="00:00:01" Value="1">
+                                    <EasingDoubleKeyFrame.EasingFunction>
+                                        <BackEase EasingMode="EaseOut" Amplitude="0.75"/>
+                                    </EasingDoubleKeyFrame.EasingFunction>
+                                </EasingDoubleKeyFrame>
+                            </DoubleAnimationUsingKeyFrames>
+                            <DoubleAnimationUsingKeyFrames BeginTime="00:00:00.5" Storyboard.TargetName="logo_04" Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleX)">
+                                <EasingDoubleKeyFrame KeyTime="00:00:00" Value="0.0625" />
+                                <EasingDoubleKeyFrame KeyTime="00:00:01" Value="1">
+                                    <EasingDoubleKeyFrame.EasingFunction>
+                                        <BackEase EasingMode="EaseOut" Amplitude="0.75"/>
+                                    </EasingDoubleKeyFrame.EasingFunction>
+                                </EasingDoubleKeyFrame>
+                            </DoubleAnimationUsingKeyFrames>
+                            <DoubleAnimationUsingKeyFrames Storyboard.TargetName="logo_04" Storyboard.TargetProperty="(UIElement.Opacity)">
+                                <EasingDoubleKeyFrame KeyTime="00:00:00" Value="0"/>
+                                <EasingDoubleKeyFrame KeyTime="00:00:00.5" Value="0"/>
+                                <EasingDoubleKeyFrame KeyTime="00:00:01.5" Value="1"/>
+                            </DoubleAnimationUsingKeyFrames>
+                            <DoubleAnimationUsingKeyFrames BeginTime="00:00:00.625" Storyboard.TargetName="logo_05" Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleY)">
+                                <EasingDoubleKeyFrame KeyTime="00:00:00" Value="0.0625" />
+                                <EasingDoubleKeyFrame KeyTime="00:00:01" Value="1">
+                                    <EasingDoubleKeyFrame.EasingFunction>
+                                        <BackEase EasingMode="EaseOut" Amplitude="0.75"/>
+                                    </EasingDoubleKeyFrame.EasingFunction>
+                                </EasingDoubleKeyFrame>
+                            </DoubleAnimationUsingKeyFrames>
+                            <DoubleAnimationUsingKeyFrames BeginTime="00:00:00.625" Storyboard.TargetName="logo_05" Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleX)">
+                                <EasingDoubleKeyFrame KeyTime="00:00:00" Value="0.0625" />
+                                <EasingDoubleKeyFrame KeyTime="00:00:01" Value="1">
+                                    <EasingDoubleKeyFrame.EasingFunction>
+                                        <BackEase EasingMode="EaseOut" Amplitude="0.75"/>
+                                    </EasingDoubleKeyFrame.EasingFunction>
+                                </EasingDoubleKeyFrame>
+                            </DoubleAnimationUsingKeyFrames>
+                            <DoubleAnimationUsingKeyFrames Storyboard.TargetName="logo_05" Storyboard.TargetProperty="(UIElement.Opacity)">
+                                <EasingDoubleKeyFrame KeyTime="00:00:00" Value="0"/>
+                                <EasingDoubleKeyFrame KeyTime="00:00:00.625" Value="0"/>
+                                <EasingDoubleKeyFrame KeyTime="00:00:01.625" Value="1"/>
+                            </DoubleAnimationUsingKeyFrames>
+                            <DoubleAnimationUsingKeyFrames BeginTime="00:00:00.75" Storyboard.TargetName="logo_06" Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleY)">
+                                <EasingDoubleKeyFrame KeyTime="00:00:00" Value="0.0625" />
+                                <EasingDoubleKeyFrame KeyTime="00:00:01" Value="1">
+                                    <EasingDoubleKeyFrame.EasingFunction>
+                                        <BackEase EasingMode="EaseOut" Amplitude="0.75"/>
+                                    </EasingDoubleKeyFrame.EasingFunction>
+                                </EasingDoubleKeyFrame>
+                            </DoubleAnimationUsingKeyFrames>
+                            <DoubleAnimationUsingKeyFrames BeginTime="00:00:00.75" Storyboard.TargetName="logo_06" Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleX)">
+                                <EasingDoubleKeyFrame KeyTime="00:00:00" Value="0.0625" />
+                                <EasingDoubleKeyFrame KeyTime="00:00:01" Value="1">
+                                    <EasingDoubleKeyFrame.EasingFunction>
+                                        <BackEase EasingMode="EaseOut" Amplitude="0.75"/>
+                                    </EasingDoubleKeyFrame.EasingFunction>
+                                </EasingDoubleKeyFrame>
+                            </DoubleAnimationUsingKeyFrames>
+                            <DoubleAnimationUsingKeyFrames Storyboard.TargetName="logo_06" Storyboard.TargetProperty="(UIElement.Opacity)">
+                                <EasingDoubleKeyFrame KeyTime="00:00:00" Value="0"/>
+                                <EasingDoubleKeyFrame KeyTime="00:00:00.75" Value="0"/>
+                                <EasingDoubleKeyFrame KeyTime="00:00:01.75" Value="1"/>
+                            </DoubleAnimationUsingKeyFrames>
+                            <DoubleAnimationUsingKeyFrames BeginTime="00:00:00.875" Storyboard.TargetName="logo_07" Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleY)">
+                                <EasingDoubleKeyFrame KeyTime="00:00:00" Value="0.0625" />
+                                <EasingDoubleKeyFrame KeyTime="00:00:01" Value="1">
+                                    <EasingDoubleKeyFrame.EasingFunction>
+                                        <BackEase EasingMode="EaseOut" Amplitude="0.75"/>
+                                    </EasingDoubleKeyFrame.EasingFunction>
+                                </EasingDoubleKeyFrame>
+                            </DoubleAnimationUsingKeyFrames>
+                            <DoubleAnimationUsingKeyFrames BeginTime="00:00:00.875" Storyboard.TargetName="logo_07" Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleX)">
+                                <EasingDoubleKeyFrame KeyTime="00:00:00" Value="0.0625" />
+                                <EasingDoubleKeyFrame KeyTime="00:00:01" Value="1">
+                                    <EasingDoubleKeyFrame.EasingFunction>
+                                        <BackEase EasingMode="EaseOut" Amplitude="0.75"/>
+                                    </EasingDoubleKeyFrame.EasingFunction>
+                                </EasingDoubleKeyFrame>
+                            </DoubleAnimationUsingKeyFrames>
+                            <DoubleAnimationUsingKeyFrames Storyboard.TargetName="logo_07" Storyboard.TargetProperty="(UIElement.Opacity)">
+                                <EasingDoubleKeyFrame KeyTime="00:00:00" Value="0"/>
+                                <EasingDoubleKeyFrame KeyTime="00:00:00.875" Value="0"/>
+                                <EasingDoubleKeyFrame KeyTime="00:00:01.875" Value="1"/>
+                            </DoubleAnimationUsingKeyFrames>
+                            <DoubleAnimationUsingKeyFrames BeginTime="00:00:01" Storyboard.TargetName="logo_08" Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleY)">
+                                <EasingDoubleKeyFrame KeyTime="00:00:00" Value="0.0625" />
+                                <EasingDoubleKeyFrame KeyTime="00:00:01" Value="1">
+                                    <EasingDoubleKeyFrame.EasingFunction>
+                                        <BackEase EasingMode="EaseOut" Amplitude="0.75"/>
+                                    </EasingDoubleKeyFrame.EasingFunction>
+                                </EasingDoubleKeyFrame>
+                            </DoubleAnimationUsingKeyFrames>
+                            <DoubleAnimationUsingKeyFrames BeginTime="00:00:01" Storyboard.TargetName="logo_08" Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleX)">
+                                <EasingDoubleKeyFrame KeyTime="00:00:00" Value="0.0625" />
+                                <EasingDoubleKeyFrame KeyTime="00:00:01" Value="1">
+                                    <EasingDoubleKeyFrame.EasingFunction>
+                                        <BackEase EasingMode="EaseOut" Amplitude="0.75"/>
+                                    </EasingDoubleKeyFrame.EasingFunction>
+                                </EasingDoubleKeyFrame>
+                            </DoubleAnimationUsingKeyFrames>
+                            <DoubleAnimationUsingKeyFrames Storyboard.TargetName="logo_08" Storyboard.TargetProperty="(UIElement.Opacity)">
+                                <EasingDoubleKeyFrame KeyTime="00:00:00" Value="0"/>
+                                <EasingDoubleKeyFrame KeyTime="00:00:01" Value="0"/>
+                                <EasingDoubleKeyFrame KeyTime="00:00:02" Value="1"/>
+                            </DoubleAnimationUsingKeyFrames>
+                            <DoubleAnimationUsingKeyFrames BeginTime="00:00:01.125" Storyboard.TargetName="logo_09" Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleY)">
+                                <EasingDoubleKeyFrame KeyTime="00:00:00" Value="0.0625" />
+                                <EasingDoubleKeyFrame KeyTime="00:00:01" Value="1">
+                                    <EasingDoubleKeyFrame.EasingFunction>
+                                        <BackEase EasingMode="EaseOut" Amplitude="0.75"/>
+                                    </EasingDoubleKeyFrame.EasingFunction>
+                                </EasingDoubleKeyFrame>
+                            </DoubleAnimationUsingKeyFrames>
+                            <DoubleAnimationUsingKeyFrames BeginTime="00:00:01.125" Storyboard.TargetName="logo_09" Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleX)">
+                                <EasingDoubleKeyFrame KeyTime="00:00:00" Value="0.0625" />
+                                <EasingDoubleKeyFrame KeyTime="00:00:01" Value="1">
+                                    <EasingDoubleKeyFrame.EasingFunction>
+                                        <BackEase EasingMode="EaseOut" Amplitude="0.75"/>
+                                    </EasingDoubleKeyFrame.EasingFunction>
+                                </EasingDoubleKeyFrame>
+                            </DoubleAnimationUsingKeyFrames>
+                            <DoubleAnimationUsingKeyFrames Storyboard.TargetName="logo_09" Storyboard.TargetProperty="(UIElement.Opacity)">
+                                <EasingDoubleKeyFrame KeyTime="00:00:00" Value="0"/>
+                                <EasingDoubleKeyFrame KeyTime="00:00:01.125" Value="0"/>
+                                <EasingDoubleKeyFrame KeyTime="00:00:02.125" Value="1"/>
+                            </DoubleAnimationUsingKeyFrames>
+                            <DoubleAnimationUsingKeyFrames BeginTime="00:00:01.25" Storyboard.TargetName="logo_10" Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleY)">
+                                <EasingDoubleKeyFrame KeyTime="00:00:00" Value="0.0625" />
+                                <EasingDoubleKeyFrame KeyTime="00:00:01" Value="1">
+                                    <EasingDoubleKeyFrame.EasingFunction>
+                                        <BackEase EasingMode="EaseOut" Amplitude="0.75"/>
+                                    </EasingDoubleKeyFrame.EasingFunction>
+                                </EasingDoubleKeyFrame>
+                            </DoubleAnimationUsingKeyFrames>
+                            <DoubleAnimationUsingKeyFrames BeginTime="00:00:01.25" Storyboard.TargetName="logo_10" Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleX)">
+                                <EasingDoubleKeyFrame KeyTime="00:00:00" Value="0.0625" />
+                                <EasingDoubleKeyFrame KeyTime="00:00:01" Value="1">
+                                    <EasingDoubleKeyFrame.EasingFunction>
+                                        <BackEase EasingMode="EaseOut" Amplitude="0.75"/>
+                                    </EasingDoubleKeyFrame.EasingFunction>
+                                </EasingDoubleKeyFrame>
+                            </DoubleAnimationUsingKeyFrames>
+                            <DoubleAnimationUsingKeyFrames Storyboard.TargetName="logo_10" Storyboard.TargetProperty="(UIElement.Opacity)">
+                                <EasingDoubleKeyFrame KeyTime="00:00:00" Value="0"/>
+                                <EasingDoubleKeyFrame KeyTime="00:00:01.25" Value="0"/>
+                                <EasingDoubleKeyFrame KeyTime="00:00:02.25" Value="1"/>
+                            </DoubleAnimationUsingKeyFrames>
+                        </Storyboard>
+                    </VisualTransition>
+                </VisualStateGroup.Transitions>
+                <VisualState x:Name="initial_state">
+                    <Storyboard>
+                        <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Visibility)" Storyboard.TargetName="initial_panel">
+                            <DiscreteObjectKeyFrame KeyTime="0" Value="{x:Static Visibility.Visible}"/>
+                        </ObjectAnimationUsingKeyFrames>
+                    </Storyboard>
+                </VisualState>
+                <VisualState x:Name="play_state">
+                    <Storyboard>
+                        <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Visibility)" Storyboard.TargetName="play_panel">
+                            <DiscreteObjectKeyFrame KeyTime="0" Value="{x:Static Visibility.Visible}"/>
+                        </ObjectAnimationUsingKeyFrames>
+                    </Storyboard>
+                </VisualState>
+                <VisualState x:Name="options_state">
+                    <Storyboard>
+                        <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Visibility)" Storyboard.TargetName="options_panel">
+                            <DiscreteObjectKeyFrame KeyTime="0" Value="{x:Static Visibility.Visible}"/>
+                        </ObjectAnimationUsingKeyFrames>
+                    </Storyboard>
+                </VisualState>
+                <VisualState x:Name="about_state">
+                    <Storyboard>
+                        <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Visibility)" Storyboard.TargetName="about_panel">
+                            <DiscreteObjectKeyFrame KeyTime="0" Value="{x:Static Visibility.Visible}"/>
+                        </ObjectAnimationUsingKeyFrames>
+                    </Storyboard>
+                </VisualState>
+            </VisualStateGroup>
+        </VisualStateManager.VisualStateGroups>
+    </Grid>
+</UserControl>

@@ -1,0 +1,122 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <DevRoot>$([MSBuild]::NormalizeDirectory($(MSBuildThisFileDirectory), ..))</DevRoot>
+    <OutRoot>$(DevRoot)out\</OutRoot>
+    <ConfigOutRoot>$(OutRoot)$(Configuration.ToLower())_$(Platform.ToLower())\</ConfigOutRoot>
+    <ProjectOutRoot>$(ConfigOutRoot)$(MSBuildProjectName)\</ProjectOutRoot>
+    <BaseIntermediateOutputPath>$(ProjectOutRoot)</BaseIntermediateOutputPath>
+    <IntermediateOutputPath>$(BaseIntermediateOutputPath)</IntermediateOutputPath>
+    <BaseOutputPath>$(ConfigOutRoot)bin\</BaseOutputPath>
+    <OutputPath>$(BaseOutputPath)</OutputPath>
+  </PropertyGroup>
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <ProjectGuid>{9D9345C4-576B-43F4-84C3-1F2FC4EB6483}</ProjectGuid>
+    <OutputType>WinExe</OutputType>
+    <RootNamespace>retron</RootNamespace>
+    <AssemblyName>retron_designer</AssemblyName>
+    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
+    <ApplicationManifest>designer_app\app.manifest</ApplicationManifest>
+    <FileAlignment>512</FileAlignment>
+    <ProjectTypeGuids>{60dc8134-eba5-43b8-bcc9-bb4bc16c2548};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+    <WarningLevel>4</WarningLevel>
+    <ErrorReport>prompt</ErrorReport>
+    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+    <Deterministic>true</Deterministic>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <UseVSHostingProcess>true</UseVSHostingProcess>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <DefineConstants>TRACE</DefineConstants>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Xaml" />
+    <Reference Include="WindowsBase" />
+    <Reference Include="PresentationCore" />
+    <Reference Include="PresentationFramework" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Noesis.GUI.Extensions">
+      <Version>3.0.5</Version>
+    </PackageReference>
+  </ItemGroup>
+  <ItemGroup>
+    <ApplicationDefinition Include="designer_app\app.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </ApplicationDefinition>
+    <Compile Include="debug_page.xaml.cs">
+      <DependentUpon>debug_page.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="designer_app\delegate_command.cs" />
+    <Compile Include="designer_app\property_notifier.cs" />
+    <Compile Include="properties\global_suppressions.cs" />
+    <Compile Include="designer_app\placeholders.cs" />
+    <Compile Include="title_page.xaml.cs">
+      <DependentUpon>title_page.xaml</DependentUpon>
+    </Compile>
+    <Page Include="application_resources.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <None Include="application_theme_full.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </None>
+    <Page Include="application_theme.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="debug_page.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="designer_app\main_window.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Compile Include="designer_app\app.xaml.cs">
+      <DependentUpon>app.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="designer_app\main_window.xaml.cs">
+      <DependentUpon>main_window.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="properties\assembly_info.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Page Include="title_page.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="designer_app\app.config" />
+    <None Include="designer_app\app.manifest" />
+    <Resource Include="fonts\robotron_2084_small.ttf" />
+    <Resource Include="fonts\robotron_2084.ttf" />
+    <Resource Include="title\title_logo.png" />
+    <Resource Include="title\title_bg.png" />
+    <Resource Include="title\title_about.png" />
+    <Resource Include="title\title_options.png" />
+    <Resource Include="title\title_play.png" />
+    <Resource Include="title\noesis_logo.png" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+</Project>

@@ -1,0 +1,183 @@
+{
+  "sprites":
+  {
+    "res:type": "sprites",
+    "format": "pal",
+    "mips": 1,
+    "sprites":
+    {
+      "player":
+      {
+        "file": "file:graphics/player.png",
+        "pos": [ 0, 0 ],
+        "size": [ 9, 15 ],
+        "handle": [ 4, 15 ]
+      },
+      "player_part0":
+      {
+        "file": "file:graphics/player.png",
+        "pos": [ 10, 0 ],
+        "size": [ 9, 15 ],
+        "handle": [ 2, 2 ]
+      },
+      "player_part1":
+      {
+        "file": "file:graphics/player.png",
+        "pos": [ 20, 0 ],
+        "size": [ 9, 15 ],
+        "handle": [ 6, 2 ]
+      },
+      "player_part2":
+      {
+        "file": "file:graphics/player.png",
+        "pos": [ 30, 0 ],
+        "size": [ 9, 15 ],
+        "handle": [ 4, 5 ]
+      },
+      "player_part3":
+      {
+        "file": "file:graphics/player.png",
+        "pos": [ 40, 0 ],
+        "size": [ 9, 15 ],
+        "handle": [ 4, 3 ]
+      },
+      "player_part4":
+      {
+        "file": "file:graphics/player.png",
+        "pos": [ 50, 0 ],
+        "size": [ 9, 15 ],
+        "handle": [ 4, 10 ]
+      },
+      "player_part5":
+      {
+        "file": "file:graphics/player.png",
+        "pos": [ 60, 0 ],
+        "size": [ 9, 15 ],
+        "handle": [ 3, 12 ]
+      },
+      "player_part6":
+      {
+        "file": "file:graphics/player.png",
+        "pos": [ 70, 0 ],
+        "size": [ 9, 15 ],
+        "handle": [ 5, 12 ]
+      },
+      "player_part7":
+      {
+        "file": "file:graphics/player.png",
+        "pos": [ 80, 0 ],
+        "size": [ 9, 15 ],
+        "handle": [ 1, 9 ]
+      },
+      "player_part8":
+      {
+        "file": "file:graphics/player.png",
+        "pos": [ 90, 0 ],
+        "size": [ 9, 15 ],
+        "handle": [ 7, 9 ]
+      },
+      "player_bullet":
+      {
+        "file": "file:graphics/player_bullet.png",
+        "size": [ 8, 2 ],
+        "handle": [ 8, 1 ]
+      }
+    }
+  },
+
+  "transition_bg_1.png":
+  {
+    "res:type": "texture",
+    "format": "pal",
+    "file": "file:transition_bg_1.png"
+  },
+
+  "transition_bg_2.png":
+  {
+    "res:type": "texture",
+    "format": "pal",
+    "file": "file:transition_bg_2.png"
+  },
+
+  "level_particles":
+  {
+    "player_bullet_hit_bounds":
+    [
+      {
+        "life": [ 8, 32 ],
+        "count": [ 32, 64 ],
+        "distance": [ 0, 4 ],
+        "velocity": [ 0.125, 1.5 ],
+        "colors": [ 232, 232, 233, 248, 249 ]
+      },
+      {
+        "life": [ 16, 24 ],
+        "count": [ 24, 32 ],
+        "distance": [ 2, 4 ],
+        "velocity": [ 0.0625, 0.25 ],
+        "angle": [ 0, 360 ],
+        "colors": [ 229, 230, 230 ]
+      }
+    ],
+
+    "enter_player":
+    [
+      {
+        "life": [ 32, 128 ],
+        "delay": [ 0, 32 ],
+        "count": [ 32, 32 ],
+        "distance": [ 0, 8 ],
+        "velocity": [ 0.5, 2 ],
+        "animations": [ "ref:sprites.player_part0", "ref:sprites.player_part1", "ref:sprites.player_part2", "ref:sprites.player_part3", "ref:sprites.player_part4", "ref:sprites.player_part5", "ref:sprites.player_part6", "ref:sprites.player_part7", "ref:sprites.player_part8" ],
+        "angle": [ 0, 360 ],
+        "angle_velocity": [ 0.125, 1 ],
+        "spin": [ 0, 360 ],
+        "spin_velocity": [ 0.5, 4 ],
+        "scale": [ 0.25, 1 ],
+        "reverse": true
+      },
+
+      {
+        "life": [ 32, 128 ],
+        "delay": [ 0, 32 ],
+        "count": [ 64, 64],
+        "size": [ 1, 2 ],
+        "distance": [ 0, 8 ],
+        "velocity": [ 0.5, 2 ],
+        "colors": [ 112, 230, 231, 232, 233, 239 ],
+        "angle": [ 0, 360 ],
+        "angle_velocity": [ 0.125, 1 ],
+        "scale": [ 0.25, 1 ],
+        "reverse": true
+      }
+    ],
+
+    "destroy_grunt":
+    [
+      {
+        "life": [ 24, 40 ],
+        "delay": [ 0, 0 ],
+        "count": [ 32, 32 ],
+        "distance": [ 0, 8 ],
+        "velocity": [ 0.125, 1.5 ],
+        "colors": [ 232, 248 ],
+        "angle": [ 0, 360 ],
+        "angle_velocity": [ 0.125, 1 ],
+        "scale": [ 0.1875, 1 ],
+        "size": [ 2, 2 ]
+      },
+      {
+        "life": [ 32, 80 ],
+        "delay": [ 0, 0 ],
+        "count": [ 64, 64 ],
+        "distance": [ 0, 4 ],
+        "velocity": [ 0.5, 2.5 ],
+        "colors": [ 232, 232, 248, 248, 230, 246 ],
+        "angle": [ 0, 360 ],
+        "angle_velocity": [ 0.125, 0.5 ],
+        "scale": [ 0.1875, 1 ],
+        "size": [ 1, 1 ]
+      }
+    ]
+  }
+}

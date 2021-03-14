@@ -1,0 +1,196 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{857BF46A-94E0-4C02-A857-DF0AD4A75870}</ProjectGuid>
+    <AppType>UWP</AppType>
+    <ConfigurationType>Application</ConfigurationType>
+    <ProjectName>retron</ProjectName>
+    <RootNamespace>retron</RootNamespace>
+    <AppxAutoIncrementPackageRevision>True</AppxAutoIncrementPackageRevision>
+    <AppxBundle>Always</AppxBundle>
+    <AppxBundlePlatforms>x64</AppxBundlePlatforms>
+    <GenerateAppInstallerFile>False</GenerateAppInstallerFile>
+    <GenerateTestArtifacts>True</GenerateTestArtifacts>
+    <HoursBetweenUpdateChecks>0</HoursBetweenUpdateChecks>
+    <AppxPackageSigningEnabled>True</AppxPackageSigningEnabled>
+    <PackageCertificateKeyFile>retron_TemporaryKey.pfx</PackageCertificateKeyFile>
+    <AppxPackageSigningTimestampDigestAlgorithm>SHA256</AppxPackageSigningTimestampDigestAlgorithm>
+  </PropertyGroup>
+  <Import Project="..\vendor\ff_game_library\build\cpp.props" />
+  <PropertyGroup>
+    <AdditionalResJsonInputs>$(DevRoot)retron.designer\**\*.xaml;$(DevRoot)retron.designer\**\*.ttf;$(DevRoot)retron.designer\**\*.png</AdditionalResJsonInputs>
+  </PropertyGroup>
+  <ItemDefinitionGroup>
+    <ClCompile>
+      <AdditionalIncludeDirectories>$(FFRoot)projects;$(NoesisRoot)Include;$(NoesisRoot)Src\Packages\App\Interactivity\Include;$(FFRoot)vendor\entt\src;$(DevRoot)vendor\box2d\include;$(DevRoot)vendor;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
+    <Link>
+      <AdditionalLibraryDirectories>$(NoesisLibDir);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="source\level\collision.cpp" />
+    <ClCompile Include="source\level\entities.cpp" />
+    <ClCompile Include="source\level\level.cpp" />
+    <ClCompile Include="source\level\particles.cpp" />
+    <ClCompile Include="source\level\position.cpp" />
+    <ClCompile Include="source\states\app_state.cpp" />
+    <ClCompile Include="source\states\debug_state.cpp" />
+    <ClCompile Include="source\states\game_state.cpp" />
+    <ClCompile Include="source\states\level_state.cpp" />
+    <ClCompile Include="source\states\title_state.cpp" />
+    <ClCompile Include="source\states\transition_state.cpp" />
+    <ClCompile Include="source\ui\debug_page.xaml.cpp" />
+    <ClCompile Include="source\ui\title_page.xaml.cpp" />
+    <ClInclude Include="app.xaml.h">
+      <DependentUpon>app.xaml</DependentUpon>
+    </ClInclude>
+    <ClInclude Include="pch.h" />
+    <ClCompile Include="source\core\audio.cpp" />
+    <ClCompile Include="source\core\game_spec.cpp" />
+    <ClCompile Include="source\core\globals.cpp" />
+    <ClCompile Include="source\core\options.cpp" />
+    <ClCompile Include="source\core\render_targets.cpp" />
+    <ClCompile Include="source\main.cpp" />
+    <ClCompile Include="app.xaml.cpp">
+      <DependentUpon>app.xaml</DependentUpon>
+    </ClCompile>
+    <ClCompile Include="pch.cpp">
+      <PrecompiledHeader>Create</PrecompiledHeader>
+    </ClCompile>
+    <ApplicationDefinition Include="app.xaml">
+      <SubType>Designer</SubType>
+    </ApplicationDefinition>
+    <AppxManifest Include="Package.appxmanifest">
+      <SubType>Designer</SubType>
+    </AppxManifest>
+    <ClInclude Include="source\core\app_service.h" />
+    <ClInclude Include="source\core\audio.h" />
+    <ClInclude Include="source\core\game_service.h" />
+    <ClInclude Include="source\core\game_spec.h" />
+    <ClInclude Include="source\core\globals.h" />
+    <ClInclude Include="source\core\level_service.h" />
+    <ClInclude Include="source\core\options.h" />
+    <ClInclude Include="source\core\render_targets.h" />
+    <ClInclude Include="source\level\collision.h" />
+    <ClInclude Include="source\level\entities.h" />
+    <ClInclude Include="source\level\level.h" />
+    <ClInclude Include="source\level\particles.h" />
+    <ClInclude Include="source\level\position.h" />
+    <ClInclude Include="source\main.h" />
+    <ClInclude Include="source\states\app_state.h" />
+    <ClInclude Include="source\states\debug_state.h" />
+    <ClInclude Include="source\states\game_state.h" />
+    <ClInclude Include="source\states\level_state.h" />
+    <ClInclude Include="source\states\title_state.h" />
+    <ClInclude Include="source\states\transition_state.h" />
+    <ClInclude Include="source\ui\debug_page.xaml.h" />
+    <ClInclude Include="source\ui\title_page.xaml.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="$(NoesisDll)">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <ResJson Include="assets\assets.graphics.res.json">
+      <FileType>Document</FileType>
+    </ResJson>
+    <ResJson Include="assets\assets.res.json">
+      <FileType>Document</FileType>
+    </ResJson>
+    <ResJson Include="assets\assets.xaml.res.json">
+      <FileType>Document</FileType>
+    </ResJson>
+    <ResJson Include="assets\values.res.json">
+      <FileType>Document</FileType>
+    </ResJson>
+    <None Include="retron_TemporaryKey.pfx" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="assets\logo\SplashScreen.scale-100.png" />
+    <Image Include="assets\logo\SplashScreen.scale-125.png" />
+    <Image Include="assets\logo\SplashScreen.scale-150.png" />
+    <Image Include="assets\logo\SplashScreen.scale-200.png" />
+    <Image Include="assets\logo\SplashScreen.scale-400.png" />
+    <Image Include="assets\logo\Square150x150Logo.scale-100.png" />
+    <Image Include="assets\logo\Square150x150Logo.scale-125.png" />
+    <Image Include="assets\logo\Square150x150Logo.scale-150.png" />
+    <Image Include="assets\logo\Square150x150Logo.scale-200.png" />
+    <Image Include="assets\logo\Square150x150Logo.scale-400.png" />
+    <Image Include="assets\logo\Square310x310Logo.scale-100.png" />
+    <Image Include="assets\logo\Square310x310Logo.scale-125.png" />
+    <Image Include="assets\logo\Square310x310Logo.scale-150.png" />
+    <Image Include="assets\logo\Square310x310Logo.scale-200.png" />
+    <Image Include="assets\logo\Square310x310Logo.scale-400.png" />
+    <Image Include="assets\logo\Square44x44Logo.altform-lightunplated_targetsize-16.png" />
+    <Image Include="assets\logo\Square44x44Logo.altform-lightunplated_targetsize-24.png" />
+    <Image Include="assets\logo\Square44x44Logo.altform-lightunplated_targetsize-256.png" />
+    <Image Include="assets\logo\Square44x44Logo.altform-lightunplated_targetsize-32.png" />
+    <Image Include="assets\logo\Square44x44Logo.altform-lightunplated_targetsize-48.png" />
+    <Image Include="assets\logo\Square44x44Logo.altform-unplated_targetsize-16.png" />
+    <Image Include="assets\logo\Square44x44Logo.altform-unplated_targetsize-24.png" />
+    <Image Include="assets\logo\Square44x44Logo.altform-unplated_targetsize-256.png" />
+    <Image Include="assets\logo\Square44x44Logo.altform-unplated_targetsize-32.png" />
+    <Image Include="assets\logo\Square44x44Logo.altform-unplated_targetsize-48.png" />
+    <Image Include="assets\logo\Square44x44Logo.scale-100.png" />
+    <Image Include="assets\logo\Square44x44Logo.scale-125.png" />
+    <Image Include="assets\logo\Square44x44Logo.scale-150.png" />
+    <Image Include="assets\logo\Square44x44Logo.scale-200.png" />
+    <Image Include="assets\logo\Square44x44Logo.scale-400.png" />
+    <Image Include="assets\logo\Square44x44Logo.targetsize-16.png" />
+    <Image Include="assets\logo\Square44x44Logo.targetsize-24.png" />
+    <Image Include="assets\logo\Square44x44Logo.targetsize-256.png" />
+    <Image Include="assets\logo\Square44x44Logo.targetsize-32.png" />
+    <Image Include="assets\logo\Square44x44Logo.targetsize-48.png" />
+    <Image Include="assets\logo\Square71x71Logo.scale-100.png" />
+    <Image Include="assets\logo\Square71x71Logo.scale-125.png" />
+    <Image Include="assets\logo\Square71x71Logo.scale-150.png" />
+    <Image Include="assets\logo\Square71x71Logo.scale-200.png" />
+    <Image Include="assets\logo\Square71x71Logo.scale-400.png" />
+    <Image Include="assets\logo\SquareLogo.png">
+      <DeploymentContent>false</DeploymentContent>
+    </Image>
+    <Image Include="assets\logo\StoreLogo.scale-100.png" />
+    <Image Include="assets\logo\StoreLogo.scale-125.png" />
+    <Image Include="assets\logo\StoreLogo.scale-150.png" />
+    <Image Include="assets\logo\StoreLogo.scale-200.png" />
+    <Image Include="assets\logo\StoreLogo.scale-400.png" />
+    <Image Include="assets\logo\Wide310x150Logo.scale-100.png" />
+    <Image Include="assets\logo\Wide310x150Logo.scale-125.png" />
+    <Image Include="assets\logo\Wide310x150Logo.scale-150.png" />
+    <Image Include="assets\logo\Wide310x150Logo.scale-200.png" />
+    <Image Include="assets\logo\Wide310x150Logo.scale-400.png" />
+    <Image Include="assets\logo\WideLogo.png">
+      <DeploymentContent>false</DeploymentContent>
+    </Image>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\vendor\box2d_uwp.vcxproj">
+      <Project>{254aaf2e-8ffd-43b2-b00b-8e351d2c1012}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\vendor\ff_game_library\projects\ff\application\application_uwp.vcxproj">
+      <Project>{513b0ebc-4a6b-455f-b190-7864f3092778}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\vendor\ff_game_library\projects\ff\audio\audio_uwp.vcxproj">
+      <Project>{e3bf3073-8da5-4d8a-954b-9ce0bfc04a16}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\vendor\ff_game_library\projects\ff\base\base_uwp.vcxproj">
+      <Project>{ea1c6536-053d-4947-89ad-ce4fce4671c2}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\vendor\ff_game_library\projects\ff\data\data_uwp.vcxproj">
+      <Project>{d8b24569-074b-41e2-9f23-094d2cc61fa4}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\vendor\ff_game_library\projects\ff\graphics\graphics_uwp.vcxproj">
+      <Project>{eabbdac6-970e-403e-a7c9-ecc410b2a040}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\vendor\ff_game_library\projects\ff\input\input_uwp.vcxproj">
+      <Project>{f3f87d0d-69b7-4187-95b0-bfc0dd83e311}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\vendor\ff_game_library\projects\ff\resource\resource_uwp.vcxproj">
+      <Project>{aa32970a-8178-4979-8c52-ea30eebb77c9}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\vendor\ff_game_library\projects\ff\ui\ui_uwp.vcxproj">
+      <Project>{279176cb-1db1-40ea-aa60-1a0469e8a6d8}</Project>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(FFRoot)build\cpp.targets" />
+</Project>

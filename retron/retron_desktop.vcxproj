@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup Label="Globals">
+    <ConfigurationType>Application</ConfigurationType>
+    <ProjectName>retron</ProjectName>
+    <ProjectGuid>{9CD231EF-367F-47D8-8F5E-7CF37C648E39}</ProjectGuid>
+  </PropertyGroup>
+  <Import Project="..\vendor\ff_game_library\build\cpp.props" />
+  <PropertyGroup>
+    <AdditionalResJsonInputs>$(DevRoot)retron.designer\**\*.xaml;$(DevRoot)retron.designer\**\*.ttf;$(DevRoot)retron.designer\**\*.png</AdditionalResJsonInputs>
+  </PropertyGroup>
+  <ItemDefinitionGroup>
+    <ClCompile>
+      <AdditionalIncludeDirectories>$(FFRoot)projects;$(NoesisRoot)Include;$(NoesisRoot)Src\Packages\App\Interactivity\Include;$(FFRoot)vendor\entt\src;$(DevRoot)vendor\box2d\include;$(DevRoot)vendor;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
+    <Link>
+      <AdditionalLibraryDirectories>$(NoesisLibDir);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="source\core\audio.cpp" />
+    <ClCompile Include="source\core\game_spec.cpp" />
+    <ClCompile Include="source\core\globals.cpp" />
+    <ClCompile Include="source\core\options.cpp" />
+    <ClCompile Include="source\core\render_targets.cpp" />
+    <ClCompile Include="source\level\collision.cpp" />
+    <ClCompile Include="source\level\entities.cpp" />
+    <ClCompile Include="source\level\level.cpp" />
+    <ClCompile Include="source\level\particles.cpp" />
+    <ClCompile Include="source\level\position.cpp" />
+    <ClCompile Include="source\main.cpp" />
+    <ClCompile Include="source\states\app_state.cpp" />
+    <ClCompile Include="source\states\debug_state.cpp" />
+    <ClCompile Include="source\states\game_state.cpp" />
+    <ClCompile Include="source\states\level_state.cpp" />
+    <ClCompile Include="source\states\title_state.cpp" />
+    <ClCompile Include="source\states\transition_state.cpp" />
+    <ClCompile Include="source\ui\debug_page.xaml.cpp" />
+    <ClCompile Include="source\ui\title_page.xaml.cpp" />
+    <ClInclude Include="pch.h" />
+    <ClCompile Include="pch.cpp">
+      <PrecompiledHeader>Create</PrecompiledHeader>
+    </ClCompile>
+    <ClInclude Include="source\core\app_service.h" />
+    <ClInclude Include="source\core\audio.h" />
+    <ClInclude Include="source\core\game_service.h" />
+    <ClInclude Include="source\core\game_spec.h" />
+    <ClInclude Include="source\core\globals.h" />
+    <ClInclude Include="source\core\level_service.h" />
+    <ClInclude Include="source\core\options.h" />
+    <ClInclude Include="source\core\render_targets.h" />
+    <ClInclude Include="source\level\collision.h" />
+    <ClInclude Include="source\level\entities.h" />
+    <ClInclude Include="source\level\level.h" />
+    <ClInclude Include="source\level\particles.h" />
+    <ClInclude Include="source\level\position.h" />
+    <ClInclude Include="source\states\app_state.h" />
+    <ClInclude Include="source\states\debug_state.h" />
+    <ClInclude Include="source\states\game_state.h" />
+    <ClInclude Include="source\states\level_state.h" />
+    <ClInclude Include="source\states\title_state.h" />
+    <ClInclude Include="source\states\transition_state.h" />
+    <ClInclude Include="source\ui\debug_page.xaml.h" />
+    <ClInclude Include="source\ui\title_page.xaml.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResJson Include="assets\assets.graphics.res.json">
+      <FileType>Document</FileType>
+    </ResJson>
+    <ResJson Include="assets\assets.res.json">
+      <FileType>Document</FileType>
+    </ResJson>
+    <ResJson Include="assets\assets.xaml.res.json">
+      <FileType>Document</FileType>
+    </ResJson>
+    <ResJson Include="assets\values.res.json">
+      <FileType>Document</FileType>
+    </ResJson>
+    <None Include="source\main.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <Manifest Include="app.manifest" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\vendor\box2d_desktop.vcxproj">
+      <Project>{3dfedc2b-4438-4cf7-8da4-733623cb8f47}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\vendor\ff_game_library\projects\ff\application\application.vcxproj">
+      <Project>{376073e9-ea4d-4513-941c-906ca968c6c3}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\vendor\ff_game_library\projects\ff\audio\audio.vcxproj">
+      <Project>{7b04eb5d-8ac9-47cc-80cb-5192cb41057a}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\vendor\ff_game_library\projects\ff\base\base.vcxproj">
+      <Project>{dfdbd2c1-61cb-4606-8e52-85b65c9aaef2}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\vendor\ff_game_library\projects\ff\data\data.vcxproj">
+      <Project>{76418cad-574e-4d62-81bd-41321411fd63}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\vendor\ff_game_library\projects\ff\graphics\graphics.vcxproj">
+      <Project>{2464cde6-763f-48fc-a587-4bb84b4b5d64}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\vendor\ff_game_library\projects\ff\input\input.vcxproj">
+      <Project>{475230fd-c110-4b27-9c6a-8ef1c11b5a2e}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\vendor\ff_game_library\projects\ff\resource\resource.vcxproj">
+      <Project>{e684fb9b-d6e4-41c4-90c8-414abf1e6006}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\vendor\ff_game_library\projects\ff\ui\ui.vcxproj">
+      <Project>{8147a742-08ac-49fd-8c51-3956e1a65e16}</Project>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="source\resource.rc" />
+  </ItemGroup>
+  <Import Project="$(FFRoot)build\cpp.targets" />
+  <Target Name="AfterBuild">
+    <Copy SourceFiles="$(NoesisDll)" DestinationFolder="$(OutDir)" SkipUnchangedFiles="True" />
+  </Target>
+</Project>

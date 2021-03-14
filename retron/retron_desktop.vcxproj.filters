@@ -1,0 +1,176 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Manifest Include="app.manifest" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="pch.cpp" />
+    <ClCompile Include="source\main.cpp">
+      <Filter>source</Filter>
+    </ClCompile>
+    <ClCompile Include="source\core\globals.cpp">
+      <Filter>source\core</Filter>
+    </ClCompile>
+    <ClCompile Include="source\core\audio.cpp">
+      <Filter>source\core</Filter>
+    </ClCompile>
+    <ClCompile Include="source\core\game_spec.cpp">
+      <Filter>source\core</Filter>
+    </ClCompile>
+    <ClCompile Include="source\core\options.cpp">
+      <Filter>source\core</Filter>
+    </ClCompile>
+    <ClCompile Include="source\core\render_targets.cpp">
+      <Filter>source\core</Filter>
+    </ClCompile>
+    <ClCompile Include="source\ui\debug_page.xaml.cpp">
+      <Filter>source\ui</Filter>
+    </ClCompile>
+    <ClCompile Include="source\ui\title_page.xaml.cpp">
+      <Filter>source\ui</Filter>
+    </ClCompile>
+    <ClCompile Include="source\states\debug_state.cpp">
+      <Filter>source\states</Filter>
+    </ClCompile>
+    <ClCompile Include="source\states\title_state.cpp">
+      <Filter>source\states</Filter>
+    </ClCompile>
+    <ClCompile Include="source\states\transition_state.cpp">
+      <Filter>source\states</Filter>
+    </ClCompile>
+    <ClCompile Include="source\states\app_state.cpp">
+      <Filter>source\states</Filter>
+    </ClCompile>
+    <ClCompile Include="source\states\game_state.cpp">
+      <Filter>source\states</Filter>
+    </ClCompile>
+    <ClCompile Include="source\states\level_state.cpp">
+      <Filter>source\states</Filter>
+    </ClCompile>
+    <ClCompile Include="source\level\entities.cpp">
+      <Filter>source\level</Filter>
+    </ClCompile>
+    <ClCompile Include="source\level\position.cpp">
+      <Filter>source\level</Filter>
+    </ClCompile>
+    <ClCompile Include="source\level\collision.cpp">
+      <Filter>source\level</Filter>
+    </ClCompile>
+    <ClCompile Include="source\level\particles.cpp">
+      <Filter>source\level</Filter>
+    </ClCompile>
+    <ClCompile Include="source\level\level.cpp">
+      <Filter>source\level</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="pch.h" />
+    <ClInclude Include="source\core\globals.h">
+      <Filter>source\core</Filter>
+    </ClInclude>
+    <ClInclude Include="source\core\app_service.h">
+      <Filter>source\core</Filter>
+    </ClInclude>
+    <ClInclude Include="source\core\audio.h">
+      <Filter>source\core</Filter>
+    </ClInclude>
+    <ClInclude Include="source\core\game_service.h">
+      <Filter>source\core</Filter>
+    </ClInclude>
+    <ClInclude Include="source\core\game_spec.h">
+      <Filter>source\core</Filter>
+    </ClInclude>
+    <ClInclude Include="source\core\level_service.h">
+      <Filter>source\core</Filter>
+    </ClInclude>
+    <ClInclude Include="source\core\options.h">
+      <Filter>source\core</Filter>
+    </ClInclude>
+    <ClInclude Include="source\core\render_targets.h">
+      <Filter>source\core</Filter>
+    </ClInclude>
+    <ClInclude Include="source\ui\debug_page.xaml.h">
+      <Filter>source\ui</Filter>
+    </ClInclude>
+    <ClInclude Include="source\ui\title_page.xaml.h">
+      <Filter>source\ui</Filter>
+    </ClInclude>
+    <ClInclude Include="source\states\debug_state.h">
+      <Filter>source\states</Filter>
+    </ClInclude>
+    <ClInclude Include="source\states\title_state.h">
+      <Filter>source\states</Filter>
+    </ClInclude>
+    <ClInclude Include="source\states\transition_state.h">
+      <Filter>source\states</Filter>
+    </ClInclude>
+    <ClInclude Include="source\states\app_state.h">
+      <Filter>source\states</Filter>
+    </ClInclude>
+    <ClInclude Include="source\states\game_state.h">
+      <Filter>source\states</Filter>
+    </ClInclude>
+    <ClInclude Include="source\states\level_state.h">
+      <Filter>source\states</Filter>
+    </ClInclude>
+    <ClInclude Include="source\level\entities.h">
+      <Filter>source\level</Filter>
+    </ClInclude>
+    <ClInclude Include="source\level\position.h">
+      <Filter>source\level</Filter>
+    </ClInclude>
+    <ClInclude Include="source\level\collision.h">
+      <Filter>source\level</Filter>
+    </ClInclude>
+    <ClInclude Include="source\level\particles.h">
+      <Filter>source\level</Filter>
+    </ClInclude>
+    <ClInclude Include="source\level\level.h">
+      <Filter>source\level</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="assets">
+      <UniqueIdentifier>{0cf85fa9-8ec7-4908-8682-fedf6ba5cea7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="source">
+      <UniqueIdentifier>{c116989b-3ea1-43f8-8708-731ee75f9fe3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="source\core">
+      <UniqueIdentifier>{f744ad21-f492-464d-9893-942d9d01054a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="source\states">
+      <UniqueIdentifier>{e228636f-0e95-4485-a9e9-8310c57784ad}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="source\ui">
+      <UniqueIdentifier>{161f7313-5b4a-4f20-8454-4361a65cf2b5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="source\level">
+      <UniqueIdentifier>{4ccfe908-fd8d-4346-8487-57b266bc6a62}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="source\resource.rc">
+      <Filter>source</Filter>
+    </ResourceCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="source\main.h">
+      <Filter>source</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <ResJson Include="assets\assets.graphics.res.json">
+      <Filter>assets</Filter>
+    </ResJson>
+    <ResJson Include="assets\assets.res.json">
+      <Filter>assets</Filter>
+    </ResJson>
+    <ResJson Include="assets\assets.xaml.res.json">
+      <Filter>assets</Filter>
+    </ResJson>
+    <ResJson Include="assets\values.res.json">
+      <Filter>assets</Filter>
+    </ResJson>
+  </ItemGroup>
+</Project>

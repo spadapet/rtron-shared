@@ -1,0 +1,18 @@
+# root dirs
+/out/
+/packages/
+
+# sub dirs
+.vs/
+bin/
+obj/
+
+# files
+*.ipch
+*.log
+*.opensdf
+*.sdf
+*.suo
+*.user
+*.vspscc
+*.tiled-session

@@ -1,0 +1,12 @@
+[submodule "vendor/box2d"]
+	path = vendor/box2d
+	url = https://github.com/erincatto/box2d.git
+	branch = master
+[submodule "vendor/ff_game_library"]
+	path = vendor/ff_game_library
+	url = https://github.com/spadapet/ff_game_library.git
+	branch = main
+[submodule "vendor/entt"]
+	path = vendor/entt
+	url = https://github.com/skypjack/entt.git
+	branch = master

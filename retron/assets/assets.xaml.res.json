@@ -1,0 +1,79 @@
+{
+  "application_resources.xaml":
+  {
+    "res:type": "file",
+    "file": "file:../../retron_designer/application_resources.xaml"
+  },
+
+  "application_theme.xaml":
+  {
+    "res:type": "file",
+    "file": "file:../../retron_designer/application_theme.xaml"
+  },
+
+  "title_page.xaml":
+  {
+    "res:type": "file",
+    "file": "file:../../retron_designer/title_page.xaml"
+  },
+
+  "debug_page.xaml":
+  {
+    "res:type": "file",
+    "file": "file:../../retron_designer/debug_page.xaml"
+  },
+
+  "#fonts/robotron_2084.ttf":
+  {
+    "res:type": "file",
+    "file": "file:../../retron_designer/Fonts/robotron_2084.ttf"
+  },
+
+  "#fonts/robotron_2084_small.ttf":
+  {
+    "res:type": "file",
+    "file": "file:../../retron_designer/Fonts/robotron_2084_small.ttf"
+  },
+
+  "title/title_bg.png":
+  {
+    "res:type": "texture",
+    "format": "pal",
+    "file": "file:../../retron_designer/title/title_bg.png"
+  },
+
+  "title/title_logo.png":
+  {
+    "res:type": "texture",
+    "format": "pal",
+    "file": "file:../../retron_designer/title/title_logo.png"
+  },
+
+  "title/title_play.png":
+  {
+    "res:type": "texture",
+    "format": "pal",
+    "file": "file:../../retron_designer/title/title_play.png"
+  },
+
+  "title/title_options.png":
+  {
+    "res:type": "texture",
+    "format": "pal",
+    "file": "file:../../retron_designer/title/title_options.png"
+  },
+
+  "title/title_about.png":
+  {
+    "res:type": "texture",
+    "format": "pal",
+    "file": "file:../../retron_designer/title/title_about.png"
+  },
+
+  "title/noesis_logo.png":
+  {
+    "res:type": "texture",
+    "format": "pal",
+    "file": "file:../../retron_designer/title/noesis_logo.png"
+  }
+}
