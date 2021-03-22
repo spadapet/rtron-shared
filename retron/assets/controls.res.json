@@ -532,50 +532,5 @@
         }
       ]
     }
-  },
-
-  "palette_main":
-  {
-    "res:type": "palette",
-    "file": "file:palette_main.png",
-
-    "remaps":
-    {
-      "player_0":
-      [ ],
-      "player_1":
-      [
-        [ 232, 236 ],
-        [ 248, 252 ]
-      ]
-    }
-  },
-
-  "game_font_data":
-  {
-    "res:type": "font_file",
-    "file": "file:../../retron_designer/fonts/robotron_2084.ttf"
-  },
-
-  "game_font_small_data":
-  {
-    "res:type": "font_file",
-    "file": "file:../../retron_designer/fonts/robotron_2084_small.ttf"
-  },
-
-  "game_font":
-  {
-    "res:type": "font",
-    "data": "ref:game_font_data",
-    "size": 8,
-    "outline": 1
-  },
-
-  "game_font_small":
-  {
-    "res:type": "font",
-    "data": "ref:game_font_small_data",
-    "size": 6,
-    "outline": 1
   }
 }

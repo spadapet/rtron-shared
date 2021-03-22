@@ -297,6 +297,7 @@
     <None Include="$(NoesisDll)" />
     <None Include="$(NoesisDll)" />
     <None Include="$(NoesisDll)" />
+    <None Include="$(NoesisDll)" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="source">
@@ -335,16 +336,16 @@
     </AppxManifest>
   </ItemGroup>
   <ItemGroup>
-    <ResJson Include="assets\assets.graphics.res.json">
+    <ResJson Include="assets\xaml.res.json">
       <Filter>assets</Filter>
     </ResJson>
-    <ResJson Include="assets\assets.res.json">
+    <ResJson Include="assets\controls.res.json">
       <Filter>assets</Filter>
     </ResJson>
-    <ResJson Include="assets\assets.xaml.res.json">
+    <ResJson Include="assets\game_spec.res.json">
       <Filter>assets</Filter>
     </ResJson>
-    <ResJson Include="assets\values.res.json">
+    <ResJson Include="assets\graphics.res.json">
       <Filter>assets</Filter>
     </ResJson>
   </ItemGroup>

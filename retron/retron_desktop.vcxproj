@@ -64,16 +64,16 @@
     <ClInclude Include="source\ui\title_page.xaml.h" />
   </ItemGroup>
   <ItemGroup>
-    <ResJson Include="assets\assets.graphics.res.json">
+    <ResJson Include="assets\graphics.res.json">
       <FileType>Document</FileType>
     </ResJson>
-    <ResJson Include="assets\assets.res.json">
+    <ResJson Include="assets\controls.res.json">
       <FileType>Document</FileType>
     </ResJson>
-    <ResJson Include="assets\assets.xaml.res.json">
+    <ResJson Include="assets\xaml.res.json">
       <FileType>Document</FileType>
     </ResJson>
-    <ResJson Include="assets\values.res.json">
+    <ResJson Include="assets\game_spec.res.json">
       <FileType>Document</FileType>
     </ResJson>
     <None Include="source\main.h" />
