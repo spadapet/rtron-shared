@@ -155,11 +155,6 @@
     </ResourceCompile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="source\main.h">
-      <Filter>source</Filter>
-    </None>
-  </ItemGroup>
-  <ItemGroup>
     <ResJson Include="assets\graphics.res.json">
       <Filter>assets</Filter>
     </ResJson>

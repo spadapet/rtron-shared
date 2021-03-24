@@ -1,7 +1,6 @@
 #include "pch.h"
 #include "source/core/app_service.h"
 #include "source/core/options.h"
-#include "source/main.h"
 #include "source/states/app_state.h"
 #include "source/ui/debug_page.xaml.h"
 #include "source/ui/title_page.xaml.h"
@@ -98,7 +97,7 @@ static ff::state::advance_t get_advance_type()
     return app_state ? app_state->advance_type() : ff::state::advance_t::running;
 }
 
-ff::init_app_params retron::get_app_params()
+static ff::init_app_params get_app_params()
 {
     ff::init_app_params params{};
     params.create_initial_state_func = ::create_app_state;
@@ -108,7 +107,7 @@ ff::init_app_params retron::get_app_params()
     return params;
 }
 
-ff::init_ui_params retron::get_ui_params()
+static ff::init_ui_params get_ui_params()
 {
     ff::init_ui_params params{};
     params.application_resources_name = "application_resources.xaml";
@@ -122,7 +121,64 @@ ff::init_ui_params retron::get_ui_params()
     return params;
 }
 
-#if !UWP_APP
+#if UWP_APP
+
+namespace retron
+{
+    ref class app : Windows::ApplicationModel::Core::IFrameworkViewSource, Windows::ApplicationModel::Core::IFrameworkView
+    {
+    public:
+        virtual Windows::ApplicationModel::Core::IFrameworkView^ CreateView()
+        {
+            return this;
+        }
+
+        virtual void Initialize(Windows::ApplicationModel::Core::CoreApplicationView^ view)
+        {
+            view->Activated += ref new Windows::Foundation::TypedEventHandler<
+                Windows::ApplicationModel::Core::CoreApplicationView^,
+                Windows::ApplicationModel::Activation::IActivatedEventArgs^>(
+                this, &app::activated);
+        }
+
+        virtual void Load(Platform::String^ entry_point)
+        {}
+
+        virtual void Run()
+        {
+            ff::handle_messages_until_quit();
+        }
+
+        virtual void SetWindow(Windows::UI::Core::CoreWindow^ window)
+        {}
+
+        virtual void Uninitialize()
+        {}
+
+    private:
+        void activated(Windows::ApplicationModel::Core::CoreApplicationView^ view, Windows::ApplicationModel::Activation::IActivatedEventArgs^ args)
+        {
+            if (!this->init_app)
+            {
+                this->init_app = std::make_unique<ff::init_app>(::get_app_params(), ::get_ui_params());
+                assert(*this->init_app);
+            }
+
+            Windows::UI::Core::CoreWindow::GetForCurrentThread()->Activate();
+        }
+
+        std::unique_ptr<ff::init_app> init_app;
+    };
+}
+
+int main(Platform::Array<Platform::String^>^ args)
+{
+    ff::app_measure_startup_perf();
+    Windows::ApplicationModel::Core::CoreApplication::Run(ref new retron::app());
+    return 0;
+}
+
+#else
 
 static void set_window_client_size(HWND hwnd, const ff::point_int& new_size)
 {
@@ -211,9 +267,9 @@ static void handle_window_message(ff::window_message& msg)
 
 int WINAPI wWinMain(HINSTANCE instance, HINSTANCE, LPWSTR, int)
 {
-    ff::init_app init_app(retron::get_app_params(), retron::get_ui_params());
+    ff::app_measure_startup_perf();
+    ff::init_app init_app(::get_app_params(), ::get_ui_params());
     ff::signal_connection message_connection = ff::window::main()->message_sink().connect(::handle_window_message);
-
     return ff::handle_messages_until_quit();
 }
 

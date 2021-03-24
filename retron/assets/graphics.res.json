@@ -121,6 +121,42 @@
         "size": [ 9, 15 ],
         "handle": [ 7, 9 ]
       },
+      "player_walk_down":
+      {
+        "file": "file:graphics/player.png",
+        "pos": [ 0, 16 ],
+        "size": [ 9, 17 ],
+        "handle": [ 4, 15 ],
+        "offset": [ 10, 0 ],
+        "repeat": 6
+      },
+      "player_walk_up":
+      {
+        "file": "file:graphics/player.png",
+        "pos": [ 0, 34 ],
+        "size": [ 9, 17 ],
+        "handle": [ 4, 15 ],
+        "offset": [ 10, 0 ],
+        "repeat": 6
+      },
+      "player_walk_left":
+      {
+        "file": "file:graphics/player.png",
+        "pos": [ 0, 68 ],
+        "size": [ 9, 15 ],
+        "handle": [ 4, 15 ],
+        "offset": [ 10, 0 ],
+        "repeat": 6
+      },
+      "player_walk_right":
+      {
+        "file": "file:graphics/player.png",
+        "pos": [ 0, 52 ],
+        "size": [ 9, 15 ],
+        "handle": [ 4, 15 ],
+        "offset": [ 10, 0 ],
+        "repeat": 6
+      },
       "player_bullet":
       {
         "file": "file:graphics/player_bullet.png",
@@ -128,6 +164,11 @@
         "handle": [ 8, 1 ]
       }
     }
+  },
+
+  "anim.player_walk_up":
+  {
+    "res:type": "animation"
   },
 
   "transition_bg_1.png":

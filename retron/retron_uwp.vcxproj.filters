@@ -62,9 +62,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h" />
-    <ClInclude Include="source\main.h">
-      <Filter>source</Filter>
-    </ClInclude>
     <ClInclude Include="source\core\globals.h">
       <Filter>source\core</Filter>
     </ClInclude>
@@ -250,9 +247,6 @@
     <Image Include="assets\logo\Square310x310Logo.scale-400.png">
       <Filter>assets\logo</Filter>
     </Image>
-    <Image Include="assets\logo\SquareLogo.png">
-      <Filter>assets\logo</Filter>
-    </Image>
     <Image Include="assets\logo\StoreLogo.scale-100.png">
       <Filter>assets\logo</Filter>
     </Image>
@@ -283,9 +277,6 @@
     <Image Include="assets\logo\Wide310x150Logo.scale-400.png">
       <Filter>assets\logo</Filter>
     </Image>
-    <Image Include="assets\logo\WideLogo.png">
-      <Filter>assets\logo</Filter>
-    </Image>
   </ItemGroup>
   <ItemGroup>
     <None Include="$(NoesisDll)" />
@@ -293,6 +284,8 @@
     <None Include="retron_TemporaryKey.pfx">
       <Filter>uwp</Filter>
     </None>
+    <None Include="$(NoesisDll)" />
+    <None Include="$(NoesisDll)" />
     <None Include="$(NoesisDll)" />
     <None Include="$(NoesisDll)" />
     <None Include="$(NoesisDll)" />
@@ -324,11 +317,6 @@
     <Filter Include="source\level">
       <UniqueIdentifier>{98c1530f-56f7-4ae8-b02b-4b41628a7882}</UniqueIdentifier>
     </Filter>
-  </ItemGroup>
-  <ItemGroup>
-    <ApplicationDefinition Include="app.xaml">
-      <Filter>uwp</Filter>
-    </ApplicationDefinition>
   </ItemGroup>
   <ItemGroup>
     <AppxManifest Include="Package.appxmanifest">

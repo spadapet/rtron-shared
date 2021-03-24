@@ -42,9 +42,6 @@
     <ClCompile Include="source\states\transition_state.cpp" />
     <ClCompile Include="source\ui\debug_page.xaml.cpp" />
     <ClCompile Include="source\ui\title_page.xaml.cpp" />
-    <ClInclude Include="app.xaml.h">
-      <DependentUpon>app.xaml</DependentUpon>
-    </ClInclude>
     <ClInclude Include="pch.h" />
     <ClCompile Include="source\core\audio.cpp" />
     <ClCompile Include="source\core\game_spec.cpp" />
@@ -52,15 +49,9 @@
     <ClCompile Include="source\core\options.cpp" />
     <ClCompile Include="source\core\render_targets.cpp" />
     <ClCompile Include="source\main.cpp" />
-    <ClCompile Include="app.xaml.cpp">
-      <DependentUpon>app.xaml</DependentUpon>
-    </ClCompile>
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader>Create</PrecompiledHeader>
     </ClCompile>
-    <ApplicationDefinition Include="app.xaml">
-      <SubType>Designer</SubType>
-    </ApplicationDefinition>
     <AppxManifest Include="Package.appxmanifest">
       <SubType>Designer</SubType>
     </AppxManifest>
@@ -77,7 +68,6 @@
     <ClInclude Include="source\level\level.h" />
     <ClInclude Include="source\level\particles.h" />
     <ClInclude Include="source\level\position.h" />
-    <ClInclude Include="source\main.h" />
     <ClInclude Include="source\states\app_state.h" />
     <ClInclude Include="source\states\debug_state.h" />
     <ClInclude Include="source\states\game_state.h" />
@@ -146,9 +136,6 @@
     <Image Include="assets\logo\Square71x71Logo.scale-150.png" />
     <Image Include="assets\logo\Square71x71Logo.scale-200.png" />
     <Image Include="assets\logo\Square71x71Logo.scale-400.png" />
-    <Image Include="assets\logo\SquareLogo.png">
-      <DeploymentContent>false</DeploymentContent>
-    </Image>
     <Image Include="assets\logo\StoreLogo.scale-100.png" />
     <Image Include="assets\logo\StoreLogo.scale-125.png" />
     <Image Include="assets\logo\StoreLogo.scale-150.png" />
@@ -159,9 +146,6 @@
     <Image Include="assets\logo\Wide310x150Logo.scale-150.png" />
     <Image Include="assets\logo\Wide310x150Logo.scale-200.png" />
     <Image Include="assets\logo\Wide310x150Logo.scale-400.png" />
-    <Image Include="assets\logo\WideLogo.png">
-      <DeploymentContent>false</DeploymentContent>
-    </Image>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\vendor\box2d_uwp.vcxproj">

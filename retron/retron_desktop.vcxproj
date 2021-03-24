@@ -76,7 +76,6 @@
     <ResJson Include="assets\game_spec.res.json">
       <FileType>Document</FileType>
     </ResJson>
-    <None Include="source\main.h" />
   </ItemGroup>
   <ItemGroup>
     <Manifest Include="app.manifest" />
