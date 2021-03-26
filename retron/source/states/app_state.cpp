@@ -261,7 +261,7 @@ void retron::app_state::init_debug_state()
     this->debug_state = std::make_shared<retron::debug_state>();
 
     this->connections.emplace_front(ff::custom_debug_sink().connect(std::bind(&retron::app_state::on_custom_debug, this)));
-    this->connections.emplace_front(ff::resource_objects::rebuilt_global_sink().connect(std::bind(&retron::app_state::on_resources_rebuilt, this)));
+    this->connections.emplace_front(ff::global_resources::rebuilt_sink().connect(std::bind(&retron::app_state::on_resources_rebuilt, this)));
     this->connections.emplace_front(this->debug_state->restart_level_event().connect(std::bind(&retron::app_state::on_restart_level, this)));
     this->connections.emplace_front(this->debug_state->restart_game_event().connect(std::bind(&retron::app_state::on_restart_game, this)));
     this->connections.emplace_front(this->debug_state->rebuild_resources_event().connect(std::bind(&retron::app_state::on_rebuild_resources, this)));
@@ -314,7 +314,7 @@ void retron::app_state::on_rebuild_resources()
     if (!this->rebulding_resources)
     {
         this->rebulding_resources = true;
-        ff::resource_objects::rebuild_global_async();
+        ff::global_resources::rebuild_async();
     }
 }
 

@@ -153,7 +153,7 @@ static retron::level_spec load_level_spec(const ff::dict& dict)
 
 retron::game_spec retron::game_spec::load()
 {
-    ff::auto_resource<ff::resource_value_provider> values_res = ff::resource_objects::global()->get_resource_object("game_spec");
+    ff::auto_resource<ff::resource_value_provider> values_res = ff::global_resources::get("game_spec");
     std::shared_ptr<ff::resource_value_provider> values = values_res.object();
 
     ff::dict app_dict = values->get_resource_value("app")->get<ff::dict>();

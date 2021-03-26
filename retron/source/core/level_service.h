@@ -1,15 +1,14 @@
 #pragma once
 
+#include "source/core/game_service.h"
+
 namespace retron
 {
-    class game_service;
     struct level_spec;
-    struct player;
 
-    class level_service
+    class level_service : public retron::game_service
     {
     public:
-        virtual retron::game_service& game_service() const = 0;
         virtual const retron::level_spec& level_spec() const = 0;
         virtual size_t player_count() const = 0;
         virtual retron::player& player(size_t index) const = 0;

@@ -55,10 +55,10 @@ namespace assets
 
 static void register_components()
 {
-    ff::resource_objects::register_global_dict(assets::controls::data());
-    ff::resource_objects::register_global_dict(assets::game_spec::data());
-    ff::resource_objects::register_global_dict(assets::graphics::data());
-    ff::resource_objects::register_global_dict(assets::xaml::data());
+    ff::global_resources::add(assets::controls::data());
+    ff::global_resources::add(assets::game_spec::data());
+    ff::global_resources::add(assets::graphics::data());
+    ff::global_resources::add(assets::xaml::data());
 
     Noesis::RegisterComponent<Noesis::EnumConverter<retron::game_flags>>();
     Noesis::RegisterComponent<Noesis::EnumConverter<retron::game_players>>();
@@ -173,7 +173,6 @@ namespace retron
 
 int main(Platform::Array<Platform::String^>^ args)
 {
-    ff::app_measure_startup_perf();
     Windows::ApplicationModel::Core::CoreApplication::Run(ref new retron::app());
     return 0;
 }
@@ -267,7 +266,6 @@ static void handle_window_message(ff::window_message& msg)
 
 int WINAPI wWinMain(HINSTANCE instance, HINSTANCE, LPWSTR, int)
 {
-    ff::app_measure_startup_perf();
     ff::init_app init_app(::get_app_params(), ::get_ui_params());
     ff::signal_connection message_connection = ff::window::main()->message_sink().connect(::handle_window_message);
     return ff::handle_messages_until_quit();

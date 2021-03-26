@@ -20,7 +20,7 @@ namespace retron
         // game_service
         virtual const retron::game_options& game_options() const override;
         virtual const retron::difficulty_spec& difficulty_spec() const override;
-        virtual const ff::input_event_provider& input_events(const retron::player& player) override;
+        virtual const ff::input_event_provider& input_events(const retron::player& player) const override;
 
         // Debug
         void restart_level();

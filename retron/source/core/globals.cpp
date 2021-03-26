@@ -26,5 +26,42 @@ const size_t input_events::ID_DEBUG_RENDER_TOGGLE = ff::stable_hash_func("debug_
 
 ff::fixed_int helpers::dir_to_degrees(ff::point_fixed dir)
 {
-    return ff::fixed_int(ff::math::radians_to_degrees(std::atan2f(-dir.y, dir.x)));
+    return dir ? ff::fixed_int(ff::math::radians_to_degrees(std::atan2f(-dir.y, dir.x))) : 270_f;
+}
+
+// degrees = index * 45
+size_t helpers::dir_to_index(ff::point_fixed dir)
+{
+    if (dir.x > 0_f)
+    {
+        if (dir.y < 0_f)
+        {
+            return 1;
+        }
+        else if (dir.y > 0_f)
+        {
+            return 7;
+        }
+
+        return 0;
+    }
+    else if (dir.x < 0_f)
+    {
+        if (dir.y < 0_f)
+        {
+            return 3;
+        }
+        else if (dir.y > 0_f)
+        {
+            return 5;
+        }
+
+        return 4;
+    }
+    else if (dir.y < 0_f)
+    {
+        return 2;
+    }
+
+    return 6;
 }

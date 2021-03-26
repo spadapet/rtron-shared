@@ -51,7 +51,7 @@ const retron::difficulty_spec& retron::game_state::difficulty_spec() const
     return this->difficulty_spec_;
 }
 
-const ff::input_event_provider& retron::game_state::input_events(const retron::player& player)
+const ff::input_event_provider& retron::game_state::input_events(const retron::player& player) const
 {
     return *this->player_input_events[player.index];
 }

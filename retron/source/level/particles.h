@@ -13,7 +13,7 @@ namespace retron
         bool effect_active(int effect_id) const;
         void effect_position(int effect_id, ff::point_fixed pos);
 
-        struct retron::particles::effect_options
+        struct effect_options
         {
             std::pair<ff::fixed_int, ff::fixed_int> angle = std::make_pair(0, 360);
             ff::point_fixed scale = ff::point_fixed(1, 1);

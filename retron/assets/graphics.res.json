@@ -139,21 +139,22 @@
         "offset": [ 10, 0 ],
         "repeat": 6
       },
-      "player_walk_left":
-      {
-        "file": "file:graphics/player.png",
-        "pos": [ 0, 68 ],
-        "size": [ 9, 15 ],
-        "handle": [ 4, 15 ],
-        "offset": [ 10, 0 ],
-        "repeat": 6
-      },
       "player_walk_right":
       {
         "file": "file:graphics/player.png",
         "pos": [ 0, 52 ],
         "size": [ 9, 15 ],
         "handle": [ 4, 15 ],
+        "offset": [ 10, 0 ],
+        "repeat": 6
+      },
+      "player_walk_left":
+      {
+        "file": "file:graphics/player.png",
+        "pos": [ 0, 52 ],
+        "size": [ 9, 15 ],
+        "handle": [ 4, 15 ],
+        "scale": [ -1, 1 ],
         "offset": [ 10, 0 ],
         "repeat": 6
       },
@@ -168,7 +169,98 @@
 
   "anim.player_walk_up":
   {
-    "res:type": "animation"
+    "res:type": "animation",
+    "length": 6,
+    "loop": true,
+    "visuals": [ { "visual": "sprite" } ],
+    "keys":
+    {
+      "sprite":
+      {
+        "length": 6,
+        "values":
+        [
+          { "frame": 0, "value": [ "ref:sprites.player_walk_up[0]" ] },
+          { "frame": 1, "value": [ "ref:sprites.player_walk_up[1]" ] },
+          { "frame": 2, "value": [ "ref:sprites.player_walk_up[2]" ] },
+          { "frame": 3, "value": [ "ref:sprites.player_walk_up[3]" ] },
+          { "frame": 4, "value": [ "ref:sprites.player_walk_up[4]" ] },
+          { "frame": 5, "value": [ "ref:sprites.player_walk_up[5]" ] }
+        ]
+      }
+    }
+  },
+
+  "anim.player_walk_down":
+  {
+    "res:type": "animation",
+    "length": 6,
+    "loop": true,
+    "visuals": [ { "visual": "sprite" } ],
+    "keys":
+    {
+      "sprite":
+      {
+        "length": 6,
+        "values":
+        [
+          { "frame": 0, "value": [ "ref:sprites.player_walk_down[0]" ] },
+          { "frame": 1, "value": [ "ref:sprites.player_walk_down[1]" ] },
+          { "frame": 2, "value": [ "ref:sprites.player_walk_down[2]" ] },
+          { "frame": 3, "value": [ "ref:sprites.player_walk_down[3]" ] },
+          { "frame": 4, "value": [ "ref:sprites.player_walk_down[4]" ] },
+          { "frame": 5, "value": [ "ref:sprites.player_walk_down[5]" ] }
+        ]
+      }
+    }
+  },
+
+  "anim.player_walk_right":
+  {
+    "res:type": "animation",
+    "length": 6,
+    "loop": true,
+    "visuals": [ { "visual": "sprite" } ],
+    "keys":
+    {
+      "sprite":
+      {
+        "length": 6,
+        "values":
+        [
+          { "frame": 0, "value": [ "ref:sprites.player_walk_right[0]" ] },
+          { "frame": 1, "value": [ "ref:sprites.player_walk_right[1]" ] },
+          { "frame": 2, "value": [ "ref:sprites.player_walk_right[2]" ] },
+          { "frame": 3, "value": [ "ref:sprites.player_walk_right[3]" ] },
+          { "frame": 4, "value": [ "ref:sprites.player_walk_right[4]" ] },
+          { "frame": 5, "value": [ "ref:sprites.player_walk_right[5]" ] }
+        ]
+      }
+    }
+  },
+
+  "anim.player_walk_left":
+  {
+    "res:type": "animation",
+    "length": 6,
+    "loop": true,
+    "visuals": [ { "visual": "sprite" } ],
+    "keys":
+    {
+      "sprite":
+      {
+        "length": 6,
+        "values":
+        [
+          { "frame": 0, "value": [ "ref:sprites.player_walk_left[0]" ] },
+          { "frame": 1, "value": [ "ref:sprites.player_walk_left[1]" ] },
+          { "frame": 2, "value": [ "ref:sprites.player_walk_left[2]" ] },
+          { "frame": 3, "value": [ "ref:sprites.player_walk_left[3]" ] },
+          { "frame": 4, "value": [ "ref:sprites.player_walk_left[4]" ] },
+          { "frame": 5, "value": [ "ref:sprites.player_walk_left[5]" ] }
+        ]
+      }
+    }
   },
 
   "transition_bg_1.png":

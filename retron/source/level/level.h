@@ -8,13 +8,12 @@
 
 namespace retron
 {
-    class game_service;
     class level_service;
 
     class level
     {
     public:
-        level(retron::level_service* levelService);
+        level(const retron::level_service& levelService);
 
         void advance(const ff::rect_fixed& camera_rect);
         void render(ff::dx11_target_base& target, ff::dx11_depth& depth, const ff::rect_fixed& target_rect, const ff::rect_fixed& camera_rect);
@@ -57,29 +56,24 @@ namespace retron
 
         void enum_entities(const std::function<void(entt::entity, retron::entity_type)>& func);
 
-        retron::level_service* level_service_;
-        retron::game_service* game_service_;
-
+        const retron::level_service& level_service_;
         const retron::game_spec& game_spec_;
         const retron::level_spec& level_spec_;
         const retron::difficulty_spec& difficulty_spec_;
-        size_t frames;
-
-        ff::auto_resource<ff::animation_base> player_sprite;
-        ff::auto_resource<ff::animation_base> player_bullet_sprite;
 
         entt::registry registry;
-        std::forward_list<ff::signal_connection> connections;
-        std::vector<std::pair<entt::entity, entt::entity>> collisions;
-        std::vector<entt::entity> _hits;
-
-        retron::entities entities_;
-        retron::position position_;
-        retron::collision collision_;
-
+        retron::entities entities;
+        retron::position position;
+        retron::collision collision;
         retron::particles particles;
-        retron::particles::effect_t destroy_grunt_particles;
-        retron::particles::effect_t player_bullet_hit_bounds_particles;
-        retron::particles::effect_t player_enter_particles;
+
+        std::unordered_map<std::string_view, retron::particles::effect_t> particle_effects;
+        std::vector<std::pair<entt::entity, entt::entity>> collisions;
+        std::forward_list<ff::signal_connection> connections;
+
+        std::array<ff::auto_resource<ff::animation_base>, 8> player_walk_anims;
+        ff::auto_resource<ff::animation_base> player_bullet_anim;
+
+        size_t frame_count;
     };
 }

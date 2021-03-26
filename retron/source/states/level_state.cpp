@@ -6,7 +6,7 @@ retron::level_state::level_state(retron::game_service* game_service, const retro
     , level_spec_(level_spec)
     , players(std::move(players))
     , targets(retron::render_target_types::palette_1)
-    , level(this)
+    , level(*this)
 {}
 
 std::shared_ptr<ff::state> retron::level_state::advance_time()
@@ -28,9 +28,19 @@ void retron::level_state::render(ff::dx11_target_base& target, ff::dx11_depth& d
     this->targets.render(target);
 }
 
-retron::game_service& retron::level_state::game_service() const
+const retron::game_options& retron::level_state::game_options() const
 {
-    return *this->game_service_;
+    return this->game_service_->game_options();
+}
+
+const retron::difficulty_spec& retron::level_state::difficulty_spec() const
+{
+    return this->game_service_->difficulty_spec();
+}
+
+const ff::input_event_provider& retron::level_state::input_events(const retron::player& player) const
+{
+    return this->game_service_->input_events(player);
 }
 
 const retron::level_spec& retron::level_state::level_spec() const

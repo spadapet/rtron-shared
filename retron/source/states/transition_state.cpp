@@ -111,7 +111,11 @@ void retron::transition_state::render(ff::dx11_target_base& target, ff::dx11_dep
             *this->targets.target(retron::render_target_types::rgb_pma_2),
             this->targets.depth(retron::render_target_types::rgb_pma_2).get(),
             constants::RENDER_RECT, constants::RENDER_RECT);
-        draw->draw_sprite(this->texture->sprite_data(), ff::transform::identity());
+
+        if (draw)
+        {
+            draw->draw_sprite(this->texture->sprite_data(), ff::transform::identity());
+        }
     }
 
     this->targets.render(target);

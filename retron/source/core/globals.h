@@ -56,4 +56,5 @@ namespace constants
 namespace helpers
 {
     ff::fixed_int dir_to_degrees(ff::point_fixed dir);
+    size_t dir_to_index(ff::point_fixed dir); // degrees = index * 45
 }
