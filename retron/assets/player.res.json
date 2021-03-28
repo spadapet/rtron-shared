@@ -1,0 +1,140 @@
+{
+  "res:values":
+  {
+    "anim.six_frame_loop":
+    {
+      "res:type": "animation",
+      "length": 6,
+      "loop": true,
+      "visuals": [ { "visual": "sprite" } ],
+      "keys":
+      {
+        "sprite":
+        {
+          "length": 6,
+          "values":
+          [
+            { "frame": 0, "value": [ "res:sprite_0" ] },
+            { "frame": 1, "value": [ "res:sprite_1" ] },
+            { "frame": 2, "value": [ "res:sprite_2" ] },
+            { "frame": 3, "value": [ "res:sprite_3" ] },
+            { "frame": 4, "value": [ "res:sprite_4" ] },
+            { "frame": 5, "value": [ "res:sprite_5" ] }
+          ]
+        }
+      }
+    }
+  },
+
+  "anim.player_walk_up":
+  {
+    "res:template": "anim.six_frame_loop",
+    "res:values":
+    {
+      "sprite_0": "ref:sprites.player_walk_up[0]",
+      "sprite_1": "ref:sprites.player_walk_up[1]",
+      "sprite_2": "ref:sprites.player_walk_up[2]",
+      "sprite_3": "ref:sprites.player_walk_up[3]",
+      "sprite_4": "ref:sprites.player_walk_up[4]",
+      "sprite_5": "ref:sprites.player_walk_up[5]"
+    }
+  },
+
+  "anim.player_walk_down":
+  {
+    "res:template": "anim.six_frame_loop",
+    "res:values":
+    {
+      "sprite_0": "ref:sprites.player_walk_down[0]",
+      "sprite_1": "ref:sprites.player_walk_down[1]",
+      "sprite_2": "ref:sprites.player_walk_down[2]",
+      "sprite_3": "ref:sprites.player_walk_down[3]",
+      "sprite_4": "ref:sprites.player_walk_down[4]",
+      "sprite_5": "ref:sprites.player_walk_down[5]"
+    }
+  },
+
+  "anim.player_walk_right":
+  {
+    "res:template": "anim.six_frame_loop",
+    "res:values":
+    {
+      "sprite_0": "ref:sprites.player_walk_right[0]",
+      "sprite_1": "ref:sprites.player_walk_right[1]",
+      "sprite_2": "ref:sprites.player_walk_right[2]",
+      "sprite_3": "ref:sprites.player_walk_right[3]",
+      "sprite_4": "ref:sprites.player_walk_right[4]",
+      "sprite_5": "ref:sprites.player_walk_right[5]"
+    }
+  },
+
+  "anim.player_walk_left":
+  {
+    "res:template": "anim.six_frame_loop",
+    "res:values":
+    {
+      "sprite_0": "ref:sprites.player_walk_left[0]",
+      "sprite_1": "ref:sprites.player_walk_left[1]",
+      "sprite_2": "ref:sprites.player_walk_left[2]",
+      "sprite_3": "ref:sprites.player_walk_left[3]",
+      "sprite_4": "ref:sprites.player_walk_left[4]",
+      "sprite_5": "ref:sprites.player_walk_left[5]"
+    }
+  },
+
+  "anim.player_walk_right_up":
+  {
+    "res:template": "anim.six_frame_loop",
+    "res:values":
+    {
+      "sprite_0": "ref:sprites.player_walk_right_up[0]",
+      "sprite_1": "ref:sprites.player_walk_right_up[1]",
+      "sprite_2": "ref:sprites.player_walk_right_up[2]",
+      "sprite_3": "ref:sprites.player_walk_right_up[3]",
+      "sprite_4": "ref:sprites.player_walk_right_up[4]",
+      "sprite_5": "ref:sprites.player_walk_right_up[5]"
+    }
+  },
+
+  "anim.player_walk_left_up":
+  {
+    "res:template": "anim.six_frame_loop",
+    "res:values":
+    {
+      "sprite_0": "ref:sprites.player_walk_left_up[0]",
+      "sprite_1": "ref:sprites.player_walk_left_up[1]",
+      "sprite_2": "ref:sprites.player_walk_left_up[2]",
+      "sprite_3": "ref:sprites.player_walk_left_up[3]",
+      "sprite_4": "ref:sprites.player_walk_left_up[4]",
+      "sprite_5": "ref:sprites.player_walk_left_up[5]"
+    }
+  },
+
+  "anim.player_walk_right_down":
+  {
+    "res:template": "anim.six_frame_loop",
+    "res:values":
+    {
+      "sprite_0": "ref:sprites.player_walk_right_down[0]",
+      "sprite_1": "ref:sprites.player_walk_right_down[1]",
+      "sprite_2": "ref:sprites.player_walk_right_down[2]",
+      "sprite_3": "ref:sprites.player_walk_right_down[3]",
+      "sprite_4": "ref:sprites.player_walk_right_down[4]",
+      "sprite_5": "ref:sprites.player_walk_right_down[5]"
+    }
+  },
+
+  "anim.player_walk_left_down":
+  {
+    "res:template": "anim.six_frame_loop",
+    "res:values":
+    {
+      "sprite_0": "ref:sprites.player_walk_left_down[0]",
+      "sprite_1": "ref:sprites.player_walk_left_down[1]",
+      "sprite_2": "ref:sprites.player_walk_left_down[2]",
+      "sprite_3": "ref:sprites.player_walk_left_down[3]",
+      "sprite_4": "ref:sprites.player_walk_left_down[4]",
+      "sprite_5": "ref:sprites.player_walk_left_down[5]"
+    }
+  }
+}

@@ -93,6 +93,15 @@
     <ResJson Include="assets\xaml.res.json">
       <FileType>Document</FileType>
     </ResJson>
+    <ResJson Include="assets\particles.res.json">
+      <FileType>Document</FileType>
+    </ResJson>
+    <ResJson Include="assets\player.res.json">
+      <FileType>Document</FileType>
+    </ResJson>
+    <ResJson Include="assets\sprites.res.json">
+      <FileType>Document</FileType>
+    </ResJson>
     <None Include="retron_TemporaryKey.pfx" />
   </ItemGroup>
   <ItemGroup>

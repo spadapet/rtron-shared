@@ -167,5 +167,14 @@
     <ResJson Include="assets\game_spec.res.json">
       <Filter>assets</Filter>
     </ResJson>
+    <ResJson Include="assets\player.res.json">
+      <Filter>assets</Filter>
+    </ResJson>
+    <ResJson Include="assets\particles.res.json">
+      <Filter>assets</Filter>
+    </ResJson>
+    <ResJson Include="assets\sprites.res.json">
+      <Filter>assets</Filter>
+    </ResJson>
   </ItemGroup>
 </Project>

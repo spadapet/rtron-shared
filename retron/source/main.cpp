@@ -14,42 +14,36 @@ namespace assets
     namespace controls
     {
 #include "controls.res.h"
-
-        static std::shared_ptr<::ff::data_base> data()
-        {
-            return std::make_shared<::ff::data_static>(ff::build_res::bytes, ff::build_res::byte_size);
-        }
     }
-
 
     namespace game_spec
     {
 #include "game_spec.res.h"
-
-        static std::shared_ptr<::ff::data_base> data()
-        {
-            return std::make_shared<::ff::data_static>(ff::build_res::bytes, ff::build_res::byte_size);
-        }
     }
 
     namespace graphics
     {
 #include "graphics.res.h"
+    }
 
-        static std::shared_ptr<::ff::data_base> data()
-        {
-            return std::make_shared<::ff::data_static>(ff::build_res::bytes, ff::build_res::byte_size);
-        }
+    namespace particles
+    {
+#include "particles.res.h"
+    }
+
+    namespace player
+    {
+#include "player.res.h"
+    }
+
+    namespace sprites
+    {
+#include "sprites.res.h"
     }
 
     namespace xaml
     {
 #include "xaml.res.h"
-
-        static std::shared_ptr<::ff::data_base> data()
-        {
-            return std::make_shared<::ff::data_static>(ff::build_res::bytes, ff::build_res::byte_size);
-        }
     }
 }
 
@@ -58,6 +52,9 @@ static void register_components()
     ff::global_resources::add(assets::controls::data());
     ff::global_resources::add(assets::game_spec::data());
     ff::global_resources::add(assets::graphics::data());
+    ff::global_resources::add(assets::particles::data());
+    ff::global_resources::add(assets::player::data());
+    ff::global_resources::add(assets::sprites::data());
     ff::global_resources::add(assets::xaml::data());
 
     Noesis::RegisterComponent<Noesis::EnumConverter<retron::game_flags>>();

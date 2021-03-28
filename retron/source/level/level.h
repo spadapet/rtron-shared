@@ -29,6 +29,9 @@ namespace retron
         entt::entity create_box(const ff::rect_fixed& rect);
         void create_objects(size_t count, retron::entity_type type, const ff::rect_fixed& rect, const std::vector<ff::rect_fixed>& avoid_rects);
 
+        ff::rect_fixed bounds_box(entt::entity entity);
+        ff::rect_fixed hit_box(entt::entity entity);
+
         void advance_entity(entt::entity entity, retron::entity_type type);
         void advance_player(entt::entity entity);
         void advance_player_bullet(entt::entity entity);
@@ -41,7 +44,7 @@ namespace retron
         void handle_entity_collision(entt::entity entity1, entt::entity entity2);
 
         void render_particles(ff::draw_base& draw);
-        void render_entity(entt::entity entity, retron::entity_type type, ff::draw_base* draw);
+        void render_entity(entt::entity entity, retron::entity_type type, ff::draw_base& draw);
         void render_player(entt::entity entity, ff::draw_base& draw);
         void render_player_bullet(entt::entity entity, ff::draw_base& draw);
         void render_bonus(entt::entity entity, retron::entity_type type, ff::draw_base& draw);
@@ -73,6 +76,7 @@ namespace retron
 
         std::array<ff::auto_resource<ff::animation_base>, 8> player_walk_anims;
         ff::auto_resource<ff::animation_base> player_bullet_anim;
+        ff::auto_resource<ff::animation_base> grunt_walk_anim;
 
         size_t frame_count;
     };

@@ -112,6 +112,21 @@
   <ItemGroup>
     <ResourceCompile Include="source\resource.rc" />
   </ItemGroup>
+  <ItemGroup>
+    <ResJson Include="assets\player.res.json">
+      <FileType>Document</FileType>
+    </ResJson>
+  </ItemGroup>
+  <ItemGroup>
+    <ResJson Include="assets\particles.res.json">
+      <FileType>Document</FileType>
+    </ResJson>
+  </ItemGroup>
+  <ItemGroup>
+    <ResJson Include="assets\sprites.res.json">
+      <FileType>Document</FileType>
+    </ResJson>
+  </ItemGroup>
   <Import Project="$(FFRoot)build\cpp.targets" />
   <Target Name="AfterBuild">
     <Copy SourceFiles="$(NoesisDll)" DestinationFolder="$(OutDir)" SkipUnchangedFiles="True" />

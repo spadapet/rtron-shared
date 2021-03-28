@@ -26,13 +26,13 @@ BEGIN
         BLOCK "040904b0"
         BEGIN
             VALUE "CompanyName", "Peter Spada"
-            VALUE "FileDescription", "ReTron 2742"
+            VALUE "FileDescription", "ReTron: 2742"
             VALUE "FileVersion", "1.0.0.0"
             VALUE "GUID", "{5c7def56-5bb9-4392-8af3-541ccf0c0c7a}"
             VALUE "InternalName", "ReTron"
             VALUE "LegalCopyright", "Copyright (C) 2021"
             VALUE "OriginalFilename", "retron.exe"
-            VALUE "ProductName", "ReTron 2742"
+            VALUE "ProductName", "ReTron: 2742"
             VALUE "ProductVersion", "1.0.0.0"
         END
     END

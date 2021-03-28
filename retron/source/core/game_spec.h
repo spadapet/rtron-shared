@@ -52,6 +52,7 @@ namespace retron
         size_t player_shot_counter;
         ff::fixed_int grunt_move;
         ff::fixed_int player_move;
+        ff::fixed_int player_move_frame_divisor;
         ff::fixed_int player_shot_move;
     };
 

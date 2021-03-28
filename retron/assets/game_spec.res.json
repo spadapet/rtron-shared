@@ -23,6 +23,7 @@
           "grunt_max_ticks_rate": 75,
           "grunt_move": 4,
           "player_move": 1,
+          "player_move_frame_divisor": 2,
           "player_shot_move": 6,
           "player_shot_counter": 8
         },

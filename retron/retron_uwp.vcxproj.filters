@@ -291,6 +291,7 @@
     <None Include="$(NoesisDll)" />
     <None Include="$(NoesisDll)" />
     <None Include="$(NoesisDll)" />
+    <None Include="$(NoesisDll)" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="source">
@@ -334,6 +335,15 @@
       <Filter>assets</Filter>
     </ResJson>
     <ResJson Include="assets\graphics.res.json">
+      <Filter>assets</Filter>
+    </ResJson>
+    <ResJson Include="assets\particles.res.json">
+      <Filter>assets</Filter>
+    </ResJson>
+    <ResJson Include="assets\player.res.json">
+      <Filter>assets</Filter>
+    </ResJson>
+    <ResJson Include="assets\sprites.res.json">
       <Filter>assets</Filter>
     </ResJson>
   </ItemGroup>
