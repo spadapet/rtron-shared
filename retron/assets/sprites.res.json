@@ -1,4 +1,6 @@
 {
+  "res:namespace": "assets::sprites",
+
   "sprites":
   {
     "res:type": "sprites",

@@ -1,4 +1,6 @@
 {
+  "res:namespace": "assets::particles",
+
   "level_particles":
   {
     "player_bullet_hit_bounds":

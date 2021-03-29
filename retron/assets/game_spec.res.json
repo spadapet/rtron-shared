@@ -1,4 +1,6 @@
 {
+  "res:namespace": "assets::game_spec",
+
   "game_spec":
   {
     "res:type": "resource_values",

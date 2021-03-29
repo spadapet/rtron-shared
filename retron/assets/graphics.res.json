@@ -1,4 +1,6 @@
 {
+  "res:namespace": "assets::graphics",
+
   "palette_main":
   {
     "res:type": "palette",

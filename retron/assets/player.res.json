@@ -1,4 +1,6 @@
 {
+  "res:namespace": "assets::player",
+
   "res:values":
   {
     "anim.six_frame_loop":

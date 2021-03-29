@@ -1,4 +1,6 @@
 {
+  "res:namespace": "assets::controls",
+
   "game_controls":
   {
     "res:type": "input",

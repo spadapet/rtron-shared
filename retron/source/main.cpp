@@ -5,57 +5,28 @@
 #include "source/ui/debug_page.xaml.h"
 #include "source/ui/title_page.xaml.h"
 
+// Resource assets
+#include "controls.res.h"
+#include "game_spec.res.h"
+#include "graphics.res.h"
+#include "particles.res.h"
+#include "player.res.h"
+#include "sprites.res.h"
+#include "xaml.res.h"
+
 static const std::string_view NOESIS_NAME = "d704047b-5bd2-4757-9858-6a7d86cdd006";
 static const std::string_view NOESIS_KEY = "B/+52Cy2udj84658Qvc+tLTo9Yv7ZNqBhmykexFIA6nbnVl0";
 static std::weak_ptr<retron::app_state> weak_app_state;
 
-namespace assets
-{
-    namespace controls
-    {
-#include "controls.res.h"
-    }
-
-    namespace game_spec
-    {
-#include "game_spec.res.h"
-    }
-
-    namespace graphics
-    {
-#include "graphics.res.h"
-    }
-
-    namespace particles
-    {
-#include "particles.res.h"
-    }
-
-    namespace player
-    {
-#include "player.res.h"
-    }
-
-    namespace sprites
-    {
-#include "sprites.res.h"
-    }
-
-    namespace xaml
-    {
-#include "xaml.res.h"
-    }
-}
-
 static void register_components()
 {
-    ff::global_resources::add(assets::controls::data());
-    ff::global_resources::add(assets::game_spec::data());
-    ff::global_resources::add(assets::graphics::data());
-    ff::global_resources::add(assets::particles::data());
-    ff::global_resources::add(assets::player::data());
-    ff::global_resources::add(assets::sprites::data());
-    ff::global_resources::add(assets::xaml::data());
+    ff::global_resources::add(::assets::controls::data());
+    ff::global_resources::add(::assets::game_spec::data());
+    ff::global_resources::add(::assets::graphics::data());
+    ff::global_resources::add(::assets::particles::data());
+    ff::global_resources::add(::assets::player::data());
+    ff::global_resources::add(::assets::sprites::data());
+    ff::global_resources::add(::assets::xaml::data());
 
     Noesis::RegisterComponent<Noesis::EnumConverter<retron::game_flags>>();
     Noesis::RegisterComponent<Noesis::EnumConverter<retron::game_players>>();
