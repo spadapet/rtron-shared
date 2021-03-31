@@ -17,6 +17,7 @@ namespace retron
 
         void direction(entt::entity entity, const ff::point_fixed& value);
         const ff::point_fixed direction(entt::entity entity);
+        static ff::point_fixed canon_direction(const ff::point_fixed& value);
 
         void scale(entt::entity entity, const ff::point_fixed& value);
         ff::point_fixed scale(entt::entity entity);

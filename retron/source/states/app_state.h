@@ -33,7 +33,7 @@ namespace retron
         virtual ff::draw_device& draw_device() const override;
         virtual ff::signal_sink<void>& destroyed() override;
         virtual ff::signal_sink<void>& reload_resources_sink() override;
-        virtual bool render_debug() const override;
+        virtual retron::render_debug_t render_debug() const override;
 
         double time_scale() const;
         ff::state::advance_t advance_type() const;
@@ -77,6 +77,6 @@ namespace retron
         bool debug_stepping_frames;
         bool debug_step_one_frame;
         bool rebulding_resources;
-        bool render_debug_;
+        retron::render_debug_t render_debug_;
     };
 }

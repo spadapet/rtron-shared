@@ -86,16 +86,24 @@ ff::fixed_int retron::position::reverse_velocity_as_angle(entt::entity entity)
 
 void retron::position::direction(entt::entity entity, const ff::point_fixed& value)
 {
-    if (value != this->direction(entity))
+    ff::point_fixed value_canon = retron::position::canon_direction(value);
+    if (value_canon && value_canon != this->direction(entity))
     {
-        this->registry.emplace_or_replace<::direction_component>(entity, value);
+        this->registry.emplace_or_replace<::direction_component>(entity, value_canon);
     }
 }
 
 const ff::point_fixed retron::position::direction(entt::entity entity)
 {
     ::direction_component* c = this->registry.try_get<::direction_component>(entity);
-    return c ? c->direction : ff::point_fixed(0, 0);
+    return c ? c->direction : ff::point_fixed(0, 1);
+}
+
+ff::point_fixed retron::position::canon_direction(const ff::point_fixed& value)
+{
+    return ff::point_fixed(
+        std::copysign(1_f, value.x) * ff::fixed_int(value.x != 0_f),
+        std::copysign(1_f, value.y) * ff::fixed_int(value.y != 0_f));
 }
 
 void retron::position::scale(entt::entity entity, const ff::point_fixed& value)

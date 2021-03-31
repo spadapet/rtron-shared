@@ -22,7 +22,7 @@ retron::app_state::app_state()
     , debug_step_one_frame(false)
     , debug_time_scale(1.0)
     , rebulding_resources(false)
-    , render_debug_(false)
+    , render_debug_(retron::render_debug_t::none)
 {
     assert(!::app_service);
     ::app_service = this;
@@ -75,7 +75,21 @@ void retron::app_state::advance_input()
 
             if (this->debug_input_events->event_hit(input_events::ID_DEBUG_RENDER_TOGGLE))
             {
-                this->render_debug_ = !this->render_debug_;
+                switch (this->render_debug_)
+                {
+                    case retron::render_debug_t::set_0:
+                        this->render_debug_ = retron::render_debug_t::set_1;
+                        break;
+
+                    case retron::render_debug_t::set_1:
+                        this->render_debug_ = retron::render_debug_t::set_2;
+                        break;
+
+                    default:
+                    case retron::render_debug_t::set_2:
+                        this->render_debug_ = retron::render_debug_t::set_0;
+                        break;
+                }
             }
         }
 
@@ -199,7 +213,7 @@ ff::signal_sink<void>& retron::app_state::reload_resources_sink()
     return this->reload_resources_signal;
 }
 
-bool retron::app_state::render_debug() const
+retron::render_debug_t retron::app_state::render_debug() const
 {
     return this->render_debug_;
 }

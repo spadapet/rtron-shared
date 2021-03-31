@@ -228,15 +228,15 @@ std::tuple<entt::entity, ff::point_fixed, ff::point_fixed> retron::collision::ra
     entity_box_type box_type_filter,
     retron::collision_box_type collision_type)
 {
-    if (start == end)
+    ff::point_fixed world_start = start * ::PIXEL_TO_WORLD_SCALE;
+    ff::point_fixed world_end = end * ::PIXEL_TO_WORLD_SCALE;
+
+    if (world_start == world_end)
     {
         return std::make_tuple(entt::null, ff::point_fixed(0, 0), ff::point_fixed(0, 0));
     }
 
     this->update_dirty_boxes(collision_type);
-
-    ff::point_fixed world_start = start * ::PIXEL_TO_WORLD_SCALE;
-    ff::point_fixed world_end = end * ::PIXEL_TO_WORLD_SCALE;
 
     class callback_t : public ::b2RayCastCallback
     {
@@ -307,19 +307,22 @@ std::tuple<bool, ff::point_fixed, ff::point_fixed> retron::collision::ray_test(
         ff::point_fixed world_start = start * ::PIXEL_TO_WORLD_SCALE;
         ff::point_fixed world_end = end * ::PIXEL_TO_WORLD_SCALE;
 
-        ::b2RayCastInput ray_data{ ::b2Vec2{ world_start.x, world_start.y }, ::b2Vec2{ world_end.x, world_end.y }, 1.0f };
-        const ::b2Shape* shape = body->GetFixtureList()->GetShape();
-
-        for (int i = 0; i < shape->GetChildCount(); i++)
+        if (world_start != world_end)
         {
-            ::b2RayCastOutput result{};
-            if (shape->RayCast(&result, ray_data, body->GetTransform(), 0))
-            {
-                ff::point_fixed hit(
-                    ff::fixed_int(ray_data.p1.x + result.fraction * (ray_data.p2.x - ray_data.p1.x)) * ::WORLD_TO_PIXEL_SCALE,
-                    ff::fixed_int(ray_data.p1.y + result.fraction * (ray_data.p2.y - ray_data.p1.y)) * ::WORLD_TO_PIXEL_SCALE);
+            ::b2RayCastInput ray_data{ ::b2Vec2{ world_start.x, world_start.y }, ::b2Vec2{ world_end.x, world_end.y }, 1.0f };
+            const ::b2Shape* shape = body->GetFixtureList()->GetShape();
 
-                return std::make_tuple(true, hit, ff::point_fixed(result.normal.x, result.normal.y));
+            for (int i = 0; i < shape->GetChildCount(); i++)
+            {
+                ::b2RayCastOutput result{};
+                if (shape->RayCast(&result, ray_data, body->GetTransform(), 0))
+                {
+                    ff::point_fixed hit(
+                        ff::fixed_int(ray_data.p1.x + result.fraction * (ray_data.p2.x - ray_data.p1.x)) * ::WORLD_TO_PIXEL_SCALE,
+                        ff::fixed_int(ray_data.p1.y + result.fraction * (ray_data.p2.y - ray_data.p1.y)) * ::WORLD_TO_PIXEL_SCALE);
+
+                    return std::make_tuple(true, hit, ff::point_fixed(result.normal.x, result.normal.y));
+                }
             }
         }
     }

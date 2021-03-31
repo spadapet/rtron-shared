@@ -26,11 +26,6 @@ std::shared_ptr<ff::state> retron::game_state::advance_time()
     return ff::state::advance_time();
 }
 
-void retron::game_state::render(ff::dx11_target_base& target, ff::dx11_depth& depth)
-{
-    return ff::state::render(target, depth);
-}
-
 size_t retron::game_state::child_state_count()
 {
     return (this->playing_level_state < this->level_states.size()) ? 1 : 0;
@@ -63,17 +58,10 @@ void retron::game_state::restart_level()
 
 void retron::game_state::init_input()
 {
+    ff::auto_resource<ff::input_mapping> game_input_mapping = "game_controls";
+    std::array<ff::auto_resource<ff::input_mapping>, constants::MAX_PLAYERS> player_input_mappings{ "player_controls", "player_controls" };
     std::vector<const ff::input_vk*> game_input_devices{ &ff::input::keyboard(), &ff::input::pointer() };
     std::array<std::vector<const ff::input_vk*>, constants::MAX_PLAYERS> player_input_devices;
-
-    // Game-wide input and devices
-    this->game_input_mapping = "game_controls"sv;
-
-    // Player specific input
-    for (size_t i = 0; i < this->player_input_mappings.size(); i++)
-    {
-        this->player_input_mappings[i] = "player_controls"sv;
-    }
 
     // Player specific devices
     for (size_t i = 0; i < player_input_devices.size(); i++)
@@ -97,20 +85,17 @@ void retron::game_state::init_input()
                 player_input_devices[i].push_back(&ff::input::gamepad(i));
             }
         }
-        else
+        else for (auto& input_devices : player_input_devices)
         {
-            for (auto& input_devices : player_input_devices)
-            {
-                input_devices.push_back(&ff::input::gamepad(i));
-            }
+            input_devices.push_back(&ff::input::gamepad(i));
         }
     }
 
-    this->game_input_events = std::make_unique<ff::input_event_provider>(*this->game_input_mapping.object(), std::move(game_input_devices));
+    this->game_input_events = std::make_unique<ff::input_event_provider>(*game_input_mapping.object(), std::move(game_input_devices));
 
     for (size_t i = 0; i < this->player_input_events.size(); i++)
     {
-        this->player_input_events[i] = std::make_unique<ff::input_event_provider>(*this->player_input_mappings[i].object(), std::move(player_input_devices[i]));
+        this->player_input_events[i] = std::make_unique<ff::input_event_provider>(*player_input_mappings[i].object(), std::move(player_input_devices[i]));
     }
 }
 

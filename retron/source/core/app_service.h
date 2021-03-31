@@ -7,6 +7,19 @@ namespace retron
     struct system_options;
     struct game_spec;
 
+    enum class render_debug_t
+    {
+        none = 0,
+        controls = 0x01,
+        ai_lines = 0x02,
+        collision = 0x04,
+        position = 0x08,
+
+        set_0 = none,
+        set_1 = controls,
+        set_2 = ai_lines | collision | position,
+    };
+
     class app_service
     {
     public:
@@ -32,6 +45,6 @@ namespace retron
         // Debug
         virtual ff::signal_sink<void>& destroyed() = 0;
         virtual ff::signal_sink<void>& reload_resources_sink() = 0;
-        virtual bool render_debug() const = 0;
+        virtual retron::render_debug_t render_debug() const = 0;
     };
 }

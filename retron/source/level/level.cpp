@@ -43,6 +43,24 @@ namespace
     };
 }
 
+static ff::point_fixed get_press_vector(const ff::input_event_provider& input_events, bool for_shoot)
+{
+    ff::fixed_int joystick_min = retron::app_service::get().game_spec().joystick_min;
+
+    ff::rect_fixed dir_press(
+        input_events.analog_value(for_shoot ? input_events::ID_SHOOT_LEFT : input_events::ID_LEFT),
+        input_events.analog_value(for_shoot ? input_events::ID_SHOOT_UP : input_events::ID_UP),
+        input_events.analog_value(for_shoot ? input_events::ID_SHOOT_RIGHT : input_events::ID_RIGHT),
+        input_events.analog_value(for_shoot ? input_events::ID_SHOOT_DOWN : input_events::ID_DOWN));
+
+    dir_press.left = dir_press.left * ff::fixed_int(dir_press.left >= joystick_min);
+    dir_press.top = dir_press.top * ff::fixed_int(dir_press.top >= joystick_min);
+    dir_press.right = dir_press.right * ff::fixed_int(dir_press.right >= joystick_min);
+    dir_press.bottom = dir_press.bottom * ff::fixed_int(dir_press.bottom >= joystick_min);
+
+    return ff::point_fixed(dir_press.right - dir_press.left, dir_press.bottom - dir_press.top);
+}
+
 retron::level::level(const retron::level_service& level_service)
     : level_service_(level_service)
     , game_spec_(retron::app_service::get().game_spec())
@@ -268,60 +286,21 @@ void retron::level::advance_entity(entt::entity entity, entity_type type)
 void retron::level::advance_player(entt::entity entity)
 {
     ::player_data& player_data = this->registry.get<::player_data>(entity);
-    retron::player& player = this->level_service_.player(player_data.index_in_level);
-    const ff::input_event_provider& input_events = this->level_service_.input_events(player);
+    const ff::input_event_provider& input_events = this->level_service_.input_events(this->level_service_.player(player_data.index_in_level));
 
-    ff::rect_fixed dir_press(
-        input_events.analog_value(input_events::ID_LEFT),
-        input_events.analog_value(input_events::ID_UP),
-        input_events.analog_value(input_events::ID_RIGHT),
-        input_events.analog_value(input_events::ID_DOWN));
+    ff::point_fixed move_vector = ::get_press_vector(input_events, false);
+    ff::point_fixed shot_vector = ::get_press_vector(input_events, true);
 
-    dir_press.left = (dir_press.left >= this->game_spec_.joystick_min) ? dir_press.left * this->difficulty_spec_.player_move : 0;
-    dir_press.top = (dir_press.top >= this->game_spec_.joystick_min) ? dir_press.top * this->difficulty_spec_.player_move : 0;
-    dir_press.right = (dir_press.right >= this->game_spec_.joystick_min) ? dir_press.right * this->difficulty_spec_.player_move : 0;
-    dir_press.bottom = (dir_press.bottom >= this->game_spec_.joystick_min) ? dir_press.bottom * this->difficulty_spec_.player_move : 0;
+    this->position.velocity(entity, move_vector * this->difficulty_spec_.player_move);
+    this->position.set(entity, this->position.get(entity) + this->position.velocity(entity));
+    this->position.direction(entity, ff::point_fixed(
+        -ff::fixed_int(move_vector.x < 0_f) + ff::fixed_int(move_vector.x > 0_f),
+        -ff::fixed_int(move_vector.y < 0_f) + ff::fixed_int(move_vector.y > 0_f)));
 
-    ff::point_fixed dir = this->position.direction(entity);
-    dir.x = dir_press.left ? -1 : (dir_press.right ? 1 : 0);
-    dir.y = dir_press.top ? -1 : (dir_press.bottom ? 1 : 0);
-
-    ff::point_fixed pos = this->position.get(entity);
-    ff::point_fixed vel(dir_press.right - dir_press.left, dir_press.bottom - dir_press.top);
-    pos += vel;
-
-    this->position.set(entity, pos);
-    this->position.velocity(entity, vel);
-
-    if (dir)
+    if ((!player_data.shot_counter || !--player_data.shot_counter) && shot_vector)
     {
-        this->position.direction(entity, dir);
-    }
-
-    if (player_data.shot_counter)
-    {
-        player_data.shot_counter--;
-    }
-
-    if (!player_data.shot_counter)
-    {
-        ff::rect_int shot_press(
-            input_events.digital_value(input_events::ID_SHOOT_LEFT),
-            input_events.digital_value(input_events::ID_SHOOT_UP),
-            input_events.digital_value(input_events::ID_SHOOT_RIGHT),
-            input_events.digital_value(input_events::ID_SHOOT_DOWN));
-
-        if (shot_press)
-        {
-            player_data.shot_counter = this->difficulty_spec_.player_shot_counter;
-
-            ff::point_fixed shot_pos = this->bounds_box(entity).center();
-            ff::point_fixed shot_dir(
-                shot_press.left ? -1 : (shot_press.right ? 1 : 0),
-                shot_press.top ? -1 : (shot_press.bottom ? 1 : 0));
-
-            this->create_player_bullet(entity, shot_pos, shot_dir);
-        }
+        player_data.shot_counter = this->difficulty_spec_.player_shot_counter;
+        this->create_player_bullet(entity, this->bounds_box(entity).center(), retron::position::canon_direction(shot_vector));
     }
 }
 
@@ -620,14 +599,50 @@ void retron::level::render_animation(entt::entity entity, ff::draw_base& draw, f
 
 void retron::level::render_debug(ff::draw_base& draw)
 {
-    if (retron::app_service::get().render_debug())
+    retron::render_debug_t render_debug = retron::app_service::get().render_debug();
+
+    if (ff::flags::has(render_debug, retron::render_debug_t::controls))
+    {
+        const ff::fixed_int radius = 12;
+        std::array<int, 2> colors{ 244, 243 };
+        std::array<const ff::point_fixed, 2> centers{ ff::point_fixed(24, 24), ff::point_fixed(52, 24) };
+        draw.draw_palette_outline_circle(centers[0], radius, 245, 1);
+        draw.draw_palette_outline_circle(centers[1], radius, 245, 1);
+
+        for (auto [entity, data] : this->registry.view<::player_data>().each())
+        {
+            const ff::input_event_provider& input_events = this->level_service_.input_events(this->level_service_.player(data.index_in_level));
+
+            ff::point_fixed move_vector = ::get_press_vector(input_events, false);
+            ff::point_fixed shot_vector = ::get_press_vector(input_events, true);
+
+            if (move_vector)
+            {
+                draw.draw_palette_line(centers[0], centers[0] + move_vector * radius, colors[data.index_in_level], 1);
+            }
+
+            if (shot_vector)
+            {
+                draw.draw_palette_line(centers[1], centers[1] + shot_vector * radius, colors[data.index_in_level], 1);
+            }
+        }
+    }
+
+    if (ff::flags::has(render_debug, retron::render_debug_t::ai_lines))
     {
         for (auto [entity, data] : this->registry.view<::grunt_data>().each())
         {
             draw.draw_palette_line(this->position.get(entity), data.dest_pos, 245, 1);
         }
+    }
 
+    if (ff::flags::has(render_debug, retron::render_debug_t::collision))
+    {
         this->collision.render_debug(draw);
+    }
+
+    if (ff::flags::has(render_debug, retron::render_debug_t::position))
+    {
         this->position.render_debug(draw);
     }
 }
