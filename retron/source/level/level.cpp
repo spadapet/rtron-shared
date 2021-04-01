@@ -58,7 +58,17 @@ static ff::point_fixed get_press_vector(const ff::input_event_provider& input_ev
     dir_press.right = dir_press.right * ff::fixed_int(dir_press.right >= joystick_min);
     dir_press.bottom = dir_press.bottom * ff::fixed_int(dir_press.bottom >= joystick_min);
 
-    return ff::point_fixed(dir_press.right - dir_press.left, dir_press.bottom - dir_press.top);
+    ff::point_fixed dir(dir_press.right - dir_press.left, dir_press.bottom - dir_press.top);
+    if (dir)
+    {
+        int slice = helpers::dir_to_degrees(dir) * 2 / 45;
+
+        return ff::point_fixed(
+            (slice >= 6 && slice <= 11) ? -1 : ((slice <= 3 || slice >= 14) ? 1 : 0),
+            (slice >= 2 && slice <= 7) ? -1 : ((slice >= 10 && slice <= 15) ? 1 : 0));
+    }
+
+    return ff::point_fixed(0, 0);
 }
 
 retron::level::level(const retron::level_service& level_service)
