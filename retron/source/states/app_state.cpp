@@ -21,7 +21,7 @@ retron::app_state::app_state()
     , debug_stepping_frames(false)
     , debug_step_one_frame(false)
     , debug_time_scale(1.0)
-    , rebulding_resources(false)
+    , rebuilding_resources_(false)
     , render_debug_(retron::render_debug_t::none)
 {
     assert(!::app_service);
@@ -213,6 +213,11 @@ ff::signal_sink<void>& retron::app_state::reload_resources_sink()
     return this->reload_resources_signal;
 }
 
+bool retron::app_state::rebuilding_resources() const
+{
+    return this->rebuilding_resources_;
+}
+
 retron::render_debug_t retron::app_state::render_debug() const
 {
     return this->render_debug_;
@@ -258,9 +263,9 @@ void retron::app_state::init_resources()
 {
     this->audio_ = std::make_unique<retron::audio>();
     this->game_spec_ = retron::game_spec::load();
-    this->debug_input_mapping = "game_debug_controls"sv;
+    this->debug_input_mapping = "game_debug_controls";
     this->debug_input_events = std::make_unique<ff::input_event_provider>(*this->debug_input_mapping.object(), std::vector<const ff::input_vk*>{ &ff::input::keyboard() });
-    this->palette_data = "palette_main"sv;
+    this->palette_data = "palette_main";
 
     for (size_t i = 0; i < this->player_palettes.size(); i++)
     {
@@ -295,7 +300,7 @@ void retron::app_state::on_custom_debug()
 
 void retron::app_state::on_resources_rebuilt()
 {
-    this->rebulding_resources = false;
+    this->rebuilding_resources_ = false;
     this->init_resources();
     this->reload_resources_signal.notify();
 }
@@ -325,9 +330,9 @@ void retron::app_state::on_rebuild_resources()
 {
     this->debug_state->hide();
 
-    if (!this->rebulding_resources)
+    if (!this->rebuilding_resources_)
     {
-        this->rebulding_resources = true;
+        this->rebuilding_resources_ = true;
         ff::global_resources::rebuild_async();
     }
 }

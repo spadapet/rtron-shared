@@ -168,6 +168,15 @@
         "pos": [ 0, 0 ],
         "size": [ 13, 16 ],
         "handle": [ 6, 16 ]
+      },
+      "grunt_part":
+      {
+        "file": "file:graphics/grunt.png",
+        "pos": [ 14, 0 ],
+        "size": [ 2, 12 ],
+        "handle": [ 0, 6 ],
+        "offset": [ 3, 0 ],
+        "repeat": 8
       }
     }
   }

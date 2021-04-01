@@ -67,7 +67,7 @@ void retron::particles::advance_now()
     ::SetEvent(this->async_event);
 }
 
-unsigned short retron::particles::add_group(const ff::pixel_transform& transform, int effect_id, int count, const std::vector<std::shared_ptr<ff::animation_base>>& animations)
+uint16_t retron::particles::add_group(const ff::pixel_transform& transform, int effect_id, int count, const std::vector<std::shared_ptr<ff::animation_base>>& animations)
 {
     retron::particles::group_t group;
     DirectX::XMStoreFloat4x4(&group.matrix, transform.matrix());
@@ -81,20 +81,20 @@ unsigned short retron::particles::add_group(const ff::pixel_transform& transform
         if (this->groups[i].refs == -1)
         {
             this->groups[i] = std::move(group);
-            return static_cast<unsigned short>(i);
+            return static_cast<uint16_t>(i);
         }
     }
 
     this->groups.push_back(std::move(group));
-    return static_cast<unsigned short>(this->groups.size() - 1);
+    return static_cast<uint16_t>(this->groups.size() - 1);
 }
 
-void retron::particles::release_group(unsigned short group_id)
+void retron::particles::release_group(uint16_t group_id)
 {
     --this->groups[group_id].refs;
 }
 
-const DirectX::XMFLOAT4X4& retron::particles::matrix(unsigned short group_id) const
+const DirectX::XMFLOAT4X4& retron::particles::matrix(uint16_t group_id) const
 {
     assert(this->groups[group_id].refs > 0);
     return this->groups[group_id].matrix;
@@ -243,24 +243,24 @@ void retron::particles::spec_t::add(particles& particles, ff::point_fixed pos, i
         return;
     }
 
-    unsigned short group_id = particles.add_group(ff::pixel_transform(pos, scale * options.scale, rotate + options.rotate), effect_id, count, this->animations);
+    uint16_t group_id = particles.add_group(ff::pixel_transform(pos, scale * options.scale, rotate + options.rotate), effect_id, count, this->animations);
 
     for (int i = 0; i < count; i++)
     {
         retron::particles::particle_t p;
 
-        p.angle = ff::math::degrees_to_radians((float)ff::math::random_range(has_angle ? angle : options.angle));
-        p.angle_vel = ff::math::degrees_to_radians((float)ff::math::random_range(angle_vel));
-        p.dist = ff::math::random_range(dist);
-        p.dist_vel = ff::math::random_range(dist_vel);
+        p.angle = ff::math::degrees_to_radians(static_cast<float>(ff::math::random_range(this->has_angle ? this->angle : options.angle)));
+        p.angle_vel = ff::math::degrees_to_radians(static_cast<float>(ff::math::random_range(this->angle_vel)));
+        p.dist = ff::math::random_range(this->dist);
+        p.dist_vel = ff::math::random_range(this->dist_vel);
 
-        p.size = ff::math::random_range(size);
-        p.spin = ff::math::random_range(spin);
-        p.spin_vel = ff::math::random_range(spin_vel);
+        p.size = ff::math::random_range(this->size);
+        p.spin = ff::math::random_range(this->spin);
+        p.spin_vel = ff::math::random_range(this->spin_vel);
         p.timer = 0;
 
-        p.delay = ff::math::random_range(delay);
-        p.life = ff::math::random_range(life);
+        p.delay = ff::math::random_range(this->delay);
+        p.life = ff::math::random_range(this->life);
         p.type = options.type;
         p.internal_type = 0;
         p.group = group_id;
@@ -280,12 +280,14 @@ void retron::particles::spec_t::add(particles& particles, ff::point_fixed pos, i
 
         if ((reverse ^ options.reverse) != 0)
         {
-            p.delay = (delay.second + life.second) - (p.delay + p.life);
+            p.delay = (this->delay.second + this->life.second) - (p.delay + p.life);
             p.dist += p.dist_vel * p.life;
             p.dist_vel = -p.dist_vel;
             p.angle += p.angle_vel * p.life;
             p.angle_vel = -p.angle_vel;
         }
+
+        p.delay += options.delay;
 
         particles.particles_new.push_back(p);
     }

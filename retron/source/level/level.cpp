@@ -4,19 +4,24 @@
 #include "source/core/level_service.h"
 #include "source/level/level.h"
 
-static constexpr std::string_view PARTICLES_destroy_grunt = "destroy_grunt"sv;
-static constexpr std::string_view PARTICLES_player_bullet_hit_bounds = "player_bullet_hit_bounds"sv;
-static constexpr std::string_view PARTICLES_player_enter = "player_enter"sv;
-
-static constexpr std::string_view ALL_PARTICLE_EFFECTS[] =
-{
-    ::PARTICLES_destroy_grunt,
-    ::PARTICLES_player_bullet_hit_bounds,
-    ::PARTICLES_player_enter,
-};
-
 namespace
 {
+    namespace particle_effects
+    {
+        static constexpr std::string_view grunt_destroy = "grunt_destroy";
+        static constexpr std::string_view grunt_start = "grunt_start";
+        static constexpr std::string_view player_bullet_hit_bounds = "player_bullet_hit_bounds";
+        static constexpr std::string_view player_enter = "player_enter";
+
+        static constexpr std::string_view all[] =
+        {
+            particle_effects::grunt_destroy,
+            particle_effects::grunt_start,
+            particle_effects::player_bullet_hit_bounds,
+            particle_effects::player_enter,
+        };
+    }
+
     struct player_data
     {
         size_t index_in_level;
@@ -115,12 +120,12 @@ retron::level::level(const retron::level_service& level_service)
 
     for (const retron::level_objects_spec& object_spec : this->level_spec_.objects)
     {
-        this->create_objects(object_spec.bonus_woman, entity_type::bonus_woman, object_spec.rect, avoid_rects);
-        this->create_objects(object_spec.bonus_man, entity_type::bonus_man, object_spec.rect, avoid_rects);
-        this->create_objects(object_spec.bonus_child, entity_type::bonus_child, object_spec.rect, avoid_rects);
-        this->create_objects(object_spec.electrode, entity_type::electrode, object_spec.rect, avoid_rects);
-        this->create_objects(object_spec.hulk, entity_type::hulk, object_spec.rect, avoid_rects);
-        this->create_objects(object_spec.grunt, entity_type::grunt, object_spec.rect, avoid_rects);
+        this->create_objects(object_spec.bonus_woman, entity_type::bonus_woman, object_spec.rect, avoid_rects, std::bind(&retron::level::create_entity, this, std::placeholders::_1, std::placeholders::_2));
+        this->create_objects(object_spec.bonus_man, entity_type::bonus_man, object_spec.rect, avoid_rects, std::bind(&retron::level::create_entity, this, std::placeholders::_1, std::placeholders::_2));
+        this->create_objects(object_spec.bonus_child, entity_type::bonus_child, object_spec.rect, avoid_rects, std::bind(&retron::level::create_entity, this, std::placeholders::_1, std::placeholders::_2));
+        this->create_objects(object_spec.electrode, entity_type::electrode, object_spec.rect, avoid_rects, std::bind(&retron::level::create_entity, this, std::placeholders::_1, std::placeholders::_2));
+        this->create_objects(object_spec.hulk, entity_type::hulk, object_spec.rect, avoid_rects, std::bind(&retron::level::create_entity, this, std::placeholders::_1, std::placeholders::_2));
+        this->create_objects(object_spec.grunt, entity_type::grunt, object_spec.rect, avoid_rects, std::bind(&retron::level::create_grunt, this, std::placeholders::_1, std::placeholders::_2));
     }
 }
 
@@ -153,21 +158,21 @@ void retron::level::app_service_destroyed()
 
 void retron::level::init_resources()
 {
-    this->player_walk_anims[0] = "anim.player_walk_right"sv;
-    this->player_walk_anims[1] = "anim.player_walk_right_up"sv;
-    this->player_walk_anims[2] = "anim.player_walk_up"sv;
-    this->player_walk_anims[3] = "anim.player_walk_left_up"sv;
-    this->player_walk_anims[4] = "anim.player_walk_left"sv;
-    this->player_walk_anims[5] = "anim.player_walk_left_down"sv;
-    this->player_walk_anims[6] = "anim.player_walk_down"sv;
-    this->player_walk_anims[7] = "anim.player_walk_right_down"sv;
+    this->player_walk_anims[0] = "anim.player_walk_right";
+    this->player_walk_anims[1] = "anim.player_walk_right_up";
+    this->player_walk_anims[2] = "anim.player_walk_up";
+    this->player_walk_anims[3] = "anim.player_walk_left_up";
+    this->player_walk_anims[4] = "anim.player_walk_left";
+    this->player_walk_anims[5] = "anim.player_walk_left_down";
+    this->player_walk_anims[6] = "anim.player_walk_down";
+    this->player_walk_anims[7] = "anim.player_walk_right_down";
 
-    this->player_bullet_anim = "sprites.player_bullet"sv;
+    this->player_bullet_anim = "sprites.player_bullet";
 
-    this->grunt_walk_anim = "sprites.grunt"sv;
+    this->grunt_walk_anim = "sprites.grunt";
 
-    ff::dict level_particles_dict = ff::auto_resource_value("level_particles"sv).value()->get<ff::dict>();
-    for (std::string_view name : ::ALL_PARTICLE_EFFECTS)
+    ff::dict level_particles_dict = ff::auto_resource_value("level_particles").value()->get<ff::dict>();
+    for (std::string_view name : particle_effects::all)
     {
         this->particle_effects.try_emplace(name, retron::particles::effect_t(level_particles_dict.get(name)));
     }
@@ -177,13 +182,19 @@ entt::entity retron::level::create_entity(entity_type type, const ff::point_fixe
 {
     entt::entity entity = this->entities.create(type);
     this->position.set(entity, pos);
+    return entity;
+}
 
-    switch (type)
-    {
-        case entity_type::grunt:
-            this->registry.emplace<::grunt_data>(entity, this->registry.size<::grunt_data>(), this->pick_grunt_move_counter(), pos);
-            break;
-    }
+entt::entity retron::level::create_grunt(retron::entity_type type, const ff::point_fixed& pos)
+{
+    entt::entity entity = this->create_entity(type, pos);
+    size_t grunt_index = this->registry.size<::grunt_data>();
+    this->registry.emplace<::grunt_data>(entity, grunt_index, this->pick_grunt_move_counter(), pos);
+
+    retron::particles::effect_options options;
+    options.delay = static_cast<int>(grunt_index * 8);
+    int effect_id = this->particle_effects[particle_effects::grunt_start].add(this->particles, pos, &options);
+    this->registry.emplace<::particle_effect_follows_entity>(entity, ::particle_effect_follows_entity{ effect_id, ff::point_fixed(0, 0) });
 
     return entity;
 }
@@ -200,7 +211,7 @@ entt::entity retron::level::create_player(size_t index_in_level)
     retron::particles::effect_options options;
     options.type = static_cast<uint8_t>(player.index);
 
-    int effect_id = this->particle_effects[::PARTICLES_player_enter].add(this->particles, pos, &options);
+    int effect_id = this->particle_effects[particle_effects::player_enter].add(this->particles, pos, &options);
     this->registry.emplace<::particle_effect_follows_entity>(entity, ::particle_effect_follows_entity{ effect_id, ff::point_fixed(0, 0) });
 
     return entity;
@@ -232,7 +243,7 @@ entt::entity retron::level::create_box(const ff::rect_fixed& rect)
     return entity;
 }
 
-void retron::level::create_objects(size_t count, entity_type type, const ff::rect_fixed& rect, const std::vector<ff::rect_fixed>& avoid_rects)
+void retron::level::create_objects(size_t count, entity_type type, const ff::rect_fixed& rect, const std::vector<ff::rect_fixed>& avoid_rects, const std::function<entt::entity(retron::entity_type, const ff::point_fixed&)>& create_func)
 {
     const ff::rect_fixed& hit_spec = retron::get_hit_box_spec(type);
 
@@ -258,7 +269,15 @@ void retron::level::create_objects(size_t count, entity_type type, const ff::rec
 
             if (good_pos)
             {
-                this->create_entity(type, pos);
+                if (create_func)
+                {
+                    create_func(type, pos);
+                }
+                else
+                {
+                    this->create_entity(type, pos);
+                }
+
                 break;
             }
         }
@@ -323,23 +342,26 @@ void retron::level::advance_player_bullet(entt::entity entity)
 
 void retron::level::advance_grunt(entt::entity entity)
 {
-    ::grunt_data& data = this->registry.get<::grunt_data>(entity);
-    if (!--data.move_counter)
+    if (!this->registry.try_get<::particle_effect_follows_entity>(entity))
     {
-        data.move_counter = this->pick_grunt_move_counter();
+        ::grunt_data& data = this->registry.get<::grunt_data>(entity);
+        if (!--data.move_counter)
+        {
+            data.move_counter = this->pick_grunt_move_counter();
 
-        const size_t players = this->registry.size<::player_data>();
-        entt::entity dest_entity = players ? this->registry.view<::player_data>().data()[data.index % players] : entity;
-        ff::point_fixed grunt_pos = this->position.get(entity);
+            const size_t players = this->registry.size<::player_data>();
+            entt::entity dest_entity = players ? this->registry.view<::player_data>().data()[data.index % players] : entity;
+            ff::point_fixed grunt_pos = this->position.get(entity);
 
-        data.dest_pos = this->pick_move_destination(entity, dest_entity, retron::collision_box_type::grunt_avoid_box);
+            data.dest_pos = this->pick_move_destination(entity, dest_entity, retron::collision_box_type::grunt_avoid_box);
 
-        ff::point_fixed delta = data.dest_pos - grunt_pos;
-        ff::point_fixed vel(
-            std::copysign(this->difficulty_spec_.grunt_move, delta.x ? delta.x : (ff::math::random_bool() ? 1 : -1)),
-            std::copysign(this->difficulty_spec_.grunt_move, delta.y ? delta.y : (ff::math::random_bool() ? 1 : -1)));
+            ff::point_fixed delta = data.dest_pos - grunt_pos;
+            ff::point_fixed vel(
+                std::copysign(this->difficulty_spec_.grunt_move, delta.x ? delta.x : (ff::math::random_bool() ? 1 : -1)),
+                std::copysign(this->difficulty_spec_.grunt_move, delta.y ? delta.y : (ff::math::random_bool() ? 1 : -1)));
 
-        this->position.set(entity, grunt_pos + vel);
+            this->position.set(entity, grunt_pos + vel);
+        }
     }
 }
 
@@ -431,7 +453,7 @@ void retron::level::handle_player_bullet_bounds_collision(entt::entity entity)
         }
     }
 
-    this->particle_effects[::PARTICLES_player_bullet_hit_bounds].add(this->particles, pos_array.data(), pos_array.size(), &options);
+    this->particle_effects[particle_effects::player_bullet_hit_bounds].add(this->particles, pos_array.data(), pos_array.size(), &options);
 }
 
 void retron::level::handle_entity_collision(entt::entity entity1, entt::entity entity2)
@@ -452,7 +474,7 @@ void retron::level::handle_entity_collision(entt::entity entity1, entt::entity e
                                 retron::particles::effect_options options;
                                 options.rotate = this->position.velocity_as_angle(entity2);
 
-                                this->particle_effects[::PARTICLES_destroy_grunt].add(
+                                this->particle_effects[particle_effects::grunt_destroy].add(
                                     this->particles, this->bounds_box(entity1).center(), &options);
                             }
                             break;
@@ -541,24 +563,21 @@ void retron::level::render_entity(entt::entity entity, entity_type type, ff::dra
 
 void retron::level::render_player(entt::entity entity, ff::draw_base& draw)
 {
-    // Don't render the player while particles are flying together
-    if (this->registry.try_get<::particle_effect_follows_entity>(entity))
+    if (!this->registry.try_get<::particle_effect_follows_entity>(entity))
     {
-        return;
+        ::player_data& player_data = this->registry.get<::player_data>(entity);
+        retron::player& player = this->level_service_.player(player_data.index_in_level);
+
+        ff::palette_base& palette = retron::app_service::get().player_palette(player.index);
+        draw.push_palette_remap(palette.index_remap(), palette.index_remap_hash());
+
+        ff::point_fixed dir = this->position.direction(entity);
+        ff::fixed_int frame = this->position.velocity(entity) ? ff::fixed_int(this->frame_count) / this->difficulty_spec_.player_move_frame_divisor : 0_f;
+        ff::animation_base* anim = this->player_walk_anims[helpers::dir_to_index(dir)].object().get();
+        this->render_animation(entity, draw, anim, frame);
+
+        draw.pop_palette_remap();
     }
-
-    ::player_data& player_data = this->registry.get<::player_data>(entity);
-    retron::player& player = this->level_service_.player(player_data.index_in_level);
-
-    ff::palette_base& palette = retron::app_service::get().player_palette(player.index);
-    draw.push_palette_remap(palette.index_remap(), palette.index_remap_hash());
-
-    ff::point_fixed dir = this->position.direction(entity);
-    ff::fixed_int frame = this->position.velocity(entity) ? ff::fixed_int(this->frame_count) / this->difficulty_spec_.player_move_frame_divisor : 0_f;
-    ff::animation_base* anim = this->player_walk_anims[helpers::dir_to_index(dir)].object().get();
-    this->render_animation(entity, draw, anim, frame);
-
-    draw.pop_palette_remap();
 }
 
 void retron::level::render_player_bullet(entt::entity entity, ff::draw_base& draw)
@@ -594,8 +613,11 @@ void retron::level::render_hulk(entt::entity entity, ff::draw_base& draw)
 
 void retron::level::render_grunt(entt::entity entity, ff::draw_base& draw)
 {
-    ff::point_fixed pos = this->position.get(entity);
-    this->render_animation(entity, draw, this->grunt_walk_anim.object().get(), 0);
+    if (!this->registry.try_get<::particle_effect_follows_entity>(entity))
+    {
+        ff::point_fixed pos = this->position.get(entity);
+        this->render_animation(entity, draw, this->grunt_walk_anim.object().get(), 0);
+    }
 }
 
 void retron::level::render_animation(entt::entity entity, ff::draw_base& draw, ff::animation_base* anim, ff::fixed_int frame)
@@ -654,6 +676,11 @@ void retron::level::render_debug(ff::draw_base& draw)
     if (ff::flags::has(render_debug, retron::render_debug_t::position))
     {
         this->position.render_debug(draw);
+    }
+
+    if (retron::app_service::get().rebuilding_resources())
+    {
+        draw.draw_palette_outline_rectangle(constants::RENDER_RECT, 230, 4);
     }
 }
 

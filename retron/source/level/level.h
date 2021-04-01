@@ -23,11 +23,12 @@ namespace retron
         void init_resources();
 
         entt::entity create_entity(retron::entity_type type, const ff::point_fixed& pos);
+        entt::entity create_grunt(retron::entity_type type, const ff::point_fixed& pos);
         entt::entity create_player(size_t index_in_level);
         entt::entity create_player_bullet(entt::entity player, ff::point_fixed shot_pos, ff::point_fixed shot_dir);
         entt::entity create_bounds(const ff::rect_fixed& rect);
         entt::entity create_box(const ff::rect_fixed& rect);
-        void create_objects(size_t count, retron::entity_type type, const ff::rect_fixed& rect, const std::vector<ff::rect_fixed>& avoid_rects);
+        void create_objects(size_t count, retron::entity_type type, const ff::rect_fixed& rect, const std::vector<ff::rect_fixed>& avoid_rects, const std::function<entt::entity(retron::entity_type, const ff::point_fixed&)>& create_func);
 
         ff::rect_fixed bounds_box(entt::entity entity);
         ff::rect_fixed hit_box(entt::entity entity);

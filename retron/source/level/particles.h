@@ -18,6 +18,7 @@ namespace retron
             std::pair<ff::fixed_int, ff::fixed_int> angle = std::make_pair(0, 360);
             ff::point_fixed scale = ff::point_fixed(1, 1);
             ff::fixed_int rotate = 0;
+            int delay = 0;
             uint8_t type = 0;
             bool reverse = false;
         };
@@ -98,11 +99,11 @@ namespace retron
             float spin_vel;
             float timer;
 
-            unsigned short group;
-            unsigned short delay;
-            unsigned short life;
-            unsigned char internal_type;
-            unsigned char type;
+            uint16_t group;
+            uint16_t delay;
+            uint16_t life;
+            uint8_t internal_type;
+            uint8_t type;
 
             union
             {
@@ -114,9 +115,9 @@ namespace retron
         void advance_block();
         void advance_now();
 
-        unsigned short add_group(const ff::pixel_transform& transform, int effect_id, int count, const std::vector<std::shared_ptr<ff::animation_base>>& animations);
-        void release_group(unsigned short group_id);
-        const DirectX::XMFLOAT4X4& matrix(unsigned short group_id) const;
+        uint16_t add_group(const ff::pixel_transform& transform, int effect_id, int count, const std::vector<std::shared_ptr<ff::animation_base>>& animations);
+        void release_group(uint16_t group_id);
+        const DirectX::XMFLOAT4X4& matrix(uint16_t group_id) const;
 
         std::vector<particle_t> particles_new;
         std::vector<particle_t> particles_async;

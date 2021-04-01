@@ -1,9 +1,9 @@
 #include "pch.h"
 #include "source/core/globals.h"
 
-const std::string_view strings::ID_APP_STATE = "app_state"sv;
-const std::string_view strings::ID_GAME_OPTIONS = "game_options"sv;
-const std::string_view strings::ID_SYSTEM_OPTIONS = "system_options"sv;
+const std::string_view strings::ID_APP_STATE = "app_state";
+const std::string_view strings::ID_GAME_OPTIONS = "game_options";
+const std::string_view strings::ID_SYSTEM_OPTIONS = "system_options";
 
 const size_t input_events::ID_UP = ff::stable_hash_func("up"sv);
 const size_t input_events::ID_DOWN = ff::stable_hash_func("down"sv);
