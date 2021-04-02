@@ -18,7 +18,7 @@
   </PropertyGroup>
   <Import Project="..\vendor\ff_game_library\build\cpp.props" />
   <PropertyGroup>
-    <AdditionalResJsonInputs>$(DevRoot)retron.designer\**\*.xaml;$(DevRoot)retron.designer\**\*.ttf;$(DevRoot)retron.designer\**\*.png</AdditionalResJsonInputs>
+    <AdditionalResJsonInputs>$(DevRoot)retron_designer\**\*.xaml;$(DevRoot)retron_designer\**\*.ttf;$(DevRoot)retron_designer\**\*.png</AdditionalResJsonInputs>
   </PropertyGroup>
   <ItemDefinitionGroup>
     <ClCompile>

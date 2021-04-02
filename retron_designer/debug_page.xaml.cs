@@ -8,6 +8,7 @@ namespace retron
         public ICommand restart_level_command => null;
         public ICommand restart_game_command => null;
         public ICommand rebuild_resources_command => null;
+        public ICommand particle_lab_command => null;
         public ICommand close_debug_command => null;
     }
 

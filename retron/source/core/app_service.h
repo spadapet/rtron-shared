@@ -47,5 +47,7 @@ namespace retron
         virtual ff::signal_sink<void>& reload_resources_sink() = 0;
         virtual bool rebuilding_resources() const = 0;
         virtual retron::render_debug_t render_debug() const = 0;
+        virtual void render_debug(retron::render_debug_t flags) = 0;
+        virtual void debug_command(size_t command_id) = 0;
     };
 }

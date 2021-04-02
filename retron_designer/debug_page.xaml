@@ -53,13 +53,17 @@
                         </i:EventTrigger>
                     </i:Interaction.Triggers>
                     <Canvas Width="7" Height="7">
-                        <Line X1="0" Y1="0" X2="7" Y2="7" StrokeThickness="1" Stroke="White" />
-                        <Line X1="0" Y1="7" X2="7" Y2="0" StrokeThickness="1" Stroke="White" />
+                        <Line X1="0" Y1="0" X2="7" Y2="7" StrokeThickness="1" Stroke="{StaticResource Brush.Foreground.Normal}" />
+                        <Line X1="0" Y1="7" X2="7" Y2="0" StrokeThickness="1" Stroke="{StaticResource Brush.Foreground.Normal}" />
                     </Canvas>
                 </Button>
             </Grid>
-            <StackPanel Grid.Row="1" Orientation="Vertical" HorizontalAlignment="Left" Margin="2">
-                <StackPanel.Resources>
+            <Grid Grid.Row="1">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+                <Grid.Resources>
                     <Style TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
                         <Setter Property="Margin" Value="0,0,0,2" />
                         <Setter Property="Padding" Value="2" />
@@ -67,11 +71,16 @@
                         <Setter Property="FontFamily" Value="{StaticResource Font.Family.Small}" />
                         <Setter Property="FontSize" Value="{StaticResource Font.Size.Small}" />
                     </Style>
-                </StackPanel.Resources>
-                <Button Content="Restart level" Command="{Binding restart_level_command}" />
-                <Button Content="Restart game" Command="{Binding restart_game_command}" />
-                <Button Content="Rebuild resources" Command="{Binding rebuild_resources_command}" />
-            </StackPanel>
+                </Grid.Resources>
+                <StackPanel Grid.Column="0" Orientation="Vertical" Margin="2,2,0,0">
+                    <Button Content="Restart level" Command="{Binding restart_level_command}" />
+                    <Button Content="Restart game" Command="{Binding restart_game_command}" />
+                    <Button Content="Rebuild resources" Command="{Binding rebuild_resources_command}" />
+                </StackPanel>
+                <StackPanel Grid.Column="1" Orientation="Vertical" Margin="2,2,0,0">
+                    <Button Content="Particle lab" Command="{Binding particle_lab_command}" />
+                </StackPanel>
+            </Grid>
         </Grid>
     </Border>
 </UserControl>

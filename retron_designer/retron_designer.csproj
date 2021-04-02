@@ -60,6 +60,9 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="particle_lab_page.xaml.cs">
+      <DependentUpon>particle_lab_page.xaml</DependentUpon>
+    </Compile>
     <Compile Include="debug_page.xaml.cs">
       <DependentUpon>debug_page.xaml</DependentUpon>
     </Compile>
@@ -79,6 +82,10 @@
       <SubType>Designer</SubType>
     </None>
     <Page Include="application_theme.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="particle_lab_page.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

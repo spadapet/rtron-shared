@@ -2,7 +2,6 @@
 
 #include "source/core/level_service.h"
 #include "source/core/game_spec.h"
-#include "source/core/render_targets.h"
 #include "source/level/level.h"
 
 namespace retron
@@ -26,12 +25,9 @@ namespace retron
         virtual retron::player& player_or_coop(size_t index) const override;
 
     private:
-        ff::rect_fixed camera();
-
         retron::game_service* game_service_;
         retron::level_spec level_spec_;
         std::vector<retron::player*> players;
-        retron::render_targets targets;
         retron::level level;
     };
 }

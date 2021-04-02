@@ -3,6 +3,7 @@
 #include "source/core/options.h"
 #include "source/states/app_state.h"
 #include "source/ui/debug_page.xaml.h"
+#include "source/ui/particle_lab_page.xaml.h"
 #include "source/ui/title_page.xaml.h"
 
 // Resource assets
@@ -34,6 +35,8 @@ static void register_components()
 
     Noesis::RegisterComponent(Noesis::TypeOf<retron::debug_page>(), nullptr);
     Noesis::RegisterComponent(Noesis::TypeOf<retron::debug_page_view_model>(), nullptr);
+    Noesis::RegisterComponent(Noesis::TypeOf<retron::particle_lab_page>(), nullptr);
+    Noesis::RegisterComponent(Noesis::TypeOf<retron::particle_lab_page_view_model>(), nullptr);
     Noesis::RegisterComponent(Noesis::TypeOf<retron::title_page>(), nullptr);
     Noesis::RegisterComponent(Noesis::TypeOf<retron::title_page_view_model>(), nullptr);
 }

@@ -53,10 +53,10 @@ static ff::point_fixed get_press_vector(const ff::input_event_provider& input_ev
     ff::fixed_int joystick_min = retron::app_service::get().game_spec().joystick_min;
 
     ff::rect_fixed dir_press(
-        input_events.analog_value(for_shoot ? input_events::ID_SHOOT_LEFT : input_events::ID_LEFT),
-        input_events.analog_value(for_shoot ? input_events::ID_SHOOT_UP : input_events::ID_UP),
-        input_events.analog_value(for_shoot ? input_events::ID_SHOOT_RIGHT : input_events::ID_RIGHT),
-        input_events.analog_value(for_shoot ? input_events::ID_SHOOT_DOWN : input_events::ID_DOWN));
+        input_events.analog_value(for_shoot ? retron::input_events::ID_SHOOT_LEFT : retron::input_events::ID_LEFT),
+        input_events.analog_value(for_shoot ? retron::input_events::ID_SHOOT_UP : retron::input_events::ID_UP),
+        input_events.analog_value(for_shoot ? retron::input_events::ID_SHOOT_RIGHT : retron::input_events::ID_RIGHT),
+        input_events.analog_value(for_shoot ? retron::input_events::ID_SHOOT_DOWN : retron::input_events::ID_DOWN));
 
     dir_press.left = dir_press.left * ff::fixed_int(dir_press.left >= joystick_min);
     dir_press.top = dir_press.top * ff::fixed_int(dir_press.top >= joystick_min);
@@ -66,7 +66,7 @@ static ff::point_fixed get_press_vector(const ff::input_event_provider& input_ev
     ff::point_fixed dir(dir_press.right - dir_press.left, dir_press.bottom - dir_press.top);
     if (dir)
     {
-        int slice = helpers::dir_to_degrees(dir) * 2 / 45;
+        int slice = retron::helpers::dir_to_degrees(dir) * 2 / 45;
 
         return ff::point_fixed(
             (slice >= 6 && slice <= 11) ? -1 : ((slice <= 3 || slice >= 14) ? 1 : 0),
@@ -676,11 +676,6 @@ void retron::level::render_debug(ff::draw_base& draw)
     if (ff::flags::has(render_debug, retron::render_debug_t::position))
     {
         this->position.render_debug(draw);
-    }
-
-    if (retron::app_service::get().rebuilding_resources())
-    {
-        draw.draw_palette_outline_rectangle(constants::RENDER_RECT, 230, 4);
     }
 }
 

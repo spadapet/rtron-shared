@@ -1,18 +1,18 @@
 #pragma once
 
-namespace strings
+namespace retron::strings
 {
     extern const std::string_view ID_APP_STATE;
     extern const std::string_view ID_GAME_OPTIONS;
     extern const std::string_view ID_SYSTEM_OPTIONS;
 }
 
-namespace colors
+namespace retron::colors
 {
     const int LEVEL_BORDER = 77;
 }
 
-namespace input_events
+namespace retron::input_events
 {
     extern const size_t ID_UP;
     extern const size_t ID_DOWN;
@@ -34,7 +34,16 @@ namespace input_events
     extern const size_t ID_DEBUG_RENDER_TOGGLE;
 }
 
-namespace constants
+namespace retron::commands
+{
+    extern const size_t ID_DEBUG_HIDE_UI;
+    extern const size_t ID_DEBUG_PARTICLE_LAB;
+    extern const size_t ID_DEBUG_RESTART_GAME;
+    extern const size_t ID_DEBUG_RESTART_LEVEL;
+    extern const size_t ID_DEBUG_REBUILD_RESOURCES;
+}
+
+namespace retron::constants
 {
     const size_t MAX_PLAYERS = 2;
     const ff::fixed_int LEVEL_BORDER_THICKNESS = 2;
@@ -53,7 +62,7 @@ namespace constants
     const ff::rect_fixed RENDER_RECT_HIGH(0, 0, RENDER_WIDTH_HIGH, RENDER_HEIGHT_HIGH);
 }
 
-namespace helpers
+namespace retron::helpers
 {
     ff::fixed_int dir_to_degrees(ff::point_fixed dir);
     size_t dir_to_index(ff::point_fixed dir); // degrees = index * 45

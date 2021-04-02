@@ -2,8 +2,8 @@
 #include "source/core/app_service.h"
 #include "source/core/render_targets.h"
 
-static const ff::point_int LOW_SIZE(constants::RENDER_WIDTH, constants::RENDER_HEIGHT);
-static const ff::point_int HIGH_SIZE = ::LOW_SIZE * constants::RENDER_SCALE;
+static const ff::point_int LOW_SIZE(retron::constants::RENDER_WIDTH, retron::constants::RENDER_HEIGHT);
+static const ff::point_int HIGH_SIZE = ::LOW_SIZE * retron::constants::RENDER_SCALE;
 
 retron::render_targets::render_targets(retron::render_target_types targets)
     : targets(targets)

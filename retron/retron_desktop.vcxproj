@@ -7,7 +7,7 @@
   </PropertyGroup>
   <Import Project="..\vendor\ff_game_library\build\cpp.props" />
   <PropertyGroup>
-    <AdditionalResJsonInputs>$(DevRoot)retron.designer\**\*.xaml;$(DevRoot)retron.designer\**\*.ttf;$(DevRoot)retron.designer\**\*.png</AdditionalResJsonInputs>
+    <AdditionalResJsonInputs>$(DevRoot)retron_designer\**\*.xaml;$(DevRoot)retron_designer\**\*.ttf;$(DevRoot)retron_designer\**\*.png</AdditionalResJsonInputs>
   </PropertyGroup>
   <ItemDefinitionGroup>
     <ClCompile>
@@ -36,6 +36,7 @@
     <ClCompile Include="source\states\title_state.cpp" />
     <ClCompile Include="source\states\transition_state.cpp" />
     <ClCompile Include="source\ui\debug_page.xaml.cpp" />
+    <ClCompile Include="source\ui\particle_lab_page.xaml.cpp" />
     <ClCompile Include="source\ui\title_page.xaml.cpp" />
     <ClInclude Include="pch.h" />
     <ClCompile Include="pch.cpp">
@@ -61,6 +62,7 @@
     <ClInclude Include="source\states\title_state.h" />
     <ClInclude Include="source\states\transition_state.h" />
     <ClInclude Include="source\ui\debug_page.xaml.h" />
+    <ClInclude Include="source\ui\particle_lab_page.xaml.h" />
     <ClInclude Include="source\ui\title_page.xaml.h" />
   </ItemGroup>
   <ItemGroup>

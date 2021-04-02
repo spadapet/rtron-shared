@@ -25,6 +25,12 @@
     "file": "file:../../retron_designer/debug_page.xaml"
   },
 
+  "particle_lab_page.xaml":
+  {
+    "res:type": "file",
+    "file": "file:../../retron_designer/particle_lab_page.xaml"
+  },
+
   "#fonts/robotron_2084.ttf":
   {
     "res:type": "file",

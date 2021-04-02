@@ -5,27 +5,18 @@ retron::level_state::level_state(retron::game_service* game_service, const retro
     : game_service_(game_service)
     , level_spec_(level_spec)
     , players(std::move(players))
-    , targets(retron::render_target_types::palette_1)
     , level(*this)
 {}
 
 std::shared_ptr<ff::state> retron::level_state::advance_time()
 {
-    this->level.advance(this->camera());
+    this->level.advance(constants::RENDER_RECT);
     return nullptr;
 }
 
 void retron::level_state::render(ff::dx11_target_base& target, ff::dx11_depth& depth)
 {
-    this->targets.clear();
-
-    this->level.render(
-        *this->targets.target(retron::render_target_types::palette_1),
-        *this->targets.depth(retron::render_target_types::palette_1),
-        constants::RENDER_RECT,
-        this->camera());
-
-    this->targets.render(target);
+    this->level.render(target, depth, constants::RENDER_RECT, constants::RENDER_RECT);
 }
 
 const retron::game_options& retron::level_state::game_options() const
@@ -62,9 +53,4 @@ retron::player& retron::level_state::player_or_coop(size_t index) const
 {
     retron::player& player = this->player(index);
     return player.coop ? *player.coop : player;
-}
-
-ff::rect_fixed retron::level_state::camera()
-{
-    return ff::rect_fixed(constants::RENDER_RECT);
 }

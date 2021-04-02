@@ -62,6 +62,9 @@
     <ClCompile Include="source\level\level.cpp">
       <Filter>source\level</Filter>
     </ClCompile>
+    <ClCompile Include="source\ui\particle_lab_page.xaml.cpp">
+      <Filter>source\ui</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h" />
@@ -127,6 +130,9 @@
     </ClInclude>
     <ClInclude Include="source\level\level.h">
       <Filter>source\level</Filter>
+    </ClInclude>
+    <ClInclude Include="source\ui\particle_lab_page.xaml.h">
+      <Filter>source\ui</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

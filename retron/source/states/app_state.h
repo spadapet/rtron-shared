@@ -17,6 +17,7 @@ namespace retron
         // State
         virtual std::shared_ptr<ff::state> advance_time() override;
         virtual void advance_input() override;
+        virtual void render(ff::dx11_target_base& target, ff::dx11_depth& depth) override;
         virtual void frame_rendered(ff::state::advance_t type, ff::dx11_target_base& target, ff::dx11_depth& depth) override;
         virtual void save_settings() override;
         virtual size_t child_state_count() override;
@@ -35,6 +36,8 @@ namespace retron
         virtual ff::signal_sink<void>& reload_resources_sink() override;
         virtual bool rebuilding_resources() const override;
         virtual retron::render_debug_t render_debug() const override;
+        virtual void render_debug(retron::render_debug_t flags) override;
+        virtual void debug_command(size_t command_id) override;
 
         double time_scale() const;
         ff::state::advance_t advance_type() const;
@@ -42,15 +45,11 @@ namespace retron
     private:
         void init_options();
         void init_resources();
-        void init_debug_state();
         void init_game_state();
         void apply_system_options();
 
         void on_custom_debug();
         void on_resources_rebuilt();
-        void on_restart_level();
-        void on_restart_game();
-        void on_rebuild_resources();
 
         // Globals
         std::shared_ptr<ff::state_wrapper> game_state;

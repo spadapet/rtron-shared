@@ -7,6 +7,7 @@ retron::game_state::game_state()
     : game_options_(retron::app_service::get().default_game_options())
     , difficulty_spec_(retron::app_service::get().game_spec().difficulties.at(std::string(this->game_options_.difficulty_id())))
     , level_set_spec(retron::app_service::get().game_spec().level_sets.at(this->difficulty_spec_.level_set))
+    , targets(retron::render_target_types::palette_1)
     , playing_level_state(0)
 {
     this->init_input();
@@ -24,6 +25,17 @@ std::shared_ptr<ff::state> retron::game_state::advance_time()
     }
 
     return ff::state::advance_time();
+}
+
+void retron::game_state::render(ff::dx11_target_base& target, ff::dx11_depth& depth)
+{
+    this->targets.clear();
+
+    ff::state::render(
+        *this->targets.target(retron::render_target_types::palette_1),
+        *this->targets.depth(retron::render_target_types::palette_1));
+
+   this->targets.render(target);
 }
 
 size_t retron::game_state::child_state_count()

@@ -9,12 +9,14 @@
         Width="960"
         Height="540"
         Background="Black"
+        Topmost="True"
         FontFamily="{StaticResource Font.Family.Default}"
         FontSize="{StaticResource Font.Size.Normal}">
     <Viewbox Stretch="Uniform" StretchDirection="Both">
         <Grid Width="480" Height="270">
-            <local:title_page />
-            <!--<local:debug_page />-->
+            <!--<local:title_page />-->
+            <local:debug_page />
+            <local:particle_lab_page />
         </Grid>
     </Viewbox>
 </Window>
