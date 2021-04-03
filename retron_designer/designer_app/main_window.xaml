@@ -9,7 +9,6 @@
         Width="960"
         Height="540"
         Background="Black"
-        Topmost="True"
         FontFamily="{StaticResource Font.Family.Default}"
         FontSize="{StaticResource Font.Size.Normal}">
     <Viewbox Stretch="Uniform" StretchDirection="Both">

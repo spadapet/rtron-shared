@@ -42,7 +42,7 @@
                     <Border>
                         <TextBlock Text="Particle Lab" Margin="4,4,0,0" />
                     </Border>
-                    <Button Grid.Column="1" Padding="0" Command="{Binding close_debug_command}" Background="Transparent">
+                    <Button Grid.Column="1" Padding="0" Command="{Binding close_command}" Background="Transparent">
                         <i:Interaction.Triggers>
                             <i:EventTrigger EventName="Loaded">
                                 <noesis:SetFocusAction />
@@ -55,24 +55,24 @@
                     </Button>
                 </Grid>
                 <Border Grid.Row="1" Background="#A0111D35">
-                    <StackPanel Orientation="Vertical" Margin="4">
-                        <ListBox Height="150">
-                            <ListBoxItem>first_particles</ListBoxItem>
-                            <ListBoxItem>second_particles</ListBoxItem>
-                            <ListBoxItem>first_particles</ListBoxItem>
-                            <ListBoxItem>second_particles</ListBoxItem>
-                            <ListBoxItem>first_particles</ListBoxItem>
-                            <ListBoxItem>second_particles</ListBoxItem>
-                            <ListBoxItem>first_particles</ListBoxItem>
-                            <ListBoxItem>second_particles</ListBoxItem>
-                            <ListBoxItem>first_particles</ListBoxItem>
-                            <ListBoxItem>second_particles</ListBoxItem>
-                            <ListBoxItem>first_particles</ListBoxItem>
-                            <ListBoxItem>second_particles</ListBoxItem>
-                            <ListBoxItem>first_particles</ListBoxItem>
-                            <ListBoxItem>second_particles</ListBoxItem>
-                        </ListBox>
-                    </StackPanel>
+                    <ListBox Height="150" Margin="4" FontFamily="{StaticResource Font.Family.Small}" FontSize="{StaticResource Font.Size.Small}" BorderBrush="{StaticResource Brush.Border.Normal}" BorderThickness="1">
+                        <ListBoxItem>first_particles</ListBoxItem>
+                        <ListBoxItem>second_particles</ListBoxItem>
+                        <ListBoxItem>first_particles</ListBoxItem>
+                        <ListBoxItem>second_particles</ListBoxItem>
+                        <ListBoxItem>first_particles</ListBoxItem>
+                        <ListBoxItem>second_particles</ListBoxItem>
+                        <ListBoxItem>first_particles</ListBoxItem>
+                        <ListBoxItem>second_particles</ListBoxItem>
+                        <ListBoxItem>first_particles</ListBoxItem>
+                        <ListBoxItem>second_particles</ListBoxItem>
+                        <ListBoxItem>first_particles</ListBoxItem>
+                        <ListBoxItem>second_particles</ListBoxItem>
+                        <ListBoxItem>first_particles</ListBoxItem>
+                        <ListBoxItem>second_particles</ListBoxItem>
+                        <ListBoxItem>first_particles_foo_bar_foo</ListBoxItem>
+                        <ListBoxItem>second_particles</ListBoxItem>
+                    </ListBox>
                 </Border>
             </Grid>
         </Border>

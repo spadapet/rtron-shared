@@ -132,7 +132,7 @@
     <SolidColorBrush x:Key="Brush.Track.Normal" Color="{StaticResource Color.Gray7}" />
 
     <SolidColorBrush x:Key="Brush.Thumb.Normal" Color="{StaticResource Color.229}" />
-    <SolidColorBrush x:Key="Brush.Thumb.Over" Color="{StaticResource Color.Gray1}" />
+    <SolidColorBrush x:Key="Brush.Thumb.Over" Color="{StaticResource Color.Gray3}" />
     <SolidColorBrush x:Key="Brush.Thumb.Pressed" Color="{StaticResource Color.Gray1}" />
     <SolidColorBrush x:Key="Brush.Thumb.Disabled" Color="{StaticResource Color.Gray5}" />
 
@@ -150,8 +150,8 @@
     <SolidColorBrush x:Key="Brush.TextBox.Focused" Color="{StaticResource Color.White}" />
 
     <SolidColorBrush x:Key="Brush.Item.Over" Color="{StaticResource Color.Gray6}" />
-    <SolidColorBrush x:Key="Brush.Item.Selected" Color="{StaticResource Color.Accent3}" />
-    <SolidColorBrush x:Key="Brush.Item.SelectedOver" Color="{StaticResource Color.Accent2}" />
+    <SolidColorBrush x:Key="Brush.Item.Selected" Color="{StaticResource Color.Accent2}" />
+    <SolidColorBrush x:Key="Brush.Item.SelectedOver" Color="{StaticResource Color.Accent3}" />
 
     <SolidColorBrush x:Key="Brush.ComboBox.Normal" Color="{StaticResource Color.Gray9}" />
     <SolidColorBrush x:Key="Brush.ComboBox.Over" Color="{StaticResource Color.Gray6}" />
@@ -172,7 +172,7 @@
     <SolidColorBrush x:Key="Brush.ToolBar.Pressed" Color="{StaticResource Color.Gray5}" />
     <SolidColorBrush x:Key="Brush.ToolBar.Checked" Color="{StaticResource Color.Accent2}" />
 
-    <sys:Double x:Key="Size.ScrollBar">10</sys:Double>
+    <sys:Double x:Key="Size.ScrollBar">8</sys:Double>
     <sys:Double x:Key="Size.GroupBox.Border">1</sys:Double>
 
     <Thickness x:Key="Border.Normal">0</Thickness>
@@ -448,7 +448,7 @@
         <Setter Property="Background" Value="Transparent"/>
         <Setter Property="HorizontalContentAlignment" Value="{Binding HorizontalContentAlignment, RelativeSource={RelativeSource AncestorType={x:Type ListBox}}}"/>
         <Setter Property="VerticalContentAlignment" Value="{Binding VerticalContentAlignment, RelativeSource={RelativeSource AncestorType={x:Type ListBox}}}"/>
-        <Setter Property="Padding" Value="12,8.5"/>
+        <Setter Property="Padding" Value="4"/>
         <Setter Property="Template" Value="{StaticResource Template.ListBoxItem}"/>
         <Setter Property="FocusVisualStyle" Value="{StaticResource Style.Focus.Inner.Uniform}"/>
         <Style.Triggers>
@@ -494,7 +494,7 @@
             <Setter.Value>
                 <ControlTemplate TargetType="RepeatButton">
                     <Border x:Name="Border" Background="Transparent">
-                        <Path x:Name="Arrow" Data="{TemplateBinding Content}" Stroke="{StaticResource Brush.Glyph.Normal}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        <Path x:Name="Arrow" Data="{TemplateBinding Content}" Stroke="{StaticResource Brush.Thumb.Normal}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                     </Border>
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsMouseOver" Value="True">
@@ -529,8 +529,8 @@
     </Style>
     <ControlTemplate x:Key="Template.ScrollBar.Horizontal" TargetType="ScrollBar">
         <ControlTemplate.Resources>
-            <Geometry x:Key="Geometry.LeftArrow">M4,0L0,4 4,8</Geometry>
-            <Geometry x:Key="Geometry.RightArrow">M0,0 L4,4 0,8</Geometry>
+            <Geometry x:Key="Geometry.LeftArrow">M3,1L0,4 3,7</Geometry>
+            <Geometry x:Key="Geometry.RightArrow">M1,1 L4,4 1,7</Geometry>
             <Storyboard x:Key="Anim.ExpandBar" BeginTime="0:0:0.1">
                 <DoubleAnimation Storyboard.TargetName="Background" Storyboard.TargetProperty="Opacity" To="1" Duration="0:0:0.1" AccelerationRatio="0.75" DecelerationRatio="0.25"/>
                 <DoubleAnimation Storyboard.TargetName="LineLeftButton" Storyboard.TargetProperty="Opacity" To="1" Duration="0:0:0.1" AccelerationRatio="0.75" DecelerationRatio="0.25"/>
@@ -561,7 +561,11 @@
                     <RepeatButton x:Name="IncreaseButton" Command="ScrollBar.PageRightCommand" Style="{StaticResource Style.ScrollBar.PageButton}"/>
                 </Track.IncreaseRepeatButton>
                 <Track.Thumb>
-                    <Thumb x:Name="Thumb" Style="{StaticResource Style.ScrollBar.Thumb}" />
+                    <Thumb x:Name="Thumb" Style="{StaticResource Style.ScrollBar.Thumb}">
+                        <Thumb.RenderTransform>
+                            <ScaleTransform ScaleY="0.2"/>
+                        </Thumb.RenderTransform>
+                    </Thumb>
                 </Track.Thumb>
             </Track>
         </Grid>
@@ -578,8 +582,8 @@
     </ControlTemplate>
     <ControlTemplate x:Key="Template.ScrollBar.Vertical" TargetType="ScrollBar">
         <ControlTemplate.Resources>
-            <Geometry x:Key="Geometry.UpArrow">M0,4L4,0 8,4</Geometry>
-            <Geometry x:Key="Geometry.DownArrow">M0,0 L4,4 8,0</Geometry>
+            <Geometry x:Key="Geometry.UpArrow">M1,3L4,0 7,3</Geometry>
+            <Geometry x:Key="Geometry.DownArrow">M1,1 L4,4 7,1</Geometry>
             <Storyboard x:Key="Anim.ExpandBar" BeginTime="0:0:0.1">
                 <DoubleAnimation Storyboard.TargetName="Background" Storyboard.TargetProperty="Opacity" To="1" Duration="0:0:0.1" AccelerationRatio="0.75" DecelerationRatio="0.25"/>
                 <DoubleAnimation Storyboard.TargetName="LineUpButton" Storyboard.TargetProperty="Opacity" To="1" Duration="0:0:0.1" AccelerationRatio="0.75" DecelerationRatio="0.25"/>
