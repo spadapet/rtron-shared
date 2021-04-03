@@ -429,6 +429,7 @@
         </Border>
         <ControlTemplate.Triggers>
             <Trigger Property="IsMouseOver" Value="True">
+                <Setter Property="Foreground" Value="{StaticResource Brush.Glyph.Over}" />
                 <Setter Property="Background" Value="{StaticResource Brush.Item.Over}" TargetName="Border"/>
             </Trigger>
             <Trigger Property="IsSelected" Value="True">

@@ -7,10 +7,18 @@ namespace retron
     public:
         particle_lab_page_view_model();
 
+        Noesis::BaseComponent* selected_particle_effect() const;
+        void selected_particle_effect(Noesis::BaseComponent* value);
+
     private:
+        void init_particle_effects();
         void debug_command(size_t command_id);
 
         Noesis::Ptr<Noesis::ICommand> close_debug_command;
+        Noesis::Ptr<Noesis::ICommand> rebuild_resources_command;
+        Noesis::Ptr<Noesis::ObservableCollection<Noesis::BaseComponent>> particle_effects;
+        Noesis::Ptr<Noesis::BaseComponent> selected_particle_effect_;
+        std::forward_list<ff::signal_connection> connections;
 
         NS_DECLARE_REFLECTION(retron::particle_lab_page_view_model, ff::ui::notify_propety_changed_base);
     };

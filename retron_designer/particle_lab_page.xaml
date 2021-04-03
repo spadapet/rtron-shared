@@ -13,7 +13,7 @@
     d:DesignHeight="270"
     d:FontFamily="{StaticResource Font.Family.Default}"
     d:FontSize="{StaticResource Font.Size.Normal}"
-    d:DataContext="{d:DesignInstance local:debug_page_view_model, IsDesignTimeCreatable=True}"
+    d:DataContext="{d:DesignInstance local:particle_lab_page_view_model, IsDesignTimeCreatable=True}"
     DataContext="{Binding view_model, RelativeSource={RelativeSource Mode=Self}}"
     UseLayoutRounding="True">
 
@@ -54,26 +54,18 @@
                         </Canvas>
                     </Button>
                 </Grid>
-                <Border Grid.Row="1" Background="#A0111D35">
-                    <ListBox Height="150" Margin="4" FontFamily="{StaticResource Font.Family.Small}" FontSize="{StaticResource Font.Size.Small}" BorderBrush="{StaticResource Brush.Border.Normal}" BorderThickness="1">
-                        <ListBoxItem>first_particles</ListBoxItem>
-                        <ListBoxItem>second_particles</ListBoxItem>
-                        <ListBoxItem>first_particles</ListBoxItem>
-                        <ListBoxItem>second_particles</ListBoxItem>
-                        <ListBoxItem>first_particles</ListBoxItem>
-                        <ListBoxItem>second_particles</ListBoxItem>
-                        <ListBoxItem>first_particles</ListBoxItem>
-                        <ListBoxItem>second_particles</ListBoxItem>
-                        <ListBoxItem>first_particles</ListBoxItem>
-                        <ListBoxItem>second_particles</ListBoxItem>
-                        <ListBoxItem>first_particles</ListBoxItem>
-                        <ListBoxItem>second_particles</ListBoxItem>
-                        <ListBoxItem>first_particles</ListBoxItem>
-                        <ListBoxItem>second_particles</ListBoxItem>
-                        <ListBoxItem>first_particles_foo_bar_foo</ListBoxItem>
-                        <ListBoxItem>second_particles</ListBoxItem>
-                    </ListBox>
-                </Border>
+                <StackPanel Grid.Row="1" Orientation="Vertical" Background="#A0111D35">
+                    <ListBox
+                        Height="150"
+                        Margin="4"
+                        FontFamily="{StaticResource Font.Family.Small}"
+                        FontSize="{StaticResource Font.Size.Small}"
+                        BorderBrush="{StaticResource Brush.Border.Normal}"
+                        BorderThickness="1"
+                        ItemsSource="{Binding particle_effects}"
+                        SelectedItem="{Binding selected_particle_effect}" />
+                    <Button Margin="4,0" Content="Rebuild resources" Command="{Binding rebuild_resources_command}" />
+                </StackPanel>
             </Grid>
         </Border>
     </Grid>
