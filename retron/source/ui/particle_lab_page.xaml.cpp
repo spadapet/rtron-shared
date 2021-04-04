@@ -4,14 +4,14 @@
 
 NS_IMPLEMENT_REFLECTION(retron::particle_lab_page_view_model, "retron.particle_lab_page_view_model")
 {
-    NsProp("close_debug_command", &retron::particle_lab_page_view_model::close_debug_command);
+    NsProp("close_command", &retron::particle_lab_page_view_model::close_command);
     NsProp("rebuild_resources_command", &retron::particle_lab_page_view_model::rebuild_resources_command);
     NsProp("particle_effects", &retron::particle_lab_page_view_model::particle_effects);
     NsProp("selected_particle_effect", &retron::particle_lab_page_view_model::selected_particle_effect, &retron::particle_lab_page_view_model::selected_particle_effect);
 }
 
 retron::particle_lab_page_view_model::particle_lab_page_view_model()
-    : close_debug_command(Noesis::MakePtr<ff::ui::delegate_command>(std::bind(&retron::particle_lab_page_view_model::debug_command, this, commands::ID_DEBUG_HIDE_UI)))
+    : close_command(Noesis::MakePtr<ff::ui::delegate_command>(std::bind(&retron::particle_lab_page_view_model::debug_command, this, commands::ID_DEBUG_HIDE_UI)))
     , rebuild_resources_command(Noesis::MakePtr<ff::ui::delegate_command>(std::bind(&retron::particle_lab_page_view_model::debug_command, this, commands::ID_DEBUG_REBUILD_RESOURCES)))
     , particle_effects(*new Noesis::ObservableCollection<Noesis::BaseComponent>())
 {
@@ -26,21 +26,34 @@ Noesis::BaseComponent* retron::particle_lab_page_view_model::selected_particle_e
 
 void retron::particle_lab_page_view_model::selected_particle_effect(Noesis::BaseComponent* value)
 {
-    if (value && selected_particle_effect_ != value)
+    if (selected_particle_effect_ != value)
     {
-        this->selected_particle_effect_ = *value;
+        this->selected_particle_effect_.Reset(value);
         this->property_changed("selected_particle_effect");
     }
 }
 
 void retron::particle_lab_page_view_model::init_particle_effects()
 {
+    int selected_index = this->particle_effects->IndexOf(this->selected_particle_effect());
     this->particle_effects->Clear();
-    this->particle_effects->Add(Noesis::Boxing::Box("Foo 1"));
-    this->particle_effects->Add(Noesis::Boxing::Box("Bar 1"));
-    this->particle_effects->Add(Noesis::Boxing::Box("Bar 2"));
 
-    this->selected_particle_effect_ = *this->particle_effects->Get(0);
+    ff::dict level_particles_dict = ff::auto_resource_value("level_particles").value()->get<ff::dict>();
+    for (std::string_view name : level_particles_dict.child_names())
+    {
+        std::string name_str = std::string(name);
+        this->name_to_effect.try_emplace(name, retron::particles::effect_t(level_particles_dict.get(name)));
+        this->particle_effects->Add(Noesis::Boxing::Box(name_str.c_str()));
+    }
+
+    if (selected_index >= 0 && selected_index < this->particle_effects->Count())
+    {
+        this->selected_particle_effect(this->particle_effects->Get(selected_index));
+    }
+    else
+    {
+        this->selected_particle_effect(this->particle_effects->Count() ? this->particle_effects->Get(0) : nullptr);
+    }
 }
 
 void retron::particle_lab_page_view_model::debug_command(size_t command_id)

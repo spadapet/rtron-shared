@@ -3,7 +3,6 @@
 #include "source/core/options.h"
 #include "source/core/game_service.h"
 #include "source/core/game_spec.h"
-#include "source/core/render_targets.h"
 
 namespace retron
 {
@@ -36,7 +35,6 @@ namespace retron
         retron::game_options game_options_;
         retron::difficulty_spec difficulty_spec_;
         retron::level_set_spec level_set_spec;
-        retron::render_targets targets;
 
         // Input
         std::unique_ptr<ff::input_event_provider> game_input_events;

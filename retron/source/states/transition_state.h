@@ -13,7 +13,7 @@ namespace retron
         virtual void render(ff::dx11_target_base& target, ff::dx11_depth& depth) override;
 
 	private:
-		retron::render_targets targets;
+        retron::render_targets temp_targets;
 		std::shared_ptr<ff::state> old_state;
 		std::shared_ptr<ff::state> new_state;
 		ff::auto_resource<ff::dx11_texture> image;

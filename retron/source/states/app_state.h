@@ -2,6 +2,7 @@
 
 #include "source/core/app_service.h"
 #include "source/core/game_spec.h"
+#include "source/core/render_targets.h"
 #include "source/core/options.h"
 
 namespace retron
@@ -32,6 +33,9 @@ namespace retron
         virtual ff::palette_base& palette() override;
         virtual ff::palette_base& player_palette(size_t player) override;
         virtual ff::draw_device& draw_device() const override;
+        virtual retron::render_targets* render_targets() const override;
+        virtual void push_render_targets(retron::render_targets& targets) override;
+        virtual void pop_render_targets(ff::dx11_target_base& final_target) override;
         virtual ff::signal_sink<void>& destroyed() override;
         virtual ff::signal_sink<void>& reload_resources_sink() override;
         virtual bool rebuilding_resources() const override;
@@ -58,6 +62,11 @@ namespace retron
         retron::game_spec game_spec_;
 
         // Rendering
+        retron::render_targets render_targets_;
+        std::vector<retron::render_targets*> render_targets_stack;
+        std::shared_ptr<ff::dx11_texture> texture_1080;
+        std::shared_ptr<ff::dx11_target_base> target_1080;
+        std::shared_ptr<ff::dx11_depth> depth_1080;
         std::unique_ptr<ff::draw_device> draw_device_;
         std::array<std::shared_ptr<ff::palette_cycle>, constants::MAX_PLAYERS> player_palettes;
         ff::auto_resource<ff::palette_data> palette_data;

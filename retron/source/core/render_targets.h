@@ -12,16 +12,16 @@ namespace retron
     class render_targets
     {
     public:
-        render_targets(retron::render_target_types targets);
+        render_targets();
 
         void clear();
         void render(ff::dx11_target_base& target);
-        const std::shared_ptr<ff::dx11_texture>& texture(render_target_types target) const;
-        const std::shared_ptr<ff::dx11_target_base>& target(render_target_types target) const;
-        const std::shared_ptr<ff::dx11_depth>& depth(render_target_types target) const;
+        const std::shared_ptr<ff::dx11_texture>& texture(render_target_types target);
+        const std::shared_ptr<ff::dx11_target_base>& target(render_target_types target);
+        const std::shared_ptr<ff::dx11_depth>& depth(render_target_types target);
 
     private:
-        render_target_types targets;
+        render_target_types used_targets;
         ff::viewport viewport;
         std::shared_ptr<ff::dx11_depth> depth_;
         std::shared_ptr<ff::dx11_texture> texture_rgb_pma_1;

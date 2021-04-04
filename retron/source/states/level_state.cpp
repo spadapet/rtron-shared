@@ -1,4 +1,6 @@
 #include "pch.h"
+#include "source/core/app_service.h"
+#include "source/core/render_targets.h"
 #include "source/states/level_state.h"
 
 retron::level_state::level_state(retron::game_service* game_service, const retron::level_spec& level_spec, std::vector<retron::player*>&& players)
@@ -16,7 +18,13 @@ std::shared_ptr<ff::state> retron::level_state::advance_time()
 
 void retron::level_state::render(ff::dx11_target_base& target, ff::dx11_depth& depth)
 {
-    this->level.render(target, depth, constants::RENDER_RECT, constants::RENDER_RECT);
+    retron::render_targets& targets = *retron::app_service::get().render_targets();
+
+    this->level.render(
+        *targets.target(retron::render_target_types::palette_1),
+        *targets.depth(retron::render_target_types::palette_1),
+        constants::RENDER_RECT,
+        constants::RENDER_RECT);
 }
 
 const retron::game_options& retron::level_state::game_options() const

@@ -3,6 +3,7 @@
 #include "source/states/app_state.h"
 #include "source/states/debug_state.h"
 #include "source/states/game_state.h"
+#include "source/states/particle_lab_state.h"
 #include "source/states/title_state.h"
 #include "source/states/transition_state.h"
 #include "source/ui/debug_page.xaml.h"
@@ -26,12 +27,16 @@ retron::app_state::app_state()
     , debug_time_scale(1.0)
     , rebuilding_resources_(false)
     , render_debug_(retron::render_debug_t::none)
+    , texture_1080(std::make_shared<ff::dx11_texture>(retron::constants::RENDER_SIZE_HIGH.cast<int>(), DXGI_FORMAT_R8G8B8A8_UNORM))
+    , target_1080(std::make_shared<ff::dx11_target_texture>(this->texture_1080))
+    , depth_1080(std::make_shared<ff::dx11_depth>())
 {
     assert(!::app_service);
     ::app_service = this;
 
     this->connections.emplace_front(ff::custom_debug_sink().connect(std::bind(&retron::app_state::on_custom_debug, this)));
     this->connections.emplace_front(ff::global_resources::rebuilt_sink().connect(std::bind(&retron::app_state::on_resources_rebuilt, this)));
+    this->render_targets_stack.push_back(nullptr);
 
     this->init_options();
     this->init_resources();
@@ -123,7 +128,19 @@ void retron::app_state::advance_input()
 
 void retron::app_state::render(ff::dx11_target_base& target, ff::dx11_depth& depth)
 {
-    ff::state::render(target, depth);
+    ff::graphics::dx11_device_state().clear_target(this->target_1080->view(), ff::color::none());
+
+    this->push_render_targets(this->render_targets_);
+    ff::state::render(*this->target_1080, *this->depth_1080);
+    this->pop_render_targets(*this->target_1080);
+
+    ff::rect_fixed target_rect = this->viewport.view(target.size().rotated_pixel_size()).cast<ff::fixed_int>();
+    ff::draw_ptr draw = this->draw_device().begin_draw(target, nullptr, target_rect, retron::constants::RENDER_RECT_HIGH);
+    if (draw)
+    {
+        draw->push_texture_sampler(D3D11_FILTER_MIN_MAG_MIP_LINEAR);
+        draw->draw_sprite(this->texture_1080->sprite_data(), ff::transform::identity());
+    }
 }
 
 void retron::app_state::frame_rendered(ff::state::advance_t type, ff::dx11_target_base& target, ff::dx11_depth& depth)
@@ -213,6 +230,25 @@ ff::draw_device& retron::app_state::draw_device() const
     return *this->draw_device_;
 }
 
+retron::render_targets* retron::app_state::render_targets() const
+{
+    assert(this->render_targets_stack.size() > 1);
+    return this->render_targets_stack.back();
+}
+
+void retron::app_state::push_render_targets(retron::render_targets& targets)
+{
+    targets.clear();
+    return this->render_targets_stack.push_back(&targets);
+}
+
+void retron::app_state::pop_render_targets(ff::dx11_target_base& final_target)
+{
+    assert(this->render_targets_stack.size() > 1);
+    this->render_targets_stack.back()->render(final_target);
+    this->render_targets_stack.pop_back();
+}
+
 ff::signal_sink<void>& retron::app_state::destroyed()
 {
     return this->destroyed_signal;
@@ -247,8 +283,7 @@ void retron::app_state::debug_command(size_t command_id)
     else if (command_id == commands::ID_DEBUG_PARTICLE_LAB)
     {
         std::shared_ptr<ff::ui_view> view = std::make_shared<ff::ui_view>(Noesis::MakePtr<retron::particle_lab_page>());
-        this->debug_state->visible(view, this->game_state);
-
+        this->debug_state->visible(view, std::make_shared<retron::particle_lab_state>());
     }
     else if (command_id == commands::ID_DEBUG_REBUILD_RESOURCES)
     {

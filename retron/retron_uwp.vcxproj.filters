@@ -59,6 +59,15 @@
     <ClCompile Include="source\level\position.cpp">
       <Filter>source\level</Filter>
     </ClCompile>
+    <ClCompile Include="source\states\particle_lab_state.cpp">
+      <Filter>source\states</Filter>
+    </ClCompile>
+    <ClCompile Include="source\states\ui_view_state.cpp">
+      <Filter>source\states</Filter>
+    </ClCompile>
+    <ClCompile Include="source\ui\particle_lab_page.xaml.cpp">
+      <Filter>source\ui</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h" />
@@ -124,6 +133,15 @@
     </ClInclude>
     <ClInclude Include="source\level\position.h">
       <Filter>source\level</Filter>
+    </ClInclude>
+    <ClInclude Include="source\states\particle_lab_state.h">
+      <Filter>source\states</Filter>
+    </ClInclude>
+    <ClInclude Include="source\states\ui_view_state.h">
+      <Filter>source\states</Filter>
+    </ClInclude>
+    <ClInclude Include="source\ui\particle_lab_page.xaml.h">
+      <Filter>source\ui</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -284,6 +302,7 @@
     <None Include="retron_TemporaryKey.pfx">
       <Filter>uwp</Filter>
     </None>
+    <None Include="$(NoesisDll)" />
     <None Include="$(NoesisDll)" />
     <None Include="$(NoesisDll)" />
     <None Include="$(NoesisDll)" />
