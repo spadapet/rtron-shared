@@ -17,7 +17,9 @@ ff::end_scope_action retron::particles::advance_async()
 
 void retron::particles::advance_block()
 {
-    ff::wait_for_event_and_reset(this->async_event);
+    // Don't use ff::wait_for_handle since it is alertable and might allow unexpected tasks to run
+    ::WaitForSingleObject(this->async_event, INFINITE);
+    ::ResetEvent(this->async_event);
 
     if (this->particles_new.size())
     {

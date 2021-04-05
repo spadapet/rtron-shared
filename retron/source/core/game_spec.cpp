@@ -164,7 +164,7 @@ retron::game_spec retron::game_spec::load()
     ff::dict default_diff_dict = diffs_dict.get<ff::dict>("default");
 
     retron::game_spec spec{};
-    spec.allow_debug = app_dict.get<bool>("allow_debug");
+    spec.allow_debug_ = app_dict.get<bool>("allow_debug");
     spec.joystick_min = app_dict.get<ff::fixed_int>("joystick_min");
     spec.joystick_max = app_dict.get<ff::fixed_int>("joystick_max");
 
@@ -190,4 +190,9 @@ retron::game_spec retron::game_spec::load()
     }
 
     return spec;
+}
+
+bool retron::game_spec::allow_debug() const
+{
+    return this->allow_debug_ || DEBUG;
 }

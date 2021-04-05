@@ -16,7 +16,7 @@ std::shared_ptr<ff::state> retron::level_state::advance_time()
     return nullptr;
 }
 
-void retron::level_state::render(ff::dx11_target_base& target, ff::dx11_depth& depth)
+void retron::level_state::render()
 {
     retron::render_targets& targets = *retron::app_service::get().render_targets();
 

@@ -38,5 +38,9 @@ namespace retron
         {
             this.InitializeComponent();
         }
+
+        private void on_mouse_down(object sender, MouseButtonEventArgs args)
+        {
+        }
     }
 }

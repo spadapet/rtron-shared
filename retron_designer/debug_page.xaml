@@ -53,8 +53,8 @@
                         </i:EventTrigger>
                     </i:Interaction.Triggers>
                     <Canvas Width="7" Height="7">
-                        <Line X1="0" Y1="0" X2="7" Y2="7" StrokeThickness="1" Stroke="{StaticResource Brush.Foreground.Normal}" />
-                        <Line X1="0" Y1="7" X2="7" Y2="0" StrokeThickness="1" Stroke="{StaticResource Brush.Foreground.Normal}" />
+                        <Line X1="0" Y1="0" X2="7" Y2="7" StrokeThickness="1" Stroke="{Binding Foreground, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Button}}" />
+                        <Line X1="0" Y1="7" X2="7" Y2="0" StrokeThickness="1" Stroke="{Binding Foreground, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Button}}" />
                     </Canvas>
                 </Button>
             </Grid>

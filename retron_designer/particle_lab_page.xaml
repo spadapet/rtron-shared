@@ -23,7 +23,7 @@
         </ei:KeyTrigger>
     </i:Interaction.Triggers>
 
-    <Grid>
+    <Grid Background="Transparent" MouseDown="on_mouse_down">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="128" />
             <ColumnDefinition Width="*" />
@@ -49,23 +49,29 @@
                             </i:EventTrigger>
                         </i:Interaction.Triggers>
                         <Canvas Width="7" Height="7">
-                            <Line X1="0" Y1="0" X2="7" Y2="7" StrokeThickness="1" Stroke="White" />
-                            <Line X1="0" Y1="7" X2="7" Y2="0" StrokeThickness="1" Stroke="White" />
+                            <Line X1="0" Y1="0" X2="7" Y2="7" StrokeThickness="1" Stroke="{Binding Foreground, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Button}}" />
+                            <Line X1="0" Y1="7" X2="7" Y2="0" StrokeThickness="1" Stroke="{Binding Foreground, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Button}}" />
                         </Canvas>
                     </Button>
                 </Grid>
-                <StackPanel Grid.Row="1" Orientation="Vertical" Background="#A0111D35">
+                <Grid
+                    Grid.Row="1"
+                    Background="#A0111D35"
+                    TextElement.FontFamily="{StaticResource Font.Family.Small}"
+                    TextElement.FontSize="{StaticResource Font.Size.Small}">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="4" />
+                    </Grid.RowDefinitions>
                     <ListBox
-                        Height="150"
                         Margin="4"
-                        FontFamily="{StaticResource Font.Family.Small}"
-                        FontSize="{StaticResource Font.Size.Small}"
                         BorderBrush="{StaticResource Brush.Border.Normal}"
                         BorderThickness="1"
                         ItemsSource="{Binding particle_effects}"
                         SelectedItem="{Binding selected_particle_effect}" />
-                    <Button Margin="4,0" Content="Rebuild resources" Command="{Binding rebuild_resources_command}" />
-                </StackPanel>
+                    <Button Grid.Row="1" Margin="4,0" Content="Rebuild resources" Command="{Binding rebuild_resources_command}" />
+                </Grid>
             </Grid>
         </Border>
     </Grid>

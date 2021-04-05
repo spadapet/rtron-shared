@@ -18,7 +18,6 @@ retron::transition_state::transition_state(std::shared_ptr<ff::state> old_state,
     this->texture2 = std::make_shared<ff::dx11_texture>(size, DXGI_FORMAT_R8G8B8A8_UNORM);
     this->target = std::make_shared<ff::dx11_target_texture>(this->texture);
     this->target2 = std::make_shared<ff::dx11_target_texture>(this->texture2);
-    this->depth = std::make_shared<ff::dx11_depth>();
 }
 
 std::shared_ptr<ff::state> retron::transition_state::advance_time()
@@ -47,7 +46,7 @@ std::shared_ptr<ff::state> retron::transition_state::advance_time()
     return nullptr;
 }
 
-void retron::transition_state::render(ff::dx11_target_base& target, ff::dx11_depth& depth)
+void retron::transition_state::render()
 {
     ff::graphics::dx11_device_state().clear_target(this->target->view(), ff::color::black());
     ff::graphics::dx11_device_state().clear_target(this->target2->view(), ff::color::black());
@@ -58,7 +57,7 @@ void retron::transition_state::render(ff::dx11_target_base& target, ff::dx11_dep
     if (this->old_state)
     {
         app.push_render_targets(this->temp_targets);
-        this->old_state->render(*this->target, *this->depth);
+        this->old_state->render();
         app.pop_render_targets(*this->target);
 
         ff::rect_fixed rect = constants::RENDER_RECT.right_edge();
@@ -94,7 +93,7 @@ void retron::transition_state::render(ff::dx11_target_base& target, ff::dx11_dep
         }
 
         app.push_render_targets(this->temp_targets);
-        this->new_state->render(*this->target2, *this->depth);
+        this->new_state->render();
         app.pop_render_targets(*this->target2);
 
         // Draw new state

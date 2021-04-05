@@ -26,9 +26,9 @@ std::shared_ptr<ff::state> retron::game_state::advance_time()
     return ff::state::advance_time();
 }
 
-void retron::game_state::render(ff::dx11_target_base& target, ff::dx11_depth& depth)
+void retron::game_state::render()
 {
-    ff::state::render(target, depth);
+    ff::state::render();
 }
 
 size_t retron::game_state::child_state_count()

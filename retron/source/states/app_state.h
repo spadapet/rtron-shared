@@ -66,7 +66,6 @@ namespace retron
         std::vector<retron::render_targets*> render_targets_stack;
         std::shared_ptr<ff::dx11_texture> texture_1080;
         std::shared_ptr<ff::dx11_target_base> target_1080;
-        std::shared_ptr<ff::dx11_depth> depth_1080;
         std::unique_ptr<ff::draw_device> draw_device_;
         std::array<std::shared_ptr<ff::palette_cycle>, constants::MAX_PLAYERS> player_palettes;
         ff::auto_resource<ff::palette_data> palette_data;
@@ -76,16 +75,17 @@ namespace retron
         std::unique_ptr<retron::audio> audio_;
 
         // Debugging
-        std::shared_ptr<retron::debug_state> debug_state;
-        ff::auto_resource<ff::input_mapping> debug_input_mapping;
-        std::unique_ptr<ff::input_event_provider> debug_input_events;
         std::forward_list<ff::signal_connection> connections;
+        std::shared_ptr<retron::debug_state> debug_state;
+        std::unique_ptr<ff::input_event_provider> debug_input_events;
+        ff::auto_resource<ff::input_mapping> debug_input_mapping;
         ff::signal<void> destroyed_signal;
         ff::signal<void> reload_resources_signal;
+        retron::render_debug_t render_debug_;
         double debug_time_scale;
         bool debug_stepping_frames;
         bool debug_step_one_frame;
         bool rebuilding_resources_;
-        retron::render_debug_t render_debug_;
+        bool pending_hide_debug_state;
     };
 }

@@ -14,7 +14,7 @@
     <Viewbox Stretch="Uniform" StretchDirection="Both">
         <Grid Width="480" Height="270">
             <!--<local:title_page />-->
-            <local:debug_page />
+            <!--<local:debug_page />-->
             <local:particle_lab_page />
         </Grid>
     </Viewbox>

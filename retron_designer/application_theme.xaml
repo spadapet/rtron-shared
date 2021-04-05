@@ -102,8 +102,8 @@
     <!-- Theme brushes -->
     <SolidColorBrush x:Key="Brush.Window.Background" Color="{StaticResource Color.White}" />
 
-    <SolidColorBrush x:Key="Brush.Glyph.Normal" Color="{StaticResource Color.Gray0}" />
-    <SolidColorBrush x:Key="Brush.Glyph.Over" Color="{StaticResource Color.Black}" />
+    <SolidColorBrush x:Key="Brush.Glyph.Normal" Color="{StaticResource Color.Black}" />
+    <SolidColorBrush x:Key="Brush.Glyph.Over" Color="{StaticResource Color.Gray0}" />
     <SolidColorBrush x:Key="Brush.Glyph.Pressed" Color="{StaticResource Color.White}" />
     <SolidColorBrush x:Key="Brush.Glyph.Checked" Color="{StaticResource Color.White}" />
     <SolidColorBrush x:Key="Brush.Glyph.Disabled" Color="{StaticResource Color.Gray2}" />
@@ -279,24 +279,27 @@
         </Grid>
         <ControlTemplate.Triggers>
             <Trigger Property="IsMouseOver" Value="True">
+                <Setter Property="Foreground" Value="{StaticResource Brush.Glyph.Over}" />
                 <Setter Property="BorderBrush" Value="{StaticResource Brush.Border.Over}" TargetName="Border"/>
                 <Setter Property="BorderThickness" Value="{StaticResource Border.Over}" TargetName="Border"/>
                 <Setter Property="CornerRadius" Value="{StaticResource Corner.Border2}" TargetName="Border"/>
             </Trigger>
             <Trigger Property="IsPressed" Value="True">
+                <Setter Property="Foreground" Value="{StaticResource Brush.Glyph.Pressed}" />
                 <Setter Property="Background" Value="{StaticResource Brush.Background.Pressed}" TargetName="Border"/>
                 <Setter Property="BorderBrush" Value="{StaticResource Brush.Border.Pressed}" TargetName="Border"/>
                 <Setter Property="BorderThickness" Value="{StaticResource Border.Normal}" TargetName="Border"/>
                 <Setter Property="CornerRadius" Value="{StaticResource Corner.Border0}" TargetName="Border"/>
             </Trigger>
             <Trigger Property="IsEnabled" Value="False">
-                <Setter Property="Foreground" Value="{StaticResource Brush.Foreground.Disabled}"/>
+                <Setter Property="Foreground" Value="{StaticResource Brush.Glyph.Disabled}"/>
                 <Setter Property="BorderBrush" Value="{StaticResource Brush.Border.Disabled}" TargetName="Border"/>
             </Trigger>
         </ControlTemplate.Triggers>
     </ControlTemplate>
     <Style x:Key="Style.ButtonBase" TargetType="ButtonBase" BasedOn="{StaticResource {x:Type ContentControl}}">
         <Setter Property="OverridesDefaultStyle" Value="True"/>
+        <Setter Property="Foreground" Value="{StaticResource Brush.Glyph.Normal}"/>
         <Setter Property="Background" Value="{StaticResource Brush.Background.Normal}"/>
         <Setter Property="BorderBrush" Value="{StaticResource Brush.Border.Normal}"/>
         <Setter Property="BorderThickness" Value="{StaticResource Border.Normal}"/>

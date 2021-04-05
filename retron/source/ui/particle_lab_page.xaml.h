@@ -11,6 +11,7 @@ namespace retron
 
         Noesis::BaseComponent* selected_particle_effect() const;
         void selected_particle_effect(Noesis::BaseComponent* value);
+        retron::particles::effect_t* find_effect(std::string_view name);
 
     private:
         void init_particle_effects();
@@ -30,11 +31,19 @@ namespace retron
     {
     public:
         particle_lab_page();
+        virtual ~particle_lab_page() override;
 
         retron::particle_lab_page_view_model* view_model() const;
+        ff::signal_sink<void>& destroyed_sink();
+        ff::signal_sink<int, ff::point_float, std::string_view, retron::particles::effect_t&>& clicked_sink();
 
     private:
+        virtual bool ConnectEvent(Noesis::BaseComponent* source, const char* event, const char* handler) override;
+        void on_mouse_down(Noesis::BaseComponent* sender, const Noesis::MouseButtonEventArgs& args);
+
         Noesis::Ptr<retron::particle_lab_page_view_model> view_model_;
+        ff::signal<void> destroyed_signal;
+        ff::signal<int, ff::point_float, std::string_view, retron::particles::effect_t&> clicked_signal;
 
         NS_DECLARE_REFLECTION(retron::particle_lab_page, Noesis::UserControl);
     };

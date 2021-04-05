@@ -60,7 +60,9 @@ namespace retron
     {
         static retron::game_spec load();
 
-        bool allow_debug;
+        bool allow_debug() const;
+
+        bool allow_debug_;
         ff::fixed_int joystick_min;
         ff::fixed_int joystick_max;
         std::unordered_map<std::string, retron::difficulty_spec> difficulties;

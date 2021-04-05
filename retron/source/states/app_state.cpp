@@ -6,6 +6,7 @@
 #include "source/states/particle_lab_state.h"
 #include "source/states/title_state.h"
 #include "source/states/transition_state.h"
+#include "source/states/ui_view_state.h"
 #include "source/ui/debug_page.xaml.h"
 #include "source/ui/particle_lab_page.xaml.h"
 
@@ -26,10 +27,10 @@ retron::app_state::app_state()
     , debug_step_one_frame(false)
     , debug_time_scale(1.0)
     , rebuilding_resources_(false)
+    , pending_hide_debug_state(false)
     , render_debug_(retron::render_debug_t::none)
     , texture_1080(std::make_shared<ff::dx11_texture>(retron::constants::RENDER_SIZE_HIGH.cast<int>(), DXGI_FORMAT_R8G8B8A8_UNORM))
     , target_1080(std::make_shared<ff::dx11_target_texture>(this->texture_1080))
-    , depth_1080(std::make_shared<ff::dx11_depth>())
 {
     assert(!::app_service);
     ::app_service = this;
@@ -54,6 +55,12 @@ retron::app_state::~app_state()
 
 std::shared_ptr<ff::state> retron::app_state::advance_time()
 {
+    if (this->pending_hide_debug_state)
+    {
+        this->pending_hide_debug_state = false;
+        this->debug_state->hide();
+    }
+
     for (auto& i : this->player_palettes)
     {
         if (i)
@@ -67,7 +74,7 @@ std::shared_ptr<ff::state> retron::app_state::advance_time()
 
 void retron::app_state::advance_input()
 {
-    if (this->game_spec_.allow_debug || DEBUG)
+    if (this->game_spec_.allow_debug())
     {
         if (this->debug_input_events->advance())
         {
@@ -131,7 +138,7 @@ void retron::app_state::render(ff::dx11_target_base& target, ff::dx11_depth& dep
     ff::graphics::dx11_device_state().clear_target(this->target_1080->view(), ff::color::none());
 
     this->push_render_targets(this->render_targets_);
-    ff::state::render(*this->target_1080, *this->depth_1080);
+    ff::state::render();
     this->pop_render_targets(*this->target_1080);
 
     ff::rect_fixed target_rect = this->viewport.view(target.size().rotated_pixel_size()).cast<ff::fixed_int>();
@@ -179,7 +186,7 @@ size_t retron::app_state::child_state_count()
 
 ff::state* retron::app_state::child_state(size_t index)
 {
-    return this->debug_state && this->debug_state->visible()
+    return this->debug_state->visible()
         ? static_cast<ff::state*>(this->debug_state.get())
         : static_cast<ff::state*>(this->game_state.get());
 }
@@ -278,12 +285,20 @@ void retron::app_state::debug_command(size_t command_id)
 {
     if (command_id == commands::ID_DEBUG_HIDE_UI)
     {
-        this->debug_state->hide();
+        this->pending_hide_debug_state = true;
     }
     else if (command_id == commands::ID_DEBUG_PARTICLE_LAB)
     {
-        std::shared_ptr<ff::ui_view> view = std::make_shared<ff::ui_view>(Noesis::MakePtr<retron::particle_lab_page>());
-        this->debug_state->visible(view, std::make_shared<retron::particle_lab_state>());
+        auto view = std::make_shared<ff::ui_view>(Noesis::MakePtr<retron::particle_lab_page>());
+        auto view_state = std::make_shared<retron::ui_view_state>(view);
+        auto particle_lab = std::make_shared<retron::particle_lab_state>(view);
+        auto top_states = std::make_shared<ff::state_list>(std::vector<std::shared_ptr<ff::state>>{ particle_lab, view_state });
+
+        this->pending_hide_debug_state = false;
+        this->debug_state->visible(top_states);
+
+        view->focused(true);
+
     }
     else if (command_id == commands::ID_DEBUG_REBUILD_RESOURCES)
     {
@@ -367,13 +382,17 @@ void retron::app_state::on_custom_debug()
 {
     if (this->debug_state->visible())
     {
-        this->debug_state->hide();
+        this->pending_hide_debug_state = true;
     }
-    else if (this->game_spec_.allow_debug || DEBUG)
+    else if (this->game_spec_.allow_debug())
     {
-        
-        std::shared_ptr<ff::ui_view> view = std::make_shared<ff::ui_view>(Noesis::MakePtr<retron::debug_page>());
-        this->debug_state->visible(view, this->game_state);
+        auto view = std::make_shared<ff::ui_view>(Noesis::MakePtr<retron::debug_page>());
+        auto view_state = std::make_shared<retron::ui_view_state>(view);
+
+        this->pending_hide_debug_state = false;
+        this->debug_state->visible(view_state, this->game_state);
+
+        view->focused(true);
     }
 }
 

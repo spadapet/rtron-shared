@@ -131,6 +131,9 @@ namespace retron
         {
             if (!this->init_app)
             {
+                auto app_view = Windows::UI::ViewManagement::ApplicationView::GetForCurrentView();
+                app_view->SetPreferredMinSize(Windows::Foundation::Size(retron::constants::RENDER_WIDTH, retron::constants::RENDER_HEIGHT));
+
                 this->init_app = std::make_unique<ff::init_app>(::get_app_params(), ::get_ui_params());
                 assert(*this->init_app);
             }
@@ -179,9 +182,23 @@ static void handle_window_message(ff::window_message& msg)
 {
     switch (msg.msg)
     {
+        case WM_GETMINMAXINFO:
+            {
+                RECT rect{ 0, 0, static_cast<int>(retron::constants::RENDER_WIDTH), static_cast<int>(retron::constants::RENDER_HEIGHT) };
+                const DWORD style = static_cast<DWORD>(GetWindowLong(msg.hwnd, GWL_STYLE));
+                const DWORD exStyle = static_cast<DWORD>(GetWindowLong(msg.hwnd, GWL_EXSTYLE));
+                if (::AdjustWindowRectExForDpi(&rect, style, FALSE, exStyle, ::GetDpiForWindow(msg.hwnd)))
+                {
+                    MINMAXINFO& mm = *reinterpret_cast<MINMAXINFO*>(msg.lp);
+                    mm.ptMinTrackSize.x = rect.right - rect.left;
+                    mm.ptMinTrackSize.y = rect.bottom - rect.top;
+                }
+            }
+            break;
+
         case WM_SYSKEYDOWN:
             if ((msg.wp == VK_DELETE || msg.wp == VK_PRIOR || msg.wp == VK_NEXT) &&
-                retron::app_service::get().game_spec().allow_debug &&
+                retron::app_service::get().game_spec().allow_debug() &&
                 ::GetKeyState(VK_SHIFT) < 0 &&
                 !ff::app_render_target().full_screen())
             {

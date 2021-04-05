@@ -13,7 +13,7 @@ namespace retron
 
         // state
         virtual std::shared_ptr<ff::state> advance_time() override;
-        virtual void render(ff::dx11_target_base& target, ff::dx11_depth& depth) override;
+        virtual void render() override;
         virtual size_t child_state_count() override;
         virtual ff::state* child_state(size_t index) override;
 

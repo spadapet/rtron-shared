@@ -9,7 +9,7 @@ retron::ui_view_state::ui_view_state(std::shared_ptr<ff::ui_view> view)
     view->size(ff::window_size{ retron::constants::RENDER_SIZE.cast<int>(), 1.0, DMDO_DEFAULT, DMDO_DEFAULT });
 }
 
-void retron::ui_view_state::render(ff::dx11_target_base& target, ff::dx11_depth& depth)
+void retron::ui_view_state::render()
 {
     retron::render_targets* targets = retron::app_service::get().render_targets();
 

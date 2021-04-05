@@ -33,13 +33,19 @@ void retron::particle_lab_page_view_model::selected_particle_effect(Noesis::Base
     }
 }
 
+retron::particles::effect_t* retron::particle_lab_page_view_model::find_effect(std::string_view name)
+{
+    auto i = this->name_to_effect.find(name);
+    return (i != this->name_to_effect.cend()) ? &i->second : nullptr;
+}
+
 void retron::particle_lab_page_view_model::init_particle_effects()
 {
     int selected_index = this->particle_effects->IndexOf(this->selected_particle_effect());
     this->particle_effects->Clear();
 
     ff::dict level_particles_dict = ff::auto_resource_value("level_particles").value()->get<ff::dict>();
-    for (std::string_view name : level_particles_dict.child_names())
+    for (std::string_view name : level_particles_dict.child_names(true))
     {
         std::string name_str = std::string(name);
         this->name_to_effect.try_emplace(name, retron::particles::effect_t(level_particles_dict.get(name)));
@@ -72,7 +78,59 @@ retron::particle_lab_page::particle_lab_page()
     Noesis::GUI::LoadComponent(this, "particle_lab_page.xaml");
 }
 
+retron::particle_lab_page::~particle_lab_page()
+{
+    this->destroyed_signal.notify();
+}
+
 retron::particle_lab_page_view_model* retron::particle_lab_page::view_model() const
 {
     return this->view_model_;
+}
+
+ff::signal_sink<void>& retron::particle_lab_page::destroyed_sink()
+{
+    return this->destroyed_signal;
+}
+
+ff::signal_sink<int, ff::point_float, std::string_view, retron::particles::effect_t&>& retron::particle_lab_page::clicked_sink()
+{
+    return this->clicked_signal;
+}
+
+bool retron::particle_lab_page::ConnectEvent(Noesis::BaseComponent* source, const char* event, const char* handler)
+{
+    NS_CONNECT_EVENT(Noesis::Grid, MouseDown, on_mouse_down);
+    return false;
+}
+
+void retron::particle_lab_page::on_mouse_down(Noesis::BaseComponent* sender, const Noesis::MouseButtonEventArgs& args)
+{
+    int button;
+    switch (args.changedButton)
+    {
+        case Noesis::MouseButton::MouseButton_Left:
+            button = VK_LBUTTON;
+            break;
+
+        case Noesis::MouseButton::MouseButton_Right:
+            button = VK_RBUTTON;
+            break;
+
+        default:
+            return;
+    }
+
+    Noesis::BaseComponent* selected = this->view_model_->selected_particle_effect();
+    if (selected && Noesis::Boxing::CanUnbox<Noesis::String>(selected))
+    {
+        ff::point_float pos(args.position.x, args.position.y);
+        std::string_view name(Noesis::Boxing::Unbox<Noesis::String>(selected).Str());
+        retron::particles::effect_t* effect = this->view_model_->find_effect(name);
+
+        if (effect)
+        {
+            this->clicked_signal.notify(button, pos, name, *effect);
+        }
+    }
 }
