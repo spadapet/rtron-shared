@@ -94,7 +94,7 @@
                         {
                          "name":"electrode",
                          "type":"int",
-                         "value":0
+                         "value":10
                         }, 
                         {
                          "name":"grunt",

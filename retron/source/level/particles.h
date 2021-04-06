@@ -18,6 +18,7 @@ namespace retron
             std::pair<ff::fixed_int, ff::fixed_int> angle = std::make_pair(0, 360);
             ff::point_fixed scale = ff::point_fixed(1, 1);
             ff::fixed_int rotate = 0;
+            ff::fixed_int spin = 0;
             int delay = 0;
             uint8_t type = 0;
             bool reverse = false;

@@ -23,6 +23,7 @@ namespace retron
         void init_resources();
 
         entt::entity create_entity(retron::entity_type type, const ff::point_fixed& pos);
+        entt::entity create_electrode(retron::entity_type type, const ff::point_fixed& pos);
         entt::entity create_grunt(retron::entity_type type, const ff::point_fixed& pos);
         entt::entity create_player(size_t index_in_level);
         entt::entity create_player_bullet(entt::entity player, ff::point_fixed shot_pos, ff::point_fixed shot_dir);
@@ -76,6 +77,7 @@ namespace retron
         std::forward_list<ff::signal_connection> connections;
 
         std::array<ff::auto_resource<ff::animation_base>, 8> player_walk_anims;
+        std::array<ff::auto_resource<ff::animation_base>, 3> electrode_anims;
         ff::auto_resource<ff::animation_base> player_bullet_anim;
         ff::auto_resource<ff::animation_base> grunt_walk_anim;
 

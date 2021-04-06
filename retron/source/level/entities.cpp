@@ -41,7 +41,7 @@ const ff::rect_fixed& retron::get_hit_box_spec(retron::entity_type type)
         ff::rect_fixed(-4, -8, 4, 0), // bonus_child
         ff::rect_fixed(-5, -15, 6, 0), // grunt
         ff::rect_fixed(-5, -8, 5, 0), // hulk
-        ff::rect_fixed(-3, -3, 3, 3), // electrode
+        ff::rect_fixed(0, 0, 8, 8), // electrode
         ff::rect_fixed(0, 0, 0, 0), // level_border
         ff::rect_fixed(0, 0, 0, 0), // level_box
     };
@@ -63,7 +63,7 @@ const ff::rect_fixed& retron::get_bounds_box_spec(retron::entity_type type)
         ff::rect_fixed(-5, -12, 5, 0), // bonus_child
         ff::rect_fixed(-5, -15, 6, 0), // grunt
         ff::rect_fixed(-5, -12, 5, 0), // hulk
-        ff::rect_fixed(-4, -4, 4, 4), // electrode
+        ff::rect_fixed(0, 0, 8, 8), // electrode
         ff::rect_fixed(0, 0, 0, 0), // level_border
         ff::rect_fixed(0, 0, 0, 0), // level_box
     };

@@ -132,8 +132,9 @@ void retron::game_state::init_level()
             players.push_back(&this->players[i]);
         }
 
-        const retron::level_spec& level_spec = this->level_spec(this->coop_player().level);
-        std::shared_ptr<retron::level_state> level_state = std::make_shared<retron::level_state>(this, level_spec, std::move(players));
+        size_t level_index = this->coop_player().level;
+        const retron::level_spec& level_spec = this->level_spec(level_index);
+        std::shared_ptr<retron::level_state> level_state = std::make_shared<retron::level_state>(level_index, this, level_spec, std::move(players));
         std::shared_ptr<ff::state_wrapper> level_wrapper = std::make_shared<ff::state_wrapper>(level_state);
         this->level_states.push_back(level_wrapper);
     }
@@ -145,8 +146,9 @@ void retron::game_state::init_level()
             std::vector<retron::player*> players;
             players.push_back(&player);
 
-            const retron::level_spec& level_spec = this->level_spec(player.level);
-            std::shared_ptr<retron::level_state> level_state = std::make_shared<retron::level_state>(this, level_spec, std::move(players));
+            size_t level_index = player.level;
+            const retron::level_spec& level_spec = this->level_spec(level_index);
+            std::shared_ptr<retron::level_state> level_state = std::make_shared<retron::level_state>(level_index, this, level_spec, std::move(players));
             std::shared_ptr<ff::state_wrapper> level_wrapper = std::make_shared<ff::state_wrapper>(level_state);
             this->level_states.push_back(level_wrapper);
         }

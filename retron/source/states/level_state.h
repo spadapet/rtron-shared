@@ -9,7 +9,7 @@ namespace retron
     class level_state : public ff::state, public retron::level_service
     {
     public:
-        level_state(retron::game_service* game_service, const retron::level_spec& level_spec, std::vector<retron::player*>&& players);
+        level_state(size_t level_index, retron::game_service* game_service, const retron::level_spec& level_spec, std::vector<retron::player*>&& players);
 
         // state
         virtual std::shared_ptr<ff::state> advance_time() override;
@@ -19,6 +19,7 @@ namespace retron
         virtual const retron::game_options& game_options() const override;
         virtual const retron::difficulty_spec& difficulty_spec() const override;
         virtual const ff::input_event_provider& input_events(const retron::player& player) const override;
+        virtual size_t level_index() const override;
         virtual const retron::level_spec& level_spec() const override;
         virtual size_t player_count() const override;
         virtual retron::player& player(size_t index) const override;
@@ -28,6 +29,7 @@ namespace retron
         retron::game_service* game_service_;
         retron::level_spec level_spec_;
         std::vector<retron::player*> players;
-        retron::level level;
+        size_t level_index_;
+        retron::level level; // must be last
     };
 }

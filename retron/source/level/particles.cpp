@@ -257,7 +257,7 @@ void retron::particles::spec_t::add(particles& particles, ff::point_fixed pos, i
         p.dist_vel = ff::math::random_range(this->dist_vel);
 
         p.size = ff::math::random_range(this->size);
-        p.spin = ff::math::random_range(this->spin);
+        p.spin = ff::math::random_range(this->spin) + options.spin;
         p.spin_vel = ff::math::random_range(this->spin_vel);
         p.timer = 0;
 

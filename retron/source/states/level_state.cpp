@@ -3,10 +3,11 @@
 #include "source/core/render_targets.h"
 #include "source/states/level_state.h"
 
-retron::level_state::level_state(retron::game_service* game_service, const retron::level_spec& level_spec, std::vector<retron::player*>&& players)
+retron::level_state::level_state(size_t level_index, retron::game_service* game_service, const retron::level_spec& level_spec, std::vector<retron::player*>&& players)
     : game_service_(game_service)
     , level_spec_(level_spec)
     , players(std::move(players))
+    , level_index_(level_index)
     , level(*this)
 {}
 
@@ -40,6 +41,11 @@ const retron::difficulty_spec& retron::level_state::difficulty_spec() const
 const ff::input_event_provider& retron::level_state::input_events(const retron::player& player) const
 {
     return this->game_service_->input_events(player);
+}
+
+size_t retron::level_state::level_index() const
+{
+    return this->level_index_;
 }
 
 const retron::level_spec& retron::level_state::level_spec() const

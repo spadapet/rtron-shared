@@ -177,6 +177,16 @@
         "handle": [ 0, 6 ],
         "offset": [ 3, 0 ],
         "repeat": 8
+      },
+
+      "electrode":
+      {
+        "file": "file:graphics/electrodes.png",
+        "pos": [ 0, 0 ],
+        "size": [ 9, 9 ],
+        "handle": [ 0, 0 ],
+        "offset": [ 10, 0 ],
+        "repeat": 3
       }
     }
   }

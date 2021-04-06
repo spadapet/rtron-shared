@@ -41,6 +41,12 @@ namespace
         ff::point_fixed dest_pos;
     };
 
+    struct electrode_data
+    {
+        size_t index;
+        size_t electrode_type;
+    };
+
     struct particle_effect_follows_entity
     {
         int effect_id;
@@ -123,7 +129,7 @@ retron::level::level(const retron::level_service& level_service)
         this->create_objects(object_spec.bonus_woman, entity_type::bonus_woman, object_spec.rect, avoid_rects, std::bind(&retron::level::create_entity, this, std::placeholders::_1, std::placeholders::_2));
         this->create_objects(object_spec.bonus_man, entity_type::bonus_man, object_spec.rect, avoid_rects, std::bind(&retron::level::create_entity, this, std::placeholders::_1, std::placeholders::_2));
         this->create_objects(object_spec.bonus_child, entity_type::bonus_child, object_spec.rect, avoid_rects, std::bind(&retron::level::create_entity, this, std::placeholders::_1, std::placeholders::_2));
-        this->create_objects(object_spec.electrode, entity_type::electrode, object_spec.rect, avoid_rects, std::bind(&retron::level::create_entity, this, std::placeholders::_1, std::placeholders::_2));
+        this->create_objects(object_spec.electrode, entity_type::electrode, object_spec.rect, avoid_rects, std::bind(&retron::level::create_electrode, this, std::placeholders::_1, std::placeholders::_2));
         this->create_objects(object_spec.hulk, entity_type::hulk, object_spec.rect, avoid_rects, std::bind(&retron::level::create_entity, this, std::placeholders::_1, std::placeholders::_2));
         this->create_objects(object_spec.grunt, entity_type::grunt, object_spec.rect, avoid_rects, std::bind(&retron::level::create_grunt, this, std::placeholders::_1, std::placeholders::_2));
     }
@@ -167,6 +173,10 @@ void retron::level::init_resources()
     this->player_walk_anims[6] = "anim.player_walk_down";
     this->player_walk_anims[7] = "anim.player_walk_right_down";
 
+    this->electrode_anims[0] = "sprites.electrode[0]";
+    this->electrode_anims[1] = "sprites.electrode[1]";
+    this->electrode_anims[2] = "sprites.electrode[2]";
+
     this->player_bullet_anim = "sprites.player_bullet";
 
     this->grunt_walk_anim = "sprites.grunt";
@@ -185,6 +195,15 @@ entt::entity retron::level::create_entity(entity_type type, const ff::point_fixe
     return entity;
 }
 
+entt::entity retron::level::create_electrode(retron::entity_type type, const ff::point_fixed& pos)
+{
+    entt::entity entity = this->create_entity(type, pos);
+    size_t index = this->registry.size<::electrode_data>();
+    this->registry.emplace<::electrode_data>(entity, index, this->level_service_.level_index());
+
+    return entity;
+}
+
 entt::entity retron::level::create_grunt(retron::entity_type type, const ff::point_fixed& pos)
 {
     entt::entity entity = this->create_entity(type, pos);
@@ -193,6 +212,8 @@ entt::entity retron::level::create_grunt(retron::entity_type type, const ff::poi
 
     retron::particles::effect_options options;
     options.delay = static_cast<int>(grunt_index * 8);
+    options.rotate = ff::math::random_bool() ? 90 : 0;
+    options.spin = options.rotate;
     int effect_id = this->particle_effects[particle_effects::grunt_start].add(this->particles, pos, &options);
     this->registry.emplace<::particle_effect_follows_entity>(entity, ::particle_effect_follows_entity{ effect_id, ff::point_fixed(0, 0) });
 
@@ -602,7 +623,8 @@ void retron::level::render_bonus(entt::entity entity, entity_type type, ff::draw
 void retron::level::render_electrode(entt::entity entity, ff::draw_base& draw)
 {
     ff::point_fixed pos = this->position.get(entity);
-    draw.draw_palette_filled_rectangle(this->hit_box(entity), 45);
+    size_t type = this->registry.get<::electrode_data>(entity).electrode_type;
+    this->electrode_anims[type % this->electrode_anims.size()]->draw_frame(draw, ff::pixel_transform(pos), 0);
 }
 
 void retron::level::render_hulk(entt::entity entity, ff::draw_base& draw)
