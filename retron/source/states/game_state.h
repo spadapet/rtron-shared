@@ -28,7 +28,8 @@ namespace retron
     private:
         void init_input();
         void init_players();
-        void init_level();
+        void init_level_states();
+        void add_level_state(size_t level_index, std::vector<retron::player*>&& players);
         retron::player& coop_player();
         const retron::level_spec& level_spec(size_t index) const;
 

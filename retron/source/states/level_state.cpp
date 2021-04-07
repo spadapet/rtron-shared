@@ -3,7 +3,7 @@
 #include "source/core/render_targets.h"
 #include "source/states/level_state.h"
 
-retron::level_state::level_state(size_t level_index, retron::game_service* game_service, const retron::level_spec& level_spec, std::vector<retron::player*>&& players)
+retron::level_state::level_state(size_t level_index, const retron::game_service& game_service, const retron::level_spec& level_spec, std::vector<retron::player*>&& players)
     : game_service_(game_service)
     , level_spec_(level_spec)
     , players(std::move(players))
@@ -28,19 +28,9 @@ void retron::level_state::render()
         constants::RENDER_RECT);
 }
 
-const retron::game_options& retron::level_state::game_options() const
+const retron::game_service& retron::level_state::game_service() const
 {
-    return this->game_service_->game_options();
-}
-
-const retron::difficulty_spec& retron::level_state::difficulty_spec() const
-{
-    return this->game_service_->difficulty_spec();
-}
-
-const ff::input_event_provider& retron::level_state::input_events(const retron::player& player) const
-{
-    return this->game_service_->input_events(player);
+    return this->game_service_;
 }
 
 size_t retron::level_state::level_index() const
@@ -58,13 +48,13 @@ size_t retron::level_state::player_count() const
     return this->players.size();
 }
 
-retron::player& retron::level_state::player(size_t index) const
+const retron::player& retron::level_state::player(size_t index) const
 {
     return *this->players[index];
 }
 
-retron::player& retron::level_state::player_or_coop(size_t index) const
+const retron::player& retron::level_state::player_or_coop(size_t index) const
 {
-    retron::player& player = this->player(index);
+    const retron::player& player = this->player(index);
     return player.coop ? *player.coop : player;
 }

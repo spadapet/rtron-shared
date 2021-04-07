@@ -6,6 +6,7 @@ MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "build", "build", "{E1ABBA80-AB79-45AC-B565-C7E91FCA9339}"
 	ProjectSection(SolutionItems) = preProject
 		.editorconfig = .editorconfig
+		build.props = build.props
 		vendor\ff_game_library\build\cpp.props = vendor\ff_game_library\build\cpp.props
 		vendor\ff_game_library\build\cpp.targets = vendor\ff_game_library\build\cpp.targets
 		vendor\ff_game_library\build\cpp.xml = vendor\ff_game_library\build\cpp.xml
