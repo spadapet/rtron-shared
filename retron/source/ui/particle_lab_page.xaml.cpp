@@ -78,19 +78,9 @@ retron::particle_lab_page::particle_lab_page()
     Noesis::GUI::LoadComponent(this, "particle_lab_page.xaml");
 }
 
-retron::particle_lab_page::~particle_lab_page()
-{
-    this->destroyed_signal.notify();
-}
-
 retron::particle_lab_page_view_model* retron::particle_lab_page::view_model() const
 {
     return this->view_model_;
-}
-
-ff::signal_sink<void>& retron::particle_lab_page::destroyed_sink()
-{
-    return this->destroyed_signal;
 }
 
 ff::signal_sink<int, ff::point_float, std::string_view, retron::particles::effect_t&>& retron::particle_lab_page::clicked_sink()

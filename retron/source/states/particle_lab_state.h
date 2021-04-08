@@ -14,7 +14,6 @@ namespace retron
         virtual void render() override;
 
     private:
-        void on_page_destroyed();
         void on_mouse_click(int button, ff::point_float pos, std::string_view name, retron::particles::effect_t& effect);
 
         std::shared_ptr<ff::ui_view> view;

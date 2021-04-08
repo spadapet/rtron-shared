@@ -31,10 +31,8 @@ namespace retron
     {
     public:
         particle_lab_page();
-        virtual ~particle_lab_page() override;
 
         retron::particle_lab_page_view_model* view_model() const;
-        ff::signal_sink<void>& destroyed_sink();
         ff::signal_sink<int, ff::point_float, std::string_view, retron::particles::effect_t&>& clicked_sink();
 
     private:
@@ -42,7 +40,6 @@ namespace retron
         void on_mouse_down(Noesis::BaseComponent* sender, const Noesis::MouseButtonEventArgs& args);
 
         Noesis::Ptr<retron::particle_lab_page_view_model> view_model_;
-        ff::signal<void> destroyed_signal;
         ff::signal<int, ff::point_float, std::string_view, retron::particles::effect_t&> clicked_signal;
 
         NS_DECLARE_REFLECTION(retron::particle_lab_page, Noesis::UserControl);

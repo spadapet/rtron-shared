@@ -19,7 +19,6 @@ namespace retron
         void render(ff::dx11_target_base& target, ff::dx11_depth& depth, const ff::rect_fixed& target_rect, const ff::rect_fixed& camera_rect);
 
     private:
-        void app_service_destroyed();
         void init_resources();
 
         entt::entity create_entity(retron::entity_type type, const ff::point_fixed& pos);

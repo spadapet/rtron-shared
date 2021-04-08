@@ -36,8 +36,7 @@ namespace retron
         virtual retron::render_targets* render_targets() const override;
         virtual void push_render_targets(retron::render_targets& targets) override;
         virtual void pop_render_targets(ff::dx11_target_base& final_target) override;
-        virtual ff::signal_sink<void>& destroyed() override;
-        virtual ff::signal_sink<void>& reload_resources_sink() override;
+        virtual ff::signal_sink<>& reload_resources_sink() override;
         virtual bool rebuilding_resources() const override;
         virtual retron::render_debug_t render_debug() const override;
         virtual void render_debug(retron::render_debug_t flags) override;
@@ -79,8 +78,7 @@ namespace retron
         std::shared_ptr<retron::debug_state> debug_state;
         std::unique_ptr<ff::input_event_provider> debug_input_events;
         ff::auto_resource<ff::input_mapping> debug_input_mapping;
-        ff::signal<void> destroyed_signal;
-        ff::signal<void> reload_resources_signal;
+        ff::signal<> reload_resources_signal;
         retron::render_debug_t render_debug_;
         double debug_time_scale;
         bool debug_stepping_frames;

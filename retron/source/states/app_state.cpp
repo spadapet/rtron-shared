@@ -47,8 +47,6 @@ retron::app_state::app_state()
 
 retron::app_state::~app_state()
 {
-    this->destroyed_signal.notify();
-
     assert(::app_service == this);
     ::app_service = nullptr;
 }
@@ -256,12 +254,7 @@ void retron::app_state::pop_render_targets(ff::dx11_target_base& final_target)
     this->render_targets_stack.pop_back();
 }
 
-ff::signal_sink<void>& retron::app_state::destroyed()
-{
-    return this->destroyed_signal;
-}
-
-ff::signal_sink<void>& retron::app_state::reload_resources_sink()
+ff::signal_sink<>& retron::app_state::reload_resources_sink()
 {
     return this->reload_resources_signal;
 }

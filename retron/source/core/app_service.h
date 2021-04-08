@@ -47,8 +47,7 @@ namespace retron
         virtual void pop_render_targets(ff::dx11_target_base& final_target) = 0;
 
         // Debug
-        virtual ff::signal_sink<void>& destroyed() = 0;
-        virtual ff::signal_sink<void>& reload_resources_sink() = 0;
+        virtual ff::signal_sink<>& reload_resources_sink() = 0;
         virtual bool rebuilding_resources() const = 0;
         virtual retron::render_debug_t render_debug() const = 0;
         virtual void render_debug(retron::render_debug_t flags) = 0;

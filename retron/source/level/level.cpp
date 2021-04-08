@@ -80,7 +80,6 @@ retron::level::level(const retron::level_service& level_service)
 {
     this->init_resources();
 
-    this->connections.emplace_front(retron::app_service::get().destroyed().connect(std::bind(&retron::level::app_service_destroyed, this)));
     this->connections.emplace_front(retron::app_service::get().reload_resources_sink().connect(std::bind(&retron::level::init_resources, this)));
 
     for (size_t i = 0; i < this->level_service_.player_count(); i++)
@@ -141,11 +140,6 @@ void retron::level::render(ff::dx11_target_base& target, ff::dx11_depth& depth, 
         this->render_particles(*draw);
         this->render_debug(*draw);
     }
-}
-
-void retron::level::app_service_destroyed()
-{
-    this->connections.clear();
 }
 
 void retron::level::init_resources()

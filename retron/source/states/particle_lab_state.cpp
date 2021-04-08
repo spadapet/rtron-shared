@@ -12,7 +12,6 @@ retron::particle_lab_state::particle_lab_state(std::shared_ptr<ff::ui_view> view
 
     if (page)
     {
-        this->connections.emplace_front(page->destroyed_sink().connect(std::bind(&retron::particle_lab_state::on_page_destroyed, this)));
         this->connections.emplace_front(page->clicked_sink().connect(std::bind(&retron::particle_lab_state::on_mouse_click, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3, std::placeholders::_4)));
     }
 }
@@ -37,11 +36,6 @@ void retron::particle_lab_state::render()
     {
         this->particles.render(*draw);
     }
-}
-
-void retron::particle_lab_state::on_page_destroyed()
-{
-    this->connections.clear();
 }
 
 void retron::particle_lab_state::on_mouse_click(int button, ff::point_float pos, std::string_view name, retron::particles::effect_t& effect)
