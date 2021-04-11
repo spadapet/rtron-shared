@@ -32,6 +32,7 @@ namespace retron::input_events
     extern const size_t ID_DEBUG_SPEED_SLOW;
     extern const size_t ID_DEBUG_SPEED_FAST;
     extern const size_t ID_DEBUG_RENDER_TOGGLE;
+    extern const size_t ID_SHOW_CUSTOM_DEBUG;
 }
 
 namespace retron::commands

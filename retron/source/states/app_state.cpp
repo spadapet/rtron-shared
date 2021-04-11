@@ -106,6 +106,16 @@ void retron::app_state::advance_input()
                         break;
                 }
             }
+
+#ifdef _DEBUG
+            if (this->debug_input_events->event_hit(input_events::ID_SHOW_CUSTOM_DEBUG))
+            {
+                if (!this->debug_state->visible())
+                {
+                    this->on_custom_debug();
+                }
+            }
+#endif
         }
 
         if (this->debug_input_events->digital_value(input_events::ID_DEBUG_SPEED_FAST))
@@ -357,10 +367,12 @@ void retron::app_state::init_options()
 // Must be able to be called multiple times (whenever resources are hot reloaded)
 void retron::app_state::init_resources()
 {
+    std::vector<const ff::input_vk*> debug_input_devices{ &ff::input::keyboard(), &ff::input::pointer() };
+
     this->audio_ = std::make_unique<retron::audio>();
     this->game_spec_ = retron::game_spec::load();
     this->debug_input_mapping = "game_debug_controls";
-    this->debug_input_events = std::make_unique<ff::input_event_provider>(*this->debug_input_mapping.object(), std::vector<const ff::input_vk*>{ &ff::input::keyboard() });
+    this->debug_input_events = std::make_unique<ff::input_event_provider>(*this->debug_input_mapping.object(), std::move(debug_input_devices));
     this->palette_data = "palette_main";
 
     for (size_t i = 0; i < this->player_palettes.size(); i++)

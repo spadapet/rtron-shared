@@ -43,6 +43,7 @@ void retron::particle_lab_page_view_model::init_particle_effects()
 {
     int selected_index = this->particle_effects->IndexOf(this->selected_particle_effect());
     this->particle_effects->Clear();
+    this->name_to_effect.clear();
 
     ff::dict level_particles_dict = ff::auto_resource_value("level_particles").value()->get<ff::dict>();
     for (std::string_view name : level_particles_dict.child_names(true))

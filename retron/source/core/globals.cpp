@@ -23,6 +23,7 @@ const size_t retron::input_events::ID_DEBUG_CANCEL_STEP_ONE_FRAME = ff::stable_h
 const size_t retron::input_events::ID_DEBUG_SPEED_SLOW = ff::stable_hash_func("speed_slow"sv);
 const size_t retron::input_events::ID_DEBUG_SPEED_FAST = ff::stable_hash_func("speed_fast"sv);
 const size_t retron::input_events::ID_DEBUG_RENDER_TOGGLE = ff::stable_hash_func("debug_render_toggle"sv);
+const size_t retron::input_events::ID_SHOW_CUSTOM_DEBUG = ff::stable_hash_func("show_custom_debug"sv);
 
 const size_t retron::commands::ID_DEBUG_HIDE_UI = ff::stable_hash_func("debug_hide_ui"sv);
 const size_t retron::commands::ID_DEBUG_PARTICLE_LAB = ff::stable_hash_func("debug_particle_lab"sv);
