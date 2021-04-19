@@ -87,9 +87,6 @@ retron::level::level(const retron::level_service& level_service)
         this->create_player(i);
     }
 
-    std::vector<ff::rect_fixed> avoid_rects;
-    avoid_rects.reserve(this->level_spec_.rects.size());
-
     for (const retron::level_rect& level_rect : this->level_spec_.rects)
     {
         switch (level_rect.type)
@@ -100,24 +97,25 @@ retron::level::level(const retron::level_service& level_service)
 
             case retron::level_rect::type::box:
                 this->create_box(level_rect.rect);
-                avoid_rects.push_back(level_rect.rect);
                 break;
 
             case retron::level_rect::type::safe:
-                avoid_rects.push_back(level_rect.rect);
+                this->entities.delay_delete(this->create_box(level_rect.rect));
                 break;
         }
     }
 
     for (const retron::level_objects_spec& object_spec : this->level_spec_.objects)
     {
-        this->create_objects(object_spec.bonus_woman, entity_type::bonus_woman, object_spec.rect, avoid_rects, std::bind(&retron::level::create_entity, this, std::placeholders::_1, std::placeholders::_2));
-        this->create_objects(object_spec.bonus_man, entity_type::bonus_man, object_spec.rect, avoid_rects, std::bind(&retron::level::create_entity, this, std::placeholders::_1, std::placeholders::_2));
-        this->create_objects(object_spec.bonus_child, entity_type::bonus_child, object_spec.rect, avoid_rects, std::bind(&retron::level::create_entity, this, std::placeholders::_1, std::placeholders::_2));
-        this->create_objects(object_spec.electrode, entity_type::electrode, object_spec.rect, avoid_rects, std::bind(&retron::level::create_electrode, this, std::placeholders::_1, std::placeholders::_2));
-        this->create_objects(object_spec.hulk, entity_type::hulk, object_spec.rect, avoid_rects, std::bind(&retron::level::create_entity, this, std::placeholders::_1, std::placeholders::_2));
-        this->create_objects(object_spec.grunt, entity_type::grunt, object_spec.rect, avoid_rects, std::bind(&retron::level::create_grunt, this, std::placeholders::_1, std::placeholders::_2));
+        this->create_objects(object_spec.bonus_woman, entity_type::bonus_woman, object_spec.rect, std::bind(&retron::level::create_entity, this, std::placeholders::_1, std::placeholders::_2));
+        this->create_objects(object_spec.bonus_man, entity_type::bonus_man, object_spec.rect, std::bind(&retron::level::create_entity, this, std::placeholders::_1, std::placeholders::_2));
+        this->create_objects(object_spec.bonus_child, entity_type::bonus_child, object_spec.rect, std::bind(&retron::level::create_entity, this, std::placeholders::_1, std::placeholders::_2));
+        this->create_objects(object_spec.electrode, entity_type::electrode, object_spec.rect, std::bind(&retron::level::create_electrode, this, std::placeholders::_1, std::placeholders::_2));
+        this->create_objects(object_spec.hulk, entity_type::hulk, object_spec.rect, std::bind(&retron::level::create_entity, this, std::placeholders::_1, std::placeholders::_2));
+        this->create_objects(object_spec.grunt, entity_type::grunt, object_spec.rect, std::bind(&retron::level::create_grunt, this, std::placeholders::_1, std::placeholders::_2));
     }
+
+    this->entities.flush_delete();
 }
 
 void retron::level::advance(const ff::rect_fixed& camera_rect)
@@ -246,42 +244,108 @@ entt::entity retron::level::create_box(const ff::rect_fixed& rect)
     return entity;
 }
 
-void retron::level::create_objects(size_t count, entity_type type, const ff::rect_fixed& rect, const std::vector<ff::rect_fixed>& avoid_rects, const std::function<entt::entity(retron::entity_type, const ff::point_fixed&)>& create_func)
+namespace
 {
-    const ff::rect_fixed& hit_spec = retron::get_hit_box_spec(type);
-
-    for (size_t i = 0; i < count; i++)
+    struct place_random_cache
     {
-        for (size_t attempt = 0; attempt < 2048; attempt++)
+        retron::collision& collision;
+        std::vector<entt::entity> hit_entities;
+        std::vector<ff::rect_fixed> hit_rects;
+        std::vector<std::pair<ff::fixed_int, ff::fixed_int>> gaps;
+    };
+}
+
+static bool place_random_y(ff::point_fixed& corner, const ff::point_fixed& size, const ff::rect_fixed& corner_bounds, ::place_random_cache& cache)
+{
+    cache.hit_rects.clear();
+    cache.gaps.clear();
+
+    ff::rect_fixed check_rect(corner.x, corner_bounds.top, corner.x + size.x, corner_bounds.bottom);
+    for (entt::entity entity : cache.collision.hit_test(check_rect, cache.hit_entities, retron::entity_box_type::none, retron::collision_box_type::bounds_box))
+    {
+        ff::rect_fixed box = cache.collision.box(entity, retron::collision_box_type::bounds_box);
+        if (box.intersects(check_rect))
         {
-            ff::point_fixed pos(
-                (ff::math::random_non_negative() & ~0x3) % static_cast<int>(rect.width() - hit_spec.width()) - static_cast<int>(hit_spec.left) + static_cast<int>(rect.left),
-                (ff::math::random_non_negative() & ~0x3) % static_cast<int>(rect.height() - hit_spec.height()) - static_cast<int>(hit_spec.top) + static_cast<int>(rect.top));
+            cache.hit_rects.push_back(box);
+        }
+    }
 
-            ff::rect_fixed hit_rect = hit_spec + pos;
-            bool good_pos = true;
+    std::sort(cache.hit_rects.begin(), cache.hit_rects.end(), [](const ff::rect_fixed& r1, const ff::rect_fixed& r2)
+    {
+        return r1.top < r2.top;
+    });
 
-            for (const ff::rect_fixed& avoid_rect : avoid_rects)
+    ff::fixed_int total = 0;
+    {
+        ff::fixed_int current_y = check_rect.top;
+
+        for (const ff::rect_fixed& rect : cache.hit_rects)
+        {
+            if (rect.top > current_y)
             {
-                if (hit_rect.intersects(avoid_rect))
+                ff::fixed_int height = rect.top - current_y;
+                if (height >= size.y)
                 {
-                    good_pos = false;
-                    break;
+                    height = (height - size.y) + 1_f;
+                    cache.gaps.push_back(std::make_pair(current_y, height));
+                    total += height;
                 }
             }
 
-            if (good_pos)
-            {
-                if (create_func)
-                {
-                    create_func(type, pos);
-                }
-                else
-                {
-                    this->create_entity(type, pos);
-                }
+            current_y = std::max(current_y, rect.bottom);
+        }
 
-                break;
+        if (current_y + size.y <= check_rect.bottom)
+        {
+            ff::fixed_int height = (check_rect.bottom - current_y - size.y) + 1_f;
+            cache.gaps.push_back(std::make_pair(current_y, height));
+            total += height;
+        }
+    }
+
+    if (total > 0_f)
+    {
+        ff::fixed_int current_y = 0;
+        ff::fixed_int pos = ff::math::random_range(0_f, total);
+
+        for (const auto& gap : cache.gaps)
+        {
+            if (pos >= current_y && pos < current_y + gap.second)
+            {
+                corner.y = std::floor(gap.first + pos - current_y);
+                return true;
+            }
+
+            current_y += gap.second;
+        }
+
+        assert(false);
+    }
+
+    return false;
+}
+
+void retron::level::create_objects(size_t count, entity_type type, const ff::rect_fixed& bounds, const std::function<entt::entity(retron::entity_type, const ff::point_fixed&)>& create_func)
+{
+    const size_t max_attempts = 256;
+    const ff::rect_fixed& spec = retron::get_hit_box_spec(type);
+    const ff::point_fixed size = spec.size();
+
+    if (count > 0 && bounds.width() >= size.x && bounds.height() >= size.y)
+    {
+        ::place_random_cache cache{ this->collision };
+
+        for (size_t i = 0; i < count; i++)
+        {
+            size_t attempt = 0;
+            for (; attempt < max_attempts; attempt++)
+            {
+                ff::point_fixed corner(std::floor(ff::math::random_range(bounds.left, bounds.right)), 0);
+                if (::place_random_y(corner, size, bounds, cache))
+                {
+                    create_func(type, corner - spec.top_left());
+                    break;
+                }
             }
         }
     }

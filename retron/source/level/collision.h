@@ -20,7 +20,7 @@ namespace retron
         collision(entt::registry& registry, retron::position& position, entities& entities);
 
         const std::vector<std::pair<entt::entity, entt::entity>>& detect_collisions(std::vector<std::pair<entt::entity, entt::entity>>& collisions, retron::collision_box_type collision_type);
-        const std::vector<entt::entity>& hit_test(const ff::rect_fixed& bounds, std::vector<entt::entity>& entities, entity_box_type box_type_filter, retron::collision_box_type collision_type);
+        const std::vector<entt::entity>& hit_test(const ff::rect_fixed& bounds, std::vector<entt::entity>& entities, entity_box_type box_type_filter, retron::collision_box_type collision_type, size_t max_hits = 0);
         std::tuple<entt::entity, ff::point_fixed, ff::point_fixed> ray_test(const ff::point_fixed& start, const ff::point_fixed& end, entity_box_type box_type_filter, retron::collision_box_type collision_type);
         std::tuple<bool, ff::point_fixed, ff::point_fixed> ray_test(entt::entity entity, const ff::point_fixed& start, const ff::point_fixed& end, retron::collision_box_type collision_type);
 

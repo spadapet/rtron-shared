@@ -182,7 +182,8 @@ const std::vector<entt::entity>& retron::collision::hit_test(
     const ff::rect_fixed& bounds,
     std::vector<entt::entity>& entities,
     entity_box_type box_type_filter,
-    retron::collision_box_type collision_type)
+    retron::collision_box_type collision_type,
+    size_t max_hits)
 {
     entities.clear();
     this->update_dirty_boxes(collision_type);
@@ -190,11 +191,12 @@ const std::vector<entt::entity>& retron::collision::hit_test(
     class callback_t : public ::b2QueryCallback
     {
     public:
-        callback_t(retron::collision* owner, std::vector<entt::entity>& entities, entity_box_type box_type_filter, retron::collision_box_type collision_type)
+        callback_t(retron::collision* owner, std::vector<entt::entity>& entities, entity_box_type box_type_filter, retron::collision_box_type collision_type, size_t max_hits)
             : owner(owner)
             , entities(entities)
             , box_type_filter(box_type_filter)
             , collision_type(collision_type)
+            , max_hits(max_hits)
         {}
 
         virtual bool ReportFixture(::b2Fixture* fixture) override
@@ -205,7 +207,7 @@ const std::vector<entt::entity>& retron::collision::hit_test(
                 this->entities.push_back(entity);
             }
 
-            return true;
+            return !this->max_hits || this->entities.size() < this->max_hits;
         }
 
     private:
@@ -213,7 +215,8 @@ const std::vector<entt::entity>& retron::collision::hit_test(
         std::vector<entt::entity>& entities;
         entity_box_type box_type_filter;
         retron::collision_box_type collision_type;
-    } callback(this, entities, box_type_filter, collision_type);
+        size_t max_hits;
+    } callback(this, entities, box_type_filter, collision_type, max_hits);
 
     ff::rect_fixed world_bounds = bounds * ::PIXEL_TO_WORLD_SCALE;
     ::b2World& world = this->worlds[static_cast<size_t>(collision_type)];

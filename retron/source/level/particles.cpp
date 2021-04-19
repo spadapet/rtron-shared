@@ -237,9 +237,15 @@ retron::particles::spec_t::spec_t(const ff::dict& dict)
     }
 }
 
+template<class T>
+static T random_range(const std::pair<T, T>& range)
+{
+    return (range.first != range.second) ? ff::math::random_range(range.first, range.second) : range.first;
+}
+
 void retron::particles::spec_t::add(particles& particles, ff::point_fixed pos, int effect_id, const retron::particles::effect_options& options) const
 {
-    const int count = ff::math::random_range(this->count);
+    const int count = ::random_range(this->count);
     if (count <= 0)
     {
         return;
@@ -251,18 +257,18 @@ void retron::particles::spec_t::add(particles& particles, ff::point_fixed pos, i
     {
         retron::particles::particle_t p;
 
-        p.angle = ff::math::degrees_to_radians(static_cast<float>(ff::math::random_range(this->has_angle ? this->angle : options.angle)));
-        p.angle_vel = ff::math::degrees_to_radians(static_cast<float>(ff::math::random_range(this->angle_vel)));
-        p.dist = ff::math::random_range(this->dist);
-        p.dist_vel = ff::math::random_range(this->dist_vel);
+        p.angle = ff::math::degrees_to_radians(static_cast<float>(::random_range(this->has_angle ? this->angle : options.angle)));
+        p.angle_vel = ff::math::degrees_to_radians(static_cast<float>(::random_range(this->angle_vel)));
+        p.dist = ::random_range(this->dist);
+        p.dist_vel = ::random_range(this->dist_vel);
 
-        p.size = ff::math::random_range(this->size);
-        p.spin = ff::math::random_range(this->spin) + options.spin;
-        p.spin_vel = ff::math::random_range(this->spin_vel);
+        p.size = ::random_range(this->size);
+        p.spin = ::random_range(this->spin) + options.spin;
+        p.spin_vel = ::random_range(this->spin_vel);
         p.timer = 0;
 
-        p.delay = ff::math::random_range(this->delay);
-        p.life = ff::math::random_range(this->life);
+        p.delay = ::random_range(this->delay);
+        p.life = ::random_range(this->life);
         p.type = options.type;
         p.internal_type = 0;
         p.group = group_id;
