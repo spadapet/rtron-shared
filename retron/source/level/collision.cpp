@@ -80,7 +80,7 @@ static ff::rect_fixed box(const ::b2Body* body)
     return rect;
 }
 
-static bool does_overlap(const ::b2Contact* contact)
+static bool might_overlap(const ::b2Contact* contact)
 {
     const ::b2Fixture* f1 = contact->GetFixtureA();
     const ::b2Fixture* f2 = contact->GetFixtureB();
@@ -156,21 +156,15 @@ const std::vector<std::pair<entt::entity, entt::entity>>& retron::collision::det
 
     for (::b2Contact* i = world.GetContactList(); i; i = i->GetNext())
     {
-        if (i->IsEnabled() && i->IsTouching())
+        if (i->IsEnabled() && i->IsTouching() && ::might_overlap(i))
         {
             entt::entity entity_a = ::entity_from_user_data(i->GetFixtureA()->GetUserData());
             entt::entity entity_b = ::entity_from_user_data(i->GetFixtureB()->GetUserData());
 
-            if (::does_overlap(i))
+            if (this->box(entity_a, collision_type).intersects(this->box(entity_b, collision_type)))
             {
-                if (this->box_type(entity_a, collision_type) <= this->box_type(entity_b, collision_type))
-                {
-                    collisions.emplace_back(entity_a, entity_b);
-                }
-                else
-                {
-                    collisions.emplace_back(entity_b, entity_a);
-                }
+                bool a_before_b = this->box_type(entity_a, collision_type) <= this->box_type(entity_b, collision_type);
+                collisions.emplace_back(a_before_b ? entity_a : entity_b, a_before_b ? entity_b : entity_a);
             }
         }
     }
@@ -244,11 +238,12 @@ std::tuple<entt::entity, ff::point_fixed, ff::point_fixed> retron::collision::ra
     class callback_t : public ::b2RayCastCallback
     {
     public:
-        callback_t(retron::collision& collision, retron::entity_box_type box_type_filter, retron::collision_box_type collision_type)
+        callback_t(retron::collision& collision, const ff::point_fixed& origin_point, retron::entity_box_type box_type_filter, retron::collision_box_type collision_type)
             : owner(collision)
             , box_type_filter(box_type_filter)
             , collision_type(collision_type)
             , entity(entt::null)
+            , origin_point(origin_point)
             , point(ff::point_fixed(0, 0))
             , normal(ff::point_fixed(0, 0))
             , fraction(0)
@@ -275,6 +270,11 @@ std::tuple<entt::entity, ff::point_fixed, ff::point_fixed> retron::collision::ra
                 return -1;
             }
 
+            if (type == entity_box_type::level && ::box(fixture->GetBody()).contains(this->origin_point))
+            {
+                return -1;
+            }
+
             this->entity = entity;
             this->point = ff::point_fixed(point.x, point.y) * ::WORLD_TO_PIXEL_SCALE;
             this->normal = ff::point_fixed(normal.x, normal.y);
@@ -287,10 +287,11 @@ std::tuple<entt::entity, ff::point_fixed, ff::point_fixed> retron::collision::ra
         entity_box_type box_type_filter;
         retron::collision_box_type collision_type;
         entt::entity entity;
+        ff::point_fixed origin_point;
         ff::point_fixed point;
         ff::point_fixed normal;
         float fraction;
-    } callback(*this, box_type_filter, collision_type);
+    } callback(*this, start, box_type_filter, collision_type);
 
     ::b2World& world = this->worlds[static_cast<size_t>(collision_type)];
     world.RayCast(&callback, { world_start.x, world_start.y }, { world_end.x, world_end.y });
@@ -395,15 +396,7 @@ ff::rect_fixed retron::collision::box_spec(entt::entity entity, retron::collisio
             {
                 const ff::rect_fixed& grunt_spec = retron::get_bounds_box_spec(entity_type::grunt);
                 box = this->box_spec(entity, retron::collision_box_type::bounds_box);
-
-                if (this->entities_.entity_type(entity) == entity_type::level_bounds)
-                {
-                    return box.deflate(-grunt_spec.left, -grunt_spec.top, grunt_spec.right, grunt_spec.bottom);
-                }
-                else
-                {
-                    return box.inflate(grunt_spec.right, grunt_spec.bottom, -grunt_spec.left, -grunt_spec.top);
-                }
+                return box.inflate(grunt_spec.right, grunt_spec.bottom, -grunt_spec.left, -grunt_spec.top);
             }
             break;
 
@@ -507,7 +500,7 @@ void retron::collision::dirty_box(entt::entity entity, retron::collision_box_typ
                 break;
 
             case retron::collision_box_type::grunt_avoid_box:
-                if (type == retron::entity_box_type::level)
+                if (type == retron::entity_box_type::level && this->entities_.entity_type(entity) == retron::entity_type::level_box)
                 {
                     this->registry.emplace_or_replace<::grunt_avoid_dirty_component>(entity);
                 }

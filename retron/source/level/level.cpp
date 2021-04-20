@@ -184,16 +184,18 @@ entt::entity retron::level::create_electrode(retron::entity_type type, const ff:
 
 entt::entity retron::level::create_grunt(retron::entity_type type, const ff::point_fixed& pos)
 {
+    const size_t max_delay_particles = 128;
+
     entt::entity entity = this->create_entity(type, pos);
     size_t grunt_index = this->registry.size<::grunt_data>();
     this->registry.emplace<::grunt_data>(entity, grunt_index, this->pick_grunt_move_counter(), pos);
 
     retron::particles::effect_options options;
-    options.delay = static_cast<int>(grunt_index);
+    options.delay = static_cast<int>(grunt_index % max_delay_particles);
     options.rotate = ff::math::random_range(1, 10) > 2 ? 90 : 0;
     options.spin = options.rotate;
     int effect_id = this->particle_effects["grunt_start"].add(this->particles, pos, &options);
-    this->registry.emplace<::particle_effect_follows_entity>(entity, ::particle_effect_follows_entity{ effect_id, ff::point_fixed(0, 0) });
+    this->registry.emplace<::particle_effect_follows_entity>(entity, effect_id, ff::point_fixed(0, 0));
 
     return entity;
 }
@@ -220,11 +222,10 @@ entt::entity retron::level::create_player(size_t index_in_level)
 
 entt::entity retron::level::create_player_bullet(entt::entity player, ff::point_fixed shot_pos, ff::point_fixed shot_dir)
 {
-    ff::point_fixed vel(this->difficulty_spec_.player_shot_move * shot_dir.x, this->difficulty_spec_.player_shot_move * shot_dir.y);
-    entt::entity entity = this->create_entity(entity_type::player_bullet, shot_pos + vel);
+    entt::entity entity = this->create_entity(entity_type::player_bullet, shot_pos + shot_dir * this->difficulty_spec_.player_shot_start_offset);
     this->registry.emplace<::player_bullet_data>(entity, player, this->frame_count);
 
-    this->position.velocity(entity, vel);
+    this->position.velocity(entity, shot_dir * this->difficulty_spec_.player_shot_move);
     this->position.rotation(entity, helpers::dir_to_degrees(shot_dir));
 
     return entity;
@@ -527,16 +528,25 @@ void retron::level::handle_entity_collision(entt::entity entity1, entt::entity e
 
     switch (type1)
     {
+        case entity_box_type::player:
+            switch (type2)
+            {
+                case entity_box_type::obstacle:
+                    break;
+            }
+            break;
+
         case entity_box_type::enemy:
             switch (type2)
             {
+                case entity_box_type::obstacle:
                 case entity_box_type::player_bullet:
                     switch (this->entities.entity_type(entity1))
                     {
                         case entity_type::grunt:
                             {
                                 retron::particles::effect_options options;
-                                options.rotate = this->position.velocity_as_angle(entity2);
+                                options.rotate = this->position.velocity_as_angle((type2 == entity_box_type::player_bullet) ? entity2 : entity1);
 
                                 this->particle_effects["grunt_destroy"].add(
                                     this->particles, this->bounds_box(entity1).center(), &options);

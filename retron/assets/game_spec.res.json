@@ -27,6 +27,7 @@
           "player_move": 1,
           "player_move_frame_divisor": 2,
           "player_shot_move": 6,
+          "player_shot_start_offset": 10,
           "player_shot_counter": 8
         },
 

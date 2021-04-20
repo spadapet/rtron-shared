@@ -21,6 +21,7 @@ static retron::difficulty_spec load_difficulty_spec(const ff::dict& dict, const 
     diff_spec.player_move = ::get_value<ff::fixed_int>(dict, default_dict, "player_move");
     diff_spec.player_move_frame_divisor = ::get_value<ff::fixed_int>(dict, default_dict, "player_move_frame_divisor");
     diff_spec.player_shot_move = ::get_value<ff::fixed_int>(dict, default_dict, "player_shot_move");
+    diff_spec.player_shot_start_offset = ::get_value<ff::fixed_int>(dict, default_dict, "player_shot_start_offset");
     diff_spec.player_shot_counter = ::get_value<size_t>(dict, default_dict, "player_shot_counter");
 
     return diff_spec;

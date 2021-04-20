@@ -54,6 +54,7 @@ namespace retron
         ff::fixed_int player_move;
         ff::fixed_int player_move_frame_divisor;
         ff::fixed_int player_shot_move;
+        ff::fixed_int player_shot_start_offset;
     };
 
     struct game_spec
