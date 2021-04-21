@@ -208,7 +208,7 @@ retron::particles::spec_t::spec_t(const ff::dict& dict)
     this->life = ::read_pair<int>(dict, "life", 32, 32, nullptr);
 
     this->dist = ::read_pair<ff::fixed_int>(dict, "distance", 0, 0, nullptr);
-    this->dist_vel = ::read_pair<ff::fixed_int>(dict, "velocity", 1, 1, nullptr);
+    this->dist_vel = ::read_pair<ff::fixed_int>(dict, "velocity", 0, 0, nullptr);
     this->size = ::read_pair<ff::fixed_int>(dict, "size", 1, 1, nullptr);
     this->angle = ::read_pair<ff::fixed_int>(dict, "angle", 0, 360, &has_angle);
     this->angle_vel = ::read_pair<ff::fixed_int>(dict, "angle_velocity", 0, 0, nullptr);

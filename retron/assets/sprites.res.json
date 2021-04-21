@@ -15,68 +15,41 @@
         "size": [ 9, 15 ],
         "handle": [ 4, 15 ]
       },
-      "player_part0":
+      "player_part_left":
       {
         "file": "file:graphics/player.png",
-        "pos": [ 10, 0 ],
-        "size": [ 9, 15 ],
-        "handle": [ 2, 2 ]
+        "pos": [ 4, 0 ],
+        "size": [ 1, 15 ],
+        "handle": [ 0, 8 ],
+        "offset": [ -1, 0 ],
+        "repeat": 5
       },
-      "player_part1":
+      "player_part_right":
       {
         "file": "file:graphics/player.png",
-        "pos": [ 20, 0 ],
-        "size": [ 9, 15 ],
-        "handle": [ 6, 2 ]
+        "pos": [ 4, 0 ],
+        "size": [ 1, 15 ],
+        "handle": [ 0, 8 ],
+        "offset": [ -1, 0 ],
+        "repeat": 5
       },
-      "player_part2":
+      "player_part_top":
       {
         "file": "file:graphics/player.png",
-        "pos": [ 30, 0 ],
-        "size": [ 9, 15 ],
-        "handle": [ 4, 5 ]
+        "pos": [ 4, 0 ],
+        "size": [ 1, 15 ],
+        "handle": [ 0, 8 ],
+        "offset": [ -1, 0 ],
+        "repeat": 5
       },
-      "player_part3":
+      "player_part_bottom":
       {
         "file": "file:graphics/player.png",
-        "pos": [ 40, 0 ],
-        "size": [ 9, 15 ],
-        "handle": [ 4, 3 ]
-      },
-      "player_part4":
-      {
-        "file": "file:graphics/player.png",
-        "pos": [ 50, 0 ],
-        "size": [ 9, 15 ],
-        "handle": [ 4, 10 ]
-      },
-      "player_part5":
-      {
-        "file": "file:graphics/player.png",
-        "pos": [ 60, 0 ],
-        "size": [ 9, 15 ],
-        "handle": [ 3, 12 ]
-      },
-      "player_part6":
-      {
-        "file": "file:graphics/player.png",
-        "pos": [ 70, 0 ],
-        "size": [ 9, 15 ],
-        "handle": [ 5, 12 ]
-      },
-      "player_part7":
-      {
-        "file": "file:graphics/player.png",
-        "pos": [ 80, 0 ],
-        "size": [ 9, 15 ],
-        "handle": [ 1, 9 ]
-      },
-      "player_part8":
-      {
-        "file": "file:graphics/player.png",
-        "pos": [ 90, 0 ],
-        "size": [ 9, 15 ],
-        "handle": [ 7, 9 ]
+        "pos": [ 4, 0 ],
+        "size": [ 1, 15 ],
+        "handle": [ 0, 8 ],
+        "offset": [ -1, 0 ],
+        "repeat": 5
       },
       "player_walk_down":
       {
@@ -169,13 +142,47 @@
         "size": [ 13, 16 ],
         "handle": [ 6, 16 ]
       },
-      "grunt_part":
+      "grunt_dither":
       {
         "file": "file:graphics/grunt.png",
         "pos": [ 14, 0 ],
-        "size": [ 2, 12 ],
-        "handle": [ 0, 6 ],
-        "offset": [ 3, 0 ],
+        "size": [ 13, 16 ],
+        "handle": [ 6, 8 ]
+      },
+      "grunt_part_left":
+      {
+        "file": "file:graphics/grunt.png",
+        "pos": [ 20, 0 ],
+        "size": [ 1, 16 ],
+        "handle": [ 0, 8 ],
+        "offset": [ -1, 0 ],
+        "repeat": 6
+      },
+      "grunt_part_right":
+      {
+        "file": "file:graphics/grunt.png",
+        "pos": [ 20, 0 ],
+        "size": [ 1, 16 ],
+        "handle": [ 0, 8 ],
+        "offset": [ 1, 0 ],
+        "repeat": 6
+      },
+      "grunt_part_top":
+      {
+        "file": "file:graphics/grunt.png",
+        "pos": [ 14, 8 ],
+        "size": [ 13, 1 ],
+        "handle": [ 5, 0 ],
+        "offset": [ 0, -1 ],
+        "repeat": 8
+      },
+      "grunt_part_bottom":
+      {
+        "file": "file:graphics/grunt.png",
+        "pos": [ 14, 8 ],
+        "size": [ 13, 1 ],
+        "handle": [ 5, 0 ],
+        "offset": [ 0, 1 ],
         "repeat": 8
       },
 

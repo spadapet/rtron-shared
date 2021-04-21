@@ -125,6 +125,7 @@ void retron::level::advance(const ff::rect_fixed& camera_rect)
     ff::end_scope_action particle_scope = this->particles.advance_async();
     this->enum_entities(std::bind(&retron::level::advance_entity, this, std::placeholders::_1, std::placeholders::_2));
     this->handle_collisions();
+    particle_scope.end_now();
     this->advance_particle_effect_positions();
     this->entities.flush_delete();
 }
@@ -192,9 +193,10 @@ entt::entity retron::level::create_grunt(retron::entity_type type, const ff::poi
 
     retron::particles::effect_options options;
     options.delay = static_cast<int>(grunt_index % max_delay_particles);
-    options.rotate = ff::math::random_range(1, 10) > 2 ? 90 : 0;
-    options.spin = options.rotate;
-    int effect_id = this->particle_effects["grunt_start"].add(this->particles, pos, &options);
+
+    bool vertical = ff::math::random_range(1, 10) > 2 ? true : false;
+    ff::point_fixed center = this->collision.box(entity, retron::collision_box_type::bounds_box).center();
+    int effect_id = this->particle_effects[vertical ? "grunt_start_90" : "grunt_start_0"].add(this->particles, center, &options);
     this->registry.emplace<::particle_effect_follows_entity>(entity, effect_id, ff::point_fixed(0, 0));
 
     return entity;
@@ -546,10 +548,43 @@ void retron::level::handle_entity_collision(entt::entity entity1, entt::entity e
                         case entity_type::grunt:
                             {
                                 retron::particles::effect_options options;
-                                options.rotate = this->position.velocity_as_angle((type2 == entity_box_type::player_bullet) ? entity2 : entity1);
+                                options.reverse = true;
 
-                                this->particle_effects["grunt_destroy"].add(
-                                    this->particles, this->bounds_box(entity1).center(), &options);
+                                std::string_view name;
+                                ff::point_fixed center = this->bounds_box(entity1).center();
+                                bool bullet = (type2 == entity_box_type::player_bullet);
+
+                                switch (retron::helpers::dir_to_index(this->position.velocity(bullet ? entity2 : entity1)))
+                                {
+                                    case 0:
+                                    case 4:
+                                        name = "grunt_start_90";
+                                        break;
+
+                                    case 1:
+                                    case 5:
+                                        options.rotate = 45;
+                                        name = "grunt_start_0";
+                                        break;
+
+                                    case 2:
+                                    case 6:
+                                        name = "grunt_start_0";
+                                        break;
+
+                                    case 3:
+                                    case 7:
+                                        options.rotate = -45;
+                                        name = "grunt_start_0";
+                                        break;
+                                }
+
+                                this->particle_effects[name].add(this->particles, center, &options);
+
+                                if (bullet)
+                                {
+                                    this->particle_effects["player_bullet_hit_bounds"].add(this->particles, center);
+                                }
                             }
                             break;
                     }

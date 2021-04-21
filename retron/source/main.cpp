@@ -16,7 +16,7 @@
 #include "xaml.res.h"
 
 static const std::string_view NOESIS_NAME = "d704047b-5bd2-4757-9858-6a7d86cdd006";
-static const std::string_view NOESIS_KEY = "B/+52Cy2udj84658Qvc+tLTo9Yv7ZNqBhmykexFIA6nbnVl0";
+static const std::string_view NOESIS_KEY = "XaF+9Q3ofvVyKbWLQjHLzZX4TXA3oZ1KMGkG3QQyP1+2TQca";
 static std::weak_ptr<retron::app_state> weak_app_state;
 
 static void register_components()

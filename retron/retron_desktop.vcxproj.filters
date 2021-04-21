@@ -166,6 +166,9 @@
     <Filter Include="source\level">
       <UniqueIdentifier>{4ccfe908-fd8d-4346-8487-57b266bc6a62}</UniqueIdentifier>
     </Filter>
+    <Filter Include="assets\levels">
+      <UniqueIdentifier>{bab9ac1f-78f9-46e9-ad86-c7d73f8729cd}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="source\resource.rc">
@@ -194,5 +197,10 @@
     <ResJson Include="assets\sprites.res.json">
       <Filter>assets</Filter>
     </ResJson>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="assets\levels\level_001.json">
+      <Filter>assets\levels</Filter>
+    </None>
   </ItemGroup>
 </Project>

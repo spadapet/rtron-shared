@@ -133,6 +133,9 @@
       <FileType>Document</FileType>
     </ResJson>
   </ItemGroup>
+  <ItemGroup>
+    <None Include="assets\levels\level_001.json" />
+  </ItemGroup>
   <Import Project="$(FFRoot)build\cpp.targets" />
   <Target Name="AfterBuild">
     <Copy SourceFiles="$(NoesisDll)" DestinationFolder="$(OutDir)" SkipUnchangedFiles="True" />

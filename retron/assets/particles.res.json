@@ -53,63 +53,67 @@
       }
     ],
 
-    "grunt_destroy":
+    "grunt_start_0":
     [
       {
-        "life": [ 24, 40 ],
-        "delay": [ 0, 0 ],
-        "count": [ 32, 32 ],
-        "distance": [ 0, 8 ],
-        "velocity": [ 0.125, 1.5 ],
-        "colors": [ 232, 248 ],
-        "angle": [ 0, 360 ],
-        "angle_velocity": [ 0.125, 1 ],
-        "scale": [ 0.1875, 1 ],
-        "size": [ 2, 2 ]
+        "life": [ 10, 30 ],
+        "delay": [ 0, 8 ],
+        "count": [ 12, 12 ],
+        "distance": [ 0, 2 ],
+        "velocity": [ 1, 8 ],
+        "animations": [ "ref:sprites.grunt_part_right[0]", "ref:sprites.grunt_part_right[1]", "ref:sprites.grunt_part_right[2]", "ref:sprites.grunt_part_right[3]", "ref:sprites.grunt_part_right[4]", "ref:sprites.grunt_part_right[5]" ],
+        "angle": 0,
+        "reverse": true
       },
       {
-        "life": [ 32, 80 ],
-        "delay": [ 0, 0 ],
-        "count": [ 64, 64 ],
-        "distance": [ 0, 4 ],
-        "velocity": [ 0.5, 2.5 ],
-        "colors": [ 232, 232, 233, 234 ],
-        "angle": [ 0, 360 ],
-        "angle_velocity": [ 0.125, 0.5 ],
-        "scale": [ 0.1875, 1 ],
-        "size": [ 1, 1 ]
+        "life": [ 10, 30 ],
+        "delay": [ 0, 8 ],
+        "count": [ 12, 12 ],
+        "distance": [ 0, 2 ],
+        "velocity": [ 1, 8 ],
+        "animations": [ "ref:sprites.grunt_part_left[0]", "ref:sprites.grunt_part_left[1]", "ref:sprites.grunt_part_left[2]", "ref:sprites.grunt_part_left[3]", "ref:sprites.grunt_part_left[4]", "ref:sprites.grunt_part_left[5]" ],
+        "angle": 180,
+        "reverse": true
+      },
+      {
+        "life": 6,
+        "delay": 32,
+        "count": 1,
+        "distance": 0,
+        "animations": [ "ref:sprites.grunt_dither" ],
+        "angle": 0
       }
     ],
 
-    "grunt_start":
+    "grunt_start_90":
     [
       {
-        "life": [ 20, 60 ],
-        "delay": [ 0, 16 ],
-        "count": [ 16, 16 ],
-        "distance": [ 0, 4 ],
-        "velocity": [ 0.25, 4 ],
-        "animations": [ "ref:sprites.grunt_part[0]", "ref:sprites.grunt_part[1]", "ref:sprites.grunt_part[2]", "ref:sprites.grunt_part[3]", "ref:sprites.grunt_part[4]", "ref:sprites.grunt_part[5]", "ref:sprites.grunt_part[6]", "ref:sprites.grunt_part[7]" ],
-        "angle": [ -10, 10 ],
-        "angle_velocity": [ 0, 0 ],
-        "spin": [ 0, 0 ],
-        "spin_velocity": [ 0, 0 ],
-        "scale": [ 1, 1 ],
+        "life": [ 10, 30 ],
+        "delay": [ 0, 8 ],
+        "count": [ 12, 12 ],
+        "distance": [ 0, 2 ],
+        "velocity": [ 1, 6 ],
+        "animations": [ "ref:sprites.grunt_part_bottom[0]", "ref:sprites.grunt_part_bottom[1]", "ref:sprites.grunt_part_bottom[2]", "ref:sprites.grunt_part_bottom[3]", "ref:sprites.grunt_part_bottom[4]", "ref:sprites.grunt_part_bottom[5]", "ref:sprites.grunt_part_bottom[6]", "ref:sprites.grunt_part_bottom[7]" ],
+        "angle": 270,
         "reverse": true
       },
       {
-        "life": [ 20, 60 ],
-        "delay": [ 0, 16 ],
-        "count": [ 16, 16 ],
-        "distance": [ 0, 4 ],
-        "velocity": [ 0.25, 4 ],
-        "animations": [ "ref:sprites.grunt_part[0]", "ref:sprites.grunt_part[1]", "ref:sprites.grunt_part[2]", "ref:sprites.grunt_part[3]", "ref:sprites.grunt_part[4]", "ref:sprites.grunt_part[5]", "ref:sprites.grunt_part[6]", "ref:sprites.grunt_part[7]" ],
-        "angle": [ 170, 190 ],
-        "angle_velocity": [ 0, 0 ],
-        "spin": [ 0, 0 ],
-        "spin_velocity": [ 0, 0 ],
-        "scale": [ 1, 1 ],
+        "life": [ 10, 30 ],
+        "delay": [ 0, 8 ],
+        "count": [ 12, 12 ],
+        "distance": [ 0, 2 ],
+        "velocity": [ 1, 6 ],
+        "animations": [ "ref:sprites.grunt_part_top[0]", "ref:sprites.grunt_part_top[1]", "ref:sprites.grunt_part_top[2]", "ref:sprites.grunt_part_top[3]", "ref:sprites.grunt_part_top[4]", "ref:sprites.grunt_part_top[5]", "ref:sprites.grunt_part_top[6]", "ref:sprites.grunt_part_top[7]" ],
+        "angle": 90,
         "reverse": true
+      },
+      {
+        "life": 6,
+        "delay": 32,
+        "count": 1,
+        "distance": 0,
+        "animations": [ "ref:sprites.grunt_dither" ],
+        "angle": 0
       }
     ]
   }
