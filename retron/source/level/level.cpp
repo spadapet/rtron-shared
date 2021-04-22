@@ -216,7 +216,7 @@ entt::entity retron::level::create_player(size_t index_in_level)
     retron::particles::effect_options options;
     options.type = static_cast<uint8_t>(player.index);
 
-    int effect_id = this->particle_effects["player_enter"].add(this->particles, pos, &options);
+    int effect_id = this->particle_effects["player_start"].add(this->particles, pos, &options);
     this->registry.emplace<::particle_effect_follows_entity>(entity, ::particle_effect_follows_entity{ effect_id, ff::point_fixed(0, 0) });
 
     return entity;

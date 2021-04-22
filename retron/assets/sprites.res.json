@@ -15,6 +15,13 @@
         "size": [ 9, 15 ],
         "handle": [ 4, 15 ]
       },
+      "player_dither":
+      {
+        "file": "file:graphics/player.png",
+        "pos": [ 10, 0 ],
+        "size": [ 9, 15 ],
+        "handle": [ 4, 8 ]
+      },
       "player_part_left":
       {
         "file": "file:graphics/player.png",
@@ -30,26 +37,26 @@
         "pos": [ 4, 0 ],
         "size": [ 1, 15 ],
         "handle": [ 0, 8 ],
-        "offset": [ -1, 0 ],
+        "offset": [ 1, 0 ],
         "repeat": 5
       },
       "player_part_top":
       {
         "file": "file:graphics/player.png",
-        "pos": [ 4, 0 ],
-        "size": [ 1, 15 ],
-        "handle": [ 0, 8 ],
-        "offset": [ -1, 0 ],
-        "repeat": 5
+        "pos": [ 0, 7 ],
+        "size": [ 9, 1 ],
+        "handle": [ 4, 0 ],
+        "offset": [ 0, -1 ],
+        "repeat": 8
       },
       "player_part_bottom":
       {
         "file": "file:graphics/player.png",
-        "pos": [ 4, 0 ],
-        "size": [ 1, 15 ],
-        "handle": [ 0, 8 ],
-        "offset": [ -1, 0 ],
-        "repeat": 5
+        "pos": [ 0, 7 ],
+        "size": [ 9, 1 ],
+        "handle": [ 4, 0 ],
+        "offset": [ 0, 1 ],
+        "repeat": 8
       },
       "player_walk_down":
       {

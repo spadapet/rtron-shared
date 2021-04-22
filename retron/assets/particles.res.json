@@ -1,6 +1,19 @@
 {
   "res:namespace": "assets::particles",
 
+  "res:values":
+  {
+    "player_start_particles":
+    {
+      "life": [ 60, 90 ],
+      "delay": [ 0, 20 ],
+      "count": [ 32, 32 ],
+      "distance": [ 0, 2 ],
+      "velocity": [ 1, 16 ],
+      "reverse": true
+    }
+  },
+
   "level_particles":
   {
     "player_bullet_hit_bounds":
@@ -22,34 +35,55 @@
       }
     ],
 
-    "player_enter":
+    "player_start":
     [
       {
-        "life": [ 32, 128 ],
-        "delay": [ 0, 32 ],
-        "count": [ 32, 32 ],
-        "distance": [ 0, 8 ],
-        "velocity": [ 0.5, 2 ],
-        "animations": [ "ref:sprites.player_part0", "ref:sprites.player_part1", "ref:sprites.player_part2", "ref:sprites.player_part3", "ref:sprites.player_part4", "ref:sprites.player_part5", "ref:sprites.player_part6", "ref:sprites.player_part7", "ref:sprites.player_part8" ],
-        "angle": [ 0, 360 ],
-        "angle_velocity": [ 0.125, 1 ],
-        "spin": [ 0, 360 ],
-        "spin_velocity": [ 0.5, 4 ],
-        "scale": [ 0.25, 1 ],
-        "reverse": true
+        "res:template": "player_start_particles",
+        "animations": [ "ref:sprites.player_part_right[0]", "ref:sprites.player_part_right[1]", "ref:sprites.player_part_right[2]", "ref:sprites.player_part_right[3]", "ref:sprites.player_part_right[4]" ],
+        "angle": 0
       },
       {
-        "life": [ 32, 128 ],
-        "delay": [ 0, 32 ],
-        "count": [ 64, 64],
-        "size": [ 1, 2 ],
-        "distance": [ 0, 8 ],
-        "velocity": [ 0.5, 2 ],
-        "colors": [ 112, 230, 231, 232, 233, 239 ],
-        "angle": [ 0, 360 ],
-        "angle_velocity": [ 0.125, 1 ],
-        "scale": [ 0.25, 1 ],
-        "reverse": true
+        "res:template": "player_start_particles",
+        "animations": [ "ref:sprites.player_part_right[0]", "ref:sprites.player_part_right[1]", "ref:sprites.player_part_right[2]", "ref:sprites.player_part_right[3]", "ref:sprites.player_part_right[4]" ],
+        "angle": 45
+      },
+      {
+        "res:template": "player_start_particles",
+        "animations": [ "ref:sprites.player_part_right[0]", "ref:sprites.player_part_right[1]", "ref:sprites.player_part_right[2]", "ref:sprites.player_part_right[3]", "ref:sprites.player_part_right[4]" ],
+        "angle": 315
+      },
+      {
+        "res:template": "player_start_particles",
+        "animations": [ "ref:sprites.player_part_left[0]", "ref:sprites.player_part_left[1]", "ref:sprites.player_part_left[2]", "ref:sprites.player_part_left[3]", "ref:sprites.player_part_left[4]" ],
+        "angle": 180
+      },
+      {
+        "res:template": "player_start_particles",
+        "animations": [ "ref:sprites.player_part_left[0]", "ref:sprites.player_part_left[1]", "ref:sprites.player_part_left[2]", "ref:sprites.player_part_left[3]", "ref:sprites.player_part_left[4]" ],
+        "angle": 135
+      },
+      {
+        "res:template": "player_start_particles",
+        "animations": [ "ref:sprites.player_part_left[0]", "ref:sprites.player_part_left[1]", "ref:sprites.player_part_left[2]", "ref:sprites.player_part_left[3]", "ref:sprites.player_part_left[4]" ],
+        "angle": 225
+      },
+      {
+        "res:template": "player_start_particles",
+        "animations": [ "ref:sprites.player_part_top[0]", "ref:sprites.player_part_top[1]", "ref:sprites.player_part_top[2]", "ref:sprites.player_part_top[3]", "ref:sprites.player_part_top[4]", "ref:sprites.player_part_top[5]", "ref:sprites.player_part_top[6]", "ref:sprites.player_part_top[7]" ],
+        "angle": 90
+      },
+      {
+        "res:template": "player_start_particles",
+        "animations": [ "ref:sprites.player_part_bottom[0]", "ref:sprites.player_part_bottom[1]", "ref:sprites.player_part_bottom[2]", "ref:sprites.player_part_bottom[3]", "ref:sprites.player_part_bottom[4]", "ref:sprites.player_part_bottom[5]", "ref:sprites.player_part_bottom[6]", "ref:sprites.player_part_bottom[7]" ],
+        "angle": 270
+      },
+      {
+        "life": 20,
+        "delay": 90,
+        "count": 1,
+        "distance": 0,
+        "animations": [ "ref:sprites.player_dither" ],
+        "angle": 0
       }
     ],
 
