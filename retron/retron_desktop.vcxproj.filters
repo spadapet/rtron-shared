@@ -71,6 +71,30 @@
     <ClCompile Include="source\states\ui_view_state.cpp">
       <Filter>source\states</Filter>
     </ClCompile>
+    <ClCompile Include="source\assets\controls.res.cpp">
+      <Filter>source\assets</Filter>
+    </ClCompile>
+    <ClCompile Include="source\assets\electrode.res.cpp">
+      <Filter>source\assets</Filter>
+    </ClCompile>
+    <ClCompile Include="source\assets\game_spec.res.cpp">
+      <Filter>source\assets</Filter>
+    </ClCompile>
+    <ClCompile Include="source\assets\graphics.res.cpp">
+      <Filter>source\assets</Filter>
+    </ClCompile>
+    <ClCompile Include="source\assets\particles.res.cpp">
+      <Filter>source\assets</Filter>
+    </ClCompile>
+    <ClCompile Include="source\assets\player.res.cpp">
+      <Filter>source\assets</Filter>
+    </ClCompile>
+    <ClCompile Include="source\assets\sprites.res.cpp">
+      <Filter>source\assets</Filter>
+    </ClCompile>
+    <ClCompile Include="source\assets\xaml.res.cpp">
+      <Filter>source\assets</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h" />
@@ -169,6 +193,9 @@
     <Filter Include="assets\levels">
       <UniqueIdentifier>{bab9ac1f-78f9-46e9-ad86-c7d73f8729cd}</UniqueIdentifier>
     </Filter>
+    <Filter Include="source\assets">
+      <UniqueIdentifier>{e5ff3d30-f7b2-47a2-a482-b082dbc0e12c}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="source\resource.rc">
@@ -195,6 +222,9 @@
       <Filter>assets</Filter>
     </ResJson>
     <ResJson Include="assets\sprites.res.json">
+      <Filter>assets</Filter>
+    </ResJson>
+    <ResJson Include="assets\electrode.res.json">
       <Filter>assets</Filter>
     </ResJson>
   </ItemGroup>

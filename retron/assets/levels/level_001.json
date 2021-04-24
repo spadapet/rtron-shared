@@ -94,12 +94,12 @@
                         {
                          "name":"electrode",
                          "type":"int",
-                         "value":60
+                         "value":15
                         }, 
                         {
                          "name":"grunt",
                          "type":"int",
-                         "value":120
+                         "value":50
                         }],
                  "rotation":0,
                  "type":"objects",

@@ -6,14 +6,17 @@
 #include "source/ui/particle_lab_page.xaml.h"
 #include "source/ui/title_page.xaml.h"
 
-// Resource assets
-#include "controls.res.h"
-#include "game_spec.res.h"
-#include "graphics.res.h"
-#include "particles.res.h"
-#include "player.res.h"
-#include "sprites.res.h"
-#include "xaml.res.h"
+namespace res
+{
+    void register_controls();
+    void register_electrode();
+    void register_game_spec();
+    void register_graphics();
+    void register_particles();
+    void register_player();
+    void register_sprites();
+    void register_xaml();
+}
 
 static const std::string_view NOESIS_NAME = "d704047b-5bd2-4757-9858-6a7d86cdd006";
 static const std::string_view NOESIS_KEY = "XaF+9Q3ofvVyKbWLQjHLzZX4TXA3oZ1KMGkG3QQyP1+2TQca";
@@ -21,13 +24,14 @@ static std::weak_ptr<retron::app_state> weak_app_state;
 
 static void register_components()
 {
-    ff::global_resources::add(::assets::controls::data());
-    ff::global_resources::add(::assets::game_spec::data());
-    ff::global_resources::add(::assets::graphics::data());
-    ff::global_resources::add(::assets::particles::data());
-    ff::global_resources::add(::assets::player::data());
-    ff::global_resources::add(::assets::sprites::data());
-    ff::global_resources::add(::assets::xaml::data());
+    ::res::register_controls();
+    ::res::register_electrode();
+    ::res::register_game_spec();
+    ::res::register_graphics();
+    ::res::register_particles();
+    ::res::register_player();
+    ::res::register_sprites();
+    ::res::register_xaml();
 
     Noesis::RegisterComponent<Noesis::EnumConverter<retron::game_flags>>();
     Noesis::RegisterComponent<Noesis::EnumConverter<retron::game_players>>();

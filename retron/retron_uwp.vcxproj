@@ -29,6 +29,14 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="source\assets\controls.res.cpp" />
+    <ClCompile Include="source\assets\electrode.res.cpp" />
+    <ClCompile Include="source\assets\game_spec.res.cpp" />
+    <ClCompile Include="source\assets\graphics.res.cpp" />
+    <ClCompile Include="source\assets\particles.res.cpp" />
+    <ClCompile Include="source\assets\player.res.cpp" />
+    <ClCompile Include="source\assets\sprites.res.cpp" />
+    <ClCompile Include="source\assets\xaml.res.cpp" />
     <ClCompile Include="source\level\collision.cpp" />
     <ClCompile Include="source\level\entities.cpp" />
     <ClCompile Include="source\level\level.cpp" />
@@ -106,6 +114,9 @@
       <FileType>Document</FileType>
     </ResJson>
     <ResJson Include="assets\sprites.res.json">
+      <FileType>Document</FileType>
+    </ResJson>
+    <ResJson Include="assets\electrode.res.json">
       <FileType>Document</FileType>
     </ResJson>
     <None Include="retron_TemporaryKey.pfx" />

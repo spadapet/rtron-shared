@@ -16,6 +16,18 @@
 
   "level_particles":
   {
+    "electrode_die":
+    [
+      {
+        "life": [ 16, 24 ],
+        "count": [ 32, 48 ],
+        "distance": [ 5, 7 ],
+        "velocity": [ 0.5, 2 ],
+        "angle": [ 0, 360 ],
+        "colors": [ 230, 230, 231, 231 ]
+      }
+    ],
+
     "player_bullet_hit_bounds":
     [
       {

@@ -68,6 +68,30 @@
     <ClCompile Include="source\ui\particle_lab_page.xaml.cpp">
       <Filter>source\ui</Filter>
     </ClCompile>
+    <ClCompile Include="source\assets\controls.res.cpp">
+      <Filter>source\assets</Filter>
+    </ClCompile>
+    <ClCompile Include="source\assets\electrode.res.cpp">
+      <Filter>source\assets</Filter>
+    </ClCompile>
+    <ClCompile Include="source\assets\game_spec.res.cpp">
+      <Filter>source\assets</Filter>
+    </ClCompile>
+    <ClCompile Include="source\assets\graphics.res.cpp">
+      <Filter>source\assets</Filter>
+    </ClCompile>
+    <ClCompile Include="source\assets\particles.res.cpp">
+      <Filter>source\assets</Filter>
+    </ClCompile>
+    <ClCompile Include="source\assets\player.res.cpp">
+      <Filter>source\assets</Filter>
+    </ClCompile>
+    <ClCompile Include="source\assets\sprites.res.cpp">
+      <Filter>source\assets</Filter>
+    </ClCompile>
+    <ClCompile Include="source\assets\xaml.res.cpp">
+      <Filter>source\assets</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h" />
@@ -311,6 +335,7 @@
     <None Include="$(NoesisDll)" />
     <None Include="$(NoesisDll)" />
     <None Include="$(NoesisDll)" />
+    <None Include="$(NoesisDll)" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="source">
@@ -336,6 +361,9 @@
     </Filter>
     <Filter Include="source\level">
       <UniqueIdentifier>{98c1530f-56f7-4ae8-b02b-4b41628a7882}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="source\assets">
+      <UniqueIdentifier>{447e6b8c-cb6c-4d00-9fd5-d98cf58a745c}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -363,6 +391,9 @@
       <Filter>assets</Filter>
     </ResJson>
     <ResJson Include="assets\sprites.res.json">
+      <Filter>assets</Filter>
+    </ResJson>
+    <ResJson Include="assets\electrode.res.json">
       <Filter>assets</Filter>
     </ResJson>
   </ItemGroup>

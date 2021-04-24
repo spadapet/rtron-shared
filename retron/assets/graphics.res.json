@@ -4,7 +4,7 @@
   "palette_main":
   {
     "res:type": "palette",
-    "file": "file:palette_main.png",
+    "file": "file:graphics/palette_main.png",
 
     "remaps":
     {
@@ -50,13 +50,13 @@
   {
     "res:type": "texture",
     "format": "pal",
-    "file": "file:transition_bg_1.png"
+    "file": "file:graphics/transition_bg_1.png"
   },
 
   "transition_bg_2.png":
   {
     "res:type": "texture",
     "format": "pal",
-    "file": "file:transition_bg_2.png"
+    "file": "file:graphics/transition_bg_2.png"
   }
 }

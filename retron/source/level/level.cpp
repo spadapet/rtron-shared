@@ -534,6 +534,7 @@ void retron::level::handle_entity_collision(entt::entity entity1, entt::entity e
             switch (type2)
             {
                 case entity_box_type::obstacle:
+                    this->entities.delay_delete(entity2);
                     break;
             }
             break;
@@ -593,6 +594,16 @@ void retron::level::handle_entity_collision(entt::entity entity1, entt::entity e
                     {
                         this->entities.delay_delete(entity1);
                     }
+                    break;
+            }
+            break;
+
+        case entity_box_type::obstacle:
+            switch (type2)
+            {
+                case entity_box_type::player_bullet:
+                    this->particle_effects["electrode_die"].add(this->particles, this->bounds_box(entity1).center());
+                    this->entities.delay_delete(entity1);
                     break;
             }
             break;

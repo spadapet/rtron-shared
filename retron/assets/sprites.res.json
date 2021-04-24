@@ -198,7 +198,16 @@
         "file": "file:graphics/electrodes.png",
         "pos": [ 0, 0 ],
         "size": [ 11, 11 ],
-        "handle": [ 0, 0 ],
+        "handle": [ 5, 5 ],
+        "offset": [ 12, 0 ],
+        "repeat": 3
+      },
+      "electrode_die":
+      {
+        "file": "file:graphics/electrodes.png",
+        "pos": [ 0, 12 ],
+        "size": [ 11, 11 ],
+        "handle": [ 5, 5 ],
         "offset": [ 12, 0 ],
         "repeat": 3
       }

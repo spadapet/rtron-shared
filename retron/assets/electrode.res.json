@@ -1,0 +1,66 @@
+{
+  "res:namespace": "assets::electrode"
+
+  /*
+  "res:values":
+  {
+    "anim.six_frame_loop":
+    {
+      "res:type": "electrode_die",
+      "length": 30,
+      "fps": 60,
+      "visuals": [ { "visual": "sprite", "rotate": "rotate", "scale": "scale" } ],
+      "keys":
+      {
+        "sprite":
+        {
+          "length": 30,
+          "values":
+          [
+            { "frame": 0, "value": [ "res:sprite" ] }
+          ]
+        }
+      },
+      "events":
+      [
+        {
+          "frame": 0,
+          "name": "new_particles",
+          "params": { "name": "electrode_die"  }
+        },
+        {
+          "frame": 30,
+          "name": "delete_animation"
+        }
+      ]
+    }
+  },
+
+  "anim.electrode_die[0]":
+  {
+    "res:template": "anim.electrode_die",
+    "res:values":
+    {
+      "sprite": "ref:sprites.electrode_die[0]"
+    }
+  },
+
+  "anim.electrode_die[1]":
+  {
+    "res:template": "anim.electrode_die",
+    "res:values":
+    {
+      "sprite": "ref:sprites.electrode_die[1]"
+    }
+  },
+
+  "anim.electrode_die[2]":
+  {
+    "res:template": "anim.electrode_die",
+    "res:values":
+    {
+      "sprite": "ref:sprites.electrode_die[2]"
+    }
+  }
+  */
+}
