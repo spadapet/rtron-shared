@@ -40,9 +40,12 @@ namespace retron
         void advance_particle_effect_positions();
 
         void handle_collisions();
-        void handle_bounds_collision(entt::entity entity1, entt::entity entity2);
-        void handle_player_bullet_bounds_collision(entt::entity entity);
-        void handle_entity_collision(entt::entity entity1, entt::entity entity2);
+        void handle_bounds_collision(entt::entity target_entity, entt::entity level_entity);
+        void handle_entity_collision(entt::entity target_entity, entt::entity source_entity);
+
+        void destroy_player_bullet(entt::entity bullet_entity, entt::entity by_entity);
+        void destroy_grunt(entt::entity grunt_entity, entt::entity by_entity);
+        void destroy_obstacle(entt::entity obstacle_entity, entt::entity by_entity);
 
         void render_particles(ff::draw_base& draw);
         void render_entity(entt::entity entity, retron::entity_type type, ff::draw_base& draw);

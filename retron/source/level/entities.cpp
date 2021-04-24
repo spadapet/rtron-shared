@@ -35,7 +35,7 @@ const ff::rect_fixed& retron::get_hit_box_spec(retron::entity_type type)
     {
         ff::rect_fixed(0, 0, 0, 0), // none
         ff::rect_fixed(-8, -1, 0, 1), // player_bullet
-        ff::rect_fixed(-4, -14, 5, 0), // player
+        ff::rect_fixed(-3, -10, 4, 0), // player
         ff::rect_fixed(-4, -8, 4, 0), // bonus_woman
         ff::rect_fixed(-4, -8, 4, 0), // bonus_man
         ff::rect_fixed(-4, -8, 4, 0), // bonus_child

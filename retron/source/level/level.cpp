@@ -68,6 +68,13 @@ static ff::point_fixed get_press_vector(const ff::input_event_provider& input_ev
     return ff::point_fixed(0, 0);
 }
 
+static size_t get_player_index_for_bullet(entt::registry& registry, entt::entity bullet_entity)
+{
+    ::player_bullet_data& bullet_data = registry.get<::player_bullet_data>(bullet_entity);
+    ::player_data* player_data = registry.valid(bullet_data.player) ? registry.try_get<::player_data>(bullet_data.player) : nullptr;
+    return player_data ? player_data->player.get().index : 0;
+}
+
 retron::level::level(const retron::level_service& level_service)
     : level_service_(level_service)
     , game_spec_(retron::app_service::get().game_spec())
@@ -463,17 +470,18 @@ void retron::level::handle_collisions()
         if (!this->entities.deleted(entity1) && !this->entities.deleted(entity2))
         {
             this->handle_entity_collision(entity1, entity2);
+            this->handle_entity_collision(entity2, entity1);
         }
     }
 }
 
-void retron::level::handle_bounds_collision(entt::entity entity1, entt::entity entity2)
+void retron::level::handle_bounds_collision(entt::entity target_entity, entt::entity level_entity)
 {
-    ff::rect_fixed old_rect = this->bounds_box(entity1);
+    ff::rect_fixed old_rect = this->bounds_box(target_entity);
     ff::rect_fixed new_rect = old_rect;
 
-    ff::rect_fixed level_rect = this->bounds_box(entity2);
-    entity_type level_type = this->entities.entity_type(entity2);
+    ff::rect_fixed level_rect = this->bounds_box(level_entity);
+    entity_type level_type = this->entities.entity_type(level_entity);
     switch (level_type)
     {
         case entity_type::level_bounds:
@@ -486,57 +494,34 @@ void retron::level::handle_bounds_collision(entt::entity entity1, entt::entity e
     }
 
     ff::point_fixed offset = new_rect.top_left() - old_rect.top_left();
-    ff::point_fixed pos = this->position.get(entity1) + offset;
-    this->position.set(entity1, pos);
+    ff::point_fixed pos = this->position.get(target_entity) + offset;
+    this->position.set(target_entity, pos);
 
-    switch (this->entities.entity_type(entity1))
+    switch (this->entities.entity_type(target_entity))
     {
         case entity_type::player_bullet:
-            this->handle_player_bullet_bounds_collision(entity1);
+            this->destroy_player_bullet(target_entity, level_entity);
             break;
     }
 }
 
-void retron::level::handle_player_bullet_bounds_collision(entt::entity entity)
+void retron::level::handle_entity_collision(entt::entity target_entity, entt::entity source_entity)
 {
-    this->entities.delay_delete(entity);
+    entity_box_type target_type = this->collision.box_type(target_entity, retron::collision_box_type::hit_box);
+    entity_box_type source_type = this->collision.box_type(source_entity, retron::collision_box_type::hit_box);
 
-    ff::point_fixed vel = this->position.velocity(entity);
-    ff::fixed_int angle = this->position.reverse_velocity_as_angle(entity);
-    ff::point_fixed pos = this->position.get(entity);
-    ff::point_fixed pos2(pos.x + (vel.x ? std::copysign(1_f, vel.x) : 0), pos.y + (vel.y ? std::copysign(1_f, vel.y) : 0));
-    std::array<ff::point_fixed, 2> pos_array{ pos, pos2 };
-
-    retron::particles::effect_options options;
-    options.angle = std::make_pair(angle - 60_f, angle + 60_f);
-
-    // Set palette for bullet particles
-    {
-        ::player_bullet_data& bullet_data = this->registry.get<::player_bullet_data>(entity);
-        ::player_data* player_data = this->registry.valid(bullet_data.player) ? this->registry.try_get<::player_data>(bullet_data.player) : nullptr;
-        if (player_data)
-        {
-            options.type = static_cast<uint8_t>(player_data->player.get().index);
-        }
-    }
-
-    this->particle_effects["player_bullet_hit_bounds"].add(this->particles, pos_array.data(), pos_array.size(), &options);
-}
-
-void retron::level::handle_entity_collision(entt::entity entity1, entt::entity entity2)
-{
-    entity_box_type type1 = this->collision.box_type(entity1, retron::collision_box_type::hit_box);
-    entity_box_type type2 = this->collision.box_type(entity2, retron::collision_box_type::hit_box);
-
-    switch (type1)
+    switch (target_type)
     {
         case entity_box_type::player:
-            switch (type2)
+            switch (source_type)
             {
                 case entity_box_type::obstacle:
-                    this->entities.delay_delete(entity2);
+                    this->destroy_obstacle(entity2, entity1);
                     break;
             }
+            break;
+
+        case entity_box_type::bonus:
             break;
 
         case entity_box_type::enemy:
@@ -547,46 +532,7 @@ void retron::level::handle_entity_collision(entt::entity entity1, entt::entity e
                     switch (this->entities.entity_type(entity1))
                     {
                         case entity_type::grunt:
-                            {
-                                retron::particles::effect_options options;
-                                options.reverse = true;
-
-                                std::string_view name;
-                                ff::point_fixed center = this->bounds_box(entity1).center();
-                                bool bullet = (type2 == entity_box_type::player_bullet);
-
-                                switch (retron::helpers::dir_to_index(this->position.velocity(bullet ? entity2 : entity1)))
-                                {
-                                    case 0:
-                                    case 4:
-                                        name = "grunt_start_90";
-                                        break;
-
-                                    case 1:
-                                    case 5:
-                                        options.rotate = 45;
-                                        name = "grunt_start_0";
-                                        break;
-
-                                    case 2:
-                                    case 6:
-                                        name = "grunt_start_0";
-                                        break;
-
-                                    case 3:
-                                    case 7:
-                                        options.rotate = -45;
-                                        name = "grunt_start_0";
-                                        break;
-                                }
-
-                                this->particle_effects[name].add(this->particles, center, &options);
-
-                                if (bullet)
-                                {
-                                    this->particle_effects["player_bullet_hit_bounds"].add(this->particles, center);
-                                }
-                            }
+                            this->destroy_grunt(entity1, entity2);
                             break;
                     }
 
@@ -619,7 +565,74 @@ void retron::level::handle_entity_collision(entt::entity entity1, entt::entity e
                     break;
             }
             break;
+
+        case entity_box_type::enemy_bullet:
+            break;
     }
+}
+
+void retron::level::destroy_player_bullet(entt::entity bullet_entity, entt::entity by_entity)
+{
+    this->entities.delay_delete(entity);
+
+    ff::point_fixed vel = this->position.velocity(entity);
+    ff::fixed_int angle = this->position.reverse_velocity_as_angle(entity);
+    ff::point_fixed pos = this->position.get(entity);
+    ff::point_fixed pos2(pos.x + (vel.x ? std::copysign(1_f, vel.x) : 0), pos.y + (vel.y ? std::copysign(1_f, vel.y) : 0));
+    std::array<ff::point_fixed, 2> pos_array{ pos, pos2 };
+
+    retron::particles::effect_options options;
+    options.angle = std::make_pair(angle - 60_f, angle + 60_f);
+    options.type = static_cast<uint8_t>(::get_player_index_for_bullet(this->registry, entity));
+    this->particle_effects["player_bullet_hit_bounds"].add(this->particles, pos_array.data(), pos_array.size(), &options);
+}
+
+void retron::level::destroy_grunt(entt::entity grunt_entity, entt::entity by_entity)
+{
+    retron::particles::effect_options options;
+    options.reverse = true;
+
+    std::string_view name;
+    ff::point_fixed center = this->bounds_box(entity1).center();
+    bool bullet = (type2 == entity_box_type::player_bullet);
+
+    switch (retron::helpers::dir_to_index(this->position.velocity(bullet ? entity2 : entity1)))
+    {
+        case 0:
+        case 4:
+            name = "grunt_start_90";
+            break;
+
+        case 1:
+        case 5:
+            options.rotate = 45;
+            name = "grunt_start_0";
+            break;
+
+        case 2:
+        case 6:
+            name = "grunt_start_0";
+            break;
+
+        case 3:
+        case 7:
+            options.rotate = -45;
+            name = "grunt_start_0";
+            break;
+    }
+
+    this->particle_effects[name].add(this->particles, center, &options);
+
+    if (bullet)
+    {
+        retron::particles::effect_options options;
+        options.type = static_cast<uint8_t>(::get_player_index_for_bullet(this->registry, entity2));
+        this->particle_effects["player_bullet_hit_bounds"].add(this->particles, center, &options);
+    }
+}
+
+void retron::level::destroy_obstacle(entt::entity obstacle_entity, entt::entity by_entity)
+{
 }
 
 void retron::level::render_particles(ff::draw_base& draw)
