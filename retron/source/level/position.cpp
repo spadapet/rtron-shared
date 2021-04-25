@@ -58,6 +58,15 @@ ff::point_fixed retron::position::get(entt::entity entity)
     return c ? c->position : ff::point_fixed(0, 0);
 }
 
+ff::pixel_transform retron::position::pixel_transform(entt::entity entity)
+{
+    ff::point_fixed pos = std::floor(this->get(entity));
+    ff::point_fixed scale = this->scale(entity);
+    ff::fixed_int rotation = this->rotation(entity);
+
+    return ff::pixel_transform(pos, scale, rotation);
+}
+
 void retron::position::velocity(entt::entity entity, const ff::point_fixed& value)
 {
     if (value != this->velocity(entity))
@@ -137,6 +146,11 @@ ff::fixed_int retron::position::rotation(entt::entity entity)
 ff::signal_sink<entt::entity>& retron::position::position_changed_sink()
 {
     return this->position_changed_signal;
+}
+
+ff::signal_sink<entt::entity>& retron::position::velocity_changed_sink()
+{
+    return this->velocity_changed_signal;
 }
 
 ff::signal_sink<entt::entity>& retron::position::direction_changed_sink()

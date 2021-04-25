@@ -9,6 +9,7 @@ namespace retron
 
         void set(entt::entity entity, const ff::point_fixed& value);
         ff::point_fixed get(entt::entity entity);
+        ff::pixel_transform pixel_transform(entt::entity entity);
 
         void velocity(entt::entity entity, const ff::point_fixed& value);
         ff::point_fixed velocity(entt::entity entity);

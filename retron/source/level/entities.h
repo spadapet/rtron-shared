@@ -6,6 +6,7 @@ namespace retron
     enum class entity_type
     {
         none,
+        animation_top,
         player_bullet,
         player,
         bonus_woman,
@@ -14,6 +15,7 @@ namespace retron
         grunt,
         hulk,
         electrode,
+        animation_bottom,
         level_bounds,
         level_box,
 

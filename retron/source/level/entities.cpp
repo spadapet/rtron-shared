@@ -12,6 +12,7 @@ retron::entity_box_type retron::box_type(retron::entity_type type)
     static retron::entity_box_type types[] =
     {
         retron::entity_box_type::none, // none
+        retron::entity_box_type::none, // animation_top
         retron::entity_box_type::player_bullet, // player_bullet
         retron::entity_box_type::player, // player
         retron::entity_box_type::bonus, // bonus_woman
@@ -20,6 +21,7 @@ retron::entity_box_type retron::box_type(retron::entity_type type)
         retron::entity_box_type::enemy, // grunt
         retron::entity_box_type::enemy, // hulk
         retron::entity_box_type::obstacle, // electrode
+        retron::entity_box_type::none, // animation_under
         retron::entity_box_type::none, // level_border
         retron::entity_box_type::none, // level_box
     };
@@ -34,6 +36,7 @@ const ff::rect_fixed& retron::get_hit_box_spec(retron::entity_type type)
     static ff::rect_fixed rects[] =
     {
         ff::rect_fixed(0, 0, 0, 0), // none
+        ff::rect_fixed(0, 0, 0, 0), // animation_top
         ff::rect_fixed(-8, -1, 0, 1), // player_bullet
         ff::rect_fixed(-3, -10, 4, 0), // player
         ff::rect_fixed(-4, -8, 4, 0), // bonus_woman
@@ -42,6 +45,7 @@ const ff::rect_fixed& retron::get_hit_box_spec(retron::entity_type type)
         ff::rect_fixed(-5, -15, 6, 0), // grunt
         ff::rect_fixed(-5, -8, 5, 0), // hulk
         ff::rect_fixed(-5, -5, 6, 6), // electrode
+        ff::rect_fixed(0, 0, 0, 0), // animation_under
         ff::rect_fixed(0, 0, 0, 0), // level_border
         ff::rect_fixed(0, 0, 0, 0), // level_box
     };
@@ -56,6 +60,7 @@ const ff::rect_fixed& retron::get_bounds_box_spec(retron::entity_type type)
     static ff::rect_fixed rects[] =
     {
         ff::rect_fixed(0, 0, 0, 0), // none
+        ff::rect_fixed(0, 0, 0, 0), // animation_top
         ff::rect_fixed(-8, -1, 0, 1), // player_bullet
         ff::rect_fixed(-4, -14, 5, 0), // player
         ff::rect_fixed(-5, -12, 5, 0), // bonus_woman
@@ -64,6 +69,7 @@ const ff::rect_fixed& retron::get_bounds_box_spec(retron::entity_type type)
         ff::rect_fixed(-5, -15, 6, 0), // grunt
         ff::rect_fixed(-5, -12, 5, 0), // hulk
         ff::rect_fixed(-5, -5, 6, 6), // electrode
+        ff::rect_fixed(0, 0, 0, 0), // animation_under
         ff::rect_fixed(0, 0, 0, 0), // level_border
         ff::rect_fixed(0, 0, 0, 0), // level_box
     };
@@ -152,7 +158,7 @@ bool retron::entities::delay_delete(entt::entity entity)
 
 bool retron::entities::deleted(entt::entity entity)
 {
-    return this->registry.all_of<::pending_delete>(entity);
+    return !this->registry.valid(entity) || this->registry.all_of<::pending_delete>(entity);
 }
 
 void retron::entities::flush_delete()
