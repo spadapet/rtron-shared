@@ -20,7 +20,9 @@
         "file": "file:graphics/player.png",
         "pos": [ 10, 0 ],
         "size": [ 9, 15 ],
-        "handle": [ 4, 8 ]
+        "handle": [ 4, 8 ],
+        "offset": [ 10, 0 ],
+        "repeat": 3
       },
       "player_part_left":
       {

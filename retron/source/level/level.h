@@ -21,6 +21,9 @@ namespace retron
     private:
         void init_resources();
 
+        ff::rect_fixed bounds_box(entt::entity entity);
+        ff::rect_fixed hit_box(entt::entity entity);
+
         entt::entity create_entity(retron::entity_type type, const ff::point_fixed& pos);
         entt::entity create_electrode(retron::entity_type type, const ff::point_fixed& pos);
         entt::entity create_grunt(retron::entity_type type, const ff::point_fixed& pos);
@@ -32,19 +35,18 @@ namespace retron
         entt::entity create_box(const ff::rect_fixed& rect);
         void create_objects(size_t count, retron::entity_type type, const ff::rect_fixed& bounds, const std::function<entt::entity(retron::entity_type, const ff::point_fixed&)>& create_func);
 
-        ff::rect_fixed bounds_box(entt::entity entity);
-        ff::rect_fixed hit_box(entt::entity entity);
-
         void advance_entity(entt::entity entity, retron::entity_type type);
         void advance_player(entt::entity entity);
         void advance_player_bullet(entt::entity entity);
         void advance_grunt(entt::entity entity);
         void advance_animation(entt::entity entity);
         void advance_follow_entity_positions();
+        void advance_phase();
 
         void handle_collisions();
         void handle_bounds_collision(entt::entity target_entity, entt::entity level_entity);
         void handle_entity_collision(entt::entity target_entity, entt::entity source_entity);
+        void handle_particle_effect_done(int effect_id);
 
         void destroy_player_bullet(entt::entity bullet_entity, entt::entity by_entity, retron::entity_box_type by_type);
         void destroy_grunt(entt::entity grunt_entity, entt::entity by_entity, retron::entity_box_type by_type);
@@ -64,8 +66,18 @@ namespace retron
 
         size_t pick_grunt_move_counter();
         ff::point_fixed pick_move_destination(entt::entity entity, entt::entity destEntity, retron::collision_box_type collision_type);
-
         void enum_entities(const std::function<void(entt::entity, retron::entity_type)>& func);
+
+        enum class phase_t
+        {
+            show_enemies,
+            show_players,
+            playing,
+            dying,
+            dead,
+            winning,
+            won
+        };
 
         const retron::level_service& level_service_;
         const retron::game_spec& game_spec_;
@@ -88,6 +100,9 @@ namespace retron
         ff::auto_resource<ff::animation_base> player_bullet_anim;
         ff::auto_resource<ff::animation_base> grunt_walk_anim;
 
+        phase_t phase;
+        size_t phase_count;
+        size_t phase_length;
         size_t frame_count;
     };
 }

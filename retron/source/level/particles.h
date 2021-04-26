@@ -12,6 +12,7 @@ namespace retron
 
         bool effect_active(int effect_id) const;
         void effect_position(int effect_id, ff::point_fixed pos);
+        ff::signal_sink<int>& effect_done_sink();
 
         struct effect_options
         {
@@ -36,7 +37,7 @@ namespace retron
             spec_t& operator=(retron::particles::spec_t&&) = default;
             spec_t& operator=(const retron::particles::spec_t&) = default;
 
-            void add(particles& particles, ff::point_fixed pos, int effect_id, const retron::particles::effect_options& options) const;
+            size_t add(particles& particles, ff::point_fixed pos, int effect_id, const retron::particles::effect_options& options) const;
 
         private:
             std::pair<int, int> count;
@@ -124,6 +125,7 @@ namespace retron
         std::vector<particle_t> particles_async;
         std::vector<group_t> groups;
         ff::win_handle async_event;
+        ff::signal<int> effect_done_signal;
 
     public:
         class effect_t
@@ -137,8 +139,8 @@ namespace retron
             retron::particles::effect_t& operator=(retron::particles::effect_t&&) = default;
             retron::particles::effect_t& operator=(const retron::particles::effect_t&) = default;
 
-            int add(retron::particles& particles, ff::point_fixed pos, const retron::particles::effect_options* options = nullptr) const;
-            int add(retron::particles& particles, const ff::point_fixed* pos, size_t posCount, const retron::particles::effect_options* options = nullptr) const;
+            std::tuple<int, size_t> add(retron::particles& particles, ff::point_fixed pos, const retron::particles::effect_options* options = nullptr) const;
+            std::tuple<int, size_t> add(retron::particles& particles, const ff::point_fixed* pos, size_t pos_count, const retron::particles::effect_options* options = nullptr) const;
 
         private:
             std::vector<spec_t> specs;

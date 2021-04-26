@@ -5,11 +5,11 @@
   {
     "player_start_particles":
     {
-      "life": [ 60, 90 ],
+      "life": [ 30, 90 ],
       "delay": [ 0, 20 ],
       "count": [ 32, 32 ],
       "distance": [ 0, 2 ],
-      "velocity": [ 1, 16 ],
+      "velocity": [ 1, 12 ],
       "reverse": true
     }
   },
@@ -28,7 +28,7 @@
       }
     ],
 
-    "player_bullet_hit_bounds":
+    "player_bullet_explode":
     [
       {
         "life": [ 8, 32 ],
@@ -36,7 +36,11 @@
         "distance": [ 0, 4 ],
         "velocity": [ 0.125, 1.5 ],
         "colors": [ 232, 232, 233, 248, 249 ]
-      },
+      }
+    ],
+
+    "player_bullet_smoke":
+    [
       {
         "life": [ 16, 24 ],
         "count": [ 24, 32 ],
@@ -91,10 +95,26 @@
       },
       {
         "life": 20,
-        "delay": 90,
+        "delay": 20,
         "count": 1,
         "distance": 0,
-        "animations": [ "ref:sprites.player_dither" ],
+        "animations": [ "ref:sprites.player_dither[0]" ],
+        "angle": 0
+      },
+      {
+        "life": 20,
+        "delay": 40,
+        "count": 1,
+        "distance": 0,
+        "animations": [ "ref:sprites.player_dither[1]" ],
+        "angle": 0
+      },
+      {
+        "life": 50,
+        "delay": 60,
+        "count": 1,
+        "distance": 0,
+        "animations": [ "ref:sprites.player_dither[2]" ],
         "angle": 0
       }
     ],

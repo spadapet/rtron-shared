@@ -17,14 +17,13 @@ namespace
     struct player_bullet_data
     {
         entt::entity player;
-        size_t start_frame;
     };
 
     struct grunt_data
     {
         size_t index;
         size_t move_counter;
-        ff::point_fixed dest_pos;
+        ff::point_fixed dest_pos; // for debug render
     };
 
     struct electrode_data
@@ -97,6 +96,9 @@ retron::level::level(const retron::level_service& level_service)
     , game_spec_(retron::app_service::get().game_spec())
     , level_spec_(level_service.level_spec())
     , difficulty_spec_(level_service.game_service().difficulty_spec())
+    , phase(phase_t::show_enemies)
+    , phase_count(0)
+    , phase_length(0)
     , frame_count(0)
     , entities(this->registry)
     , position(this->registry)
@@ -105,11 +107,7 @@ retron::level::level(const retron::level_service& level_service)
     this->init_resources();
 
     this->connections.emplace_front(retron::app_service::get().reload_resources_sink().connect(std::bind(&retron::level::init_resources, this)));
-
-    for (size_t i = 0; i < this->level_service_.player_count(); i++)
-    {
-        this->create_player(i);
-    }
+    this->connections.emplace_front(this->particles.effect_done_sink().connect(std::bind(&retron::level::handle_particle_effect_done, this, std::placeholders::_1)));
 
     for (const retron::level_rect& level_rect : this->level_spec_.rects)
     {
@@ -144,13 +142,12 @@ retron::level::level(const retron::level_service& level_service)
 
 void retron::level::advance(const ff::rect_fixed& camera_rect)
 {
-    this->frame_count++;
-
     ff::end_scope_action particle_scope = this->particles.advance_async();
     this->enum_entities(std::bind(&retron::level::advance_entity, this, std::placeholders::_1, std::placeholders::_2));
     this->handle_collisions();
     particle_scope.end_now();
     this->advance_follow_entity_positions();
+    this->advance_phase();
     this->entities.flush_delete();
 }
 
@@ -195,6 +192,16 @@ void retron::level::init_resources()
     }
 }
 
+ff::rect_fixed retron::level::bounds_box(entt::entity entity)
+{
+    return this->collision.box(entity, retron::collision_box_type::bounds_box);
+}
+
+ff::rect_fixed retron::level::hit_box(entt::entity entity)
+{
+    return this->collision.box(entity, retron::collision_box_type::hit_box);
+}
+
 entt::entity retron::level::create_entity(entity_type type, const ff::point_fixed& pos)
 {
     entt::entity entity = this->entities.create(type);
@@ -223,9 +230,14 @@ entt::entity retron::level::create_grunt(retron::entity_type type, const ff::poi
     options.delay = static_cast<int>(grunt_index % max_delay_particles);
 
     bool vertical = ff::math::random_range(1, 10) > 2 ? true : false;
-    ff::point_fixed center = this->collision.box(entity, retron::collision_box_type::bounds_box).center();
-    int effect_id = this->particle_effects[vertical ? "grunt_start_90" : "grunt_start_0"].add(this->particles, center, &options);
+    ff::point_fixed center = this->bounds_box(entity).center();
+    auto [effect_id, max_life] = this->particle_effects[vertical ? "grunt_start_90" : "grunt_start_0"].add(this->particles, center, &options);
     this->registry.emplace<::particle_effect_follows_entity>(entity, effect_id, ff::point_fixed(0, 0));
+
+    if (this->phase == phase_t::show_enemies && !this->phase_count)
+    {
+        this->phase_length = std::max(this->phase_length, max_life);
+    }
 
     return entity;
 }
@@ -244,8 +256,13 @@ entt::entity retron::level::create_player(size_t index_in_level)
     retron::particles::effect_options options;
     options.type = static_cast<uint8_t>(player.index);
 
-    int effect_id = this->particle_effects["player_start"].add(this->particles, pos, &options);
+    auto [effect_id, max_life] = this->particle_effects["player_start"].add(this->particles, pos, &options);
     this->registry.emplace<::particle_effect_follows_entity>(entity, ::particle_effect_follows_entity{ effect_id, ff::point_fixed(0, 0) });
+
+    if (this->phase == phase_t::show_players && !this->phase_count)
+    {
+        this->phase_length = std::max(this->phase_length, max_life);
+    }
 
     return entity;
 }
@@ -253,7 +270,7 @@ entt::entity retron::level::create_player(size_t index_in_level)
 entt::entity retron::level::create_player_bullet(entt::entity player, ff::point_fixed shot_pos, ff::point_fixed shot_dir)
 {
     entt::entity entity = this->create_entity(entity_type::player_bullet, shot_pos + shot_dir * this->difficulty_spec_.player_shot_start_offset);
-    this->registry.emplace<::player_bullet_data>(entity, player, this->frame_count);
+    this->registry.emplace<::player_bullet_data>(entity, player);
 
     this->position.velocity(entity, shot_dir * this->difficulty_spec_.player_shot_move);
     this->position.rotation(entity, helpers::dir_to_degrees(shot_dir));
@@ -395,16 +412,6 @@ void retron::level::create_objects(size_t count, entity_type type, const ff::rec
     }
 }
 
-ff::rect_fixed retron::level::bounds_box(entt::entity entity)
-{
-    return this->collision.box(entity, retron::collision_box_type::bounds_box);
-}
-
-ff::rect_fixed retron::level::hit_box(entt::entity entity)
-{
-    return this->collision.box(entity, retron::collision_box_type::hit_box);
-}
-
 void retron::level::advance_entity(entt::entity entity, entity_type type)
 {
     switch (type)
@@ -430,20 +437,23 @@ void retron::level::advance_entity(entt::entity entity, entity_type type)
 
 void retron::level::advance_player(entt::entity entity)
 {
-    ::player_data& player_data = this->registry.get<::player_data>(entity);
-    ff::point_fixed move_vector = ::get_press_vector(player_data.input_events, false);
-    ff::point_fixed shot_vector = ::get_press_vector(player_data.input_events, true);
-
-    this->position.velocity(entity, move_vector * this->difficulty_spec_.player_move);
-    this->position.set(entity, this->position.get(entity) + this->position.velocity(entity));
-    this->position.direction(entity, ff::point_fixed(
-        -ff::fixed_int(move_vector.x < 0_f) + ff::fixed_int(move_vector.x > 0_f),
-        -ff::fixed_int(move_vector.y < 0_f) + ff::fixed_int(move_vector.y > 0_f)));
-
-    if ((!player_data.shot_counter || !--player_data.shot_counter) && shot_vector)
+    if (this->phase == phase_t::playing || (this->phase == phase_t::show_players && this->phase_count >= 60))
     {
-        player_data.shot_counter = this->difficulty_spec_.player_shot_counter;
-        this->create_player_bullet(entity, this->bounds_box(entity).center(), retron::position::canon_direction(shot_vector));
+        ::player_data& player_data = this->registry.get<::player_data>(entity);
+        ff::point_fixed move_vector = ::get_press_vector(player_data.input_events, false);
+        ff::point_fixed shot_vector = ::get_press_vector(player_data.input_events, true);
+
+        this->position.velocity(entity, move_vector * this->difficulty_spec_.player_move);
+        this->position.set(entity, this->position.get(entity) + this->position.velocity(entity));
+        this->position.direction(entity, ff::point_fixed(
+            -ff::fixed_int(move_vector.x < 0_f) + ff::fixed_int(move_vector.x > 0_f),
+            -ff::fixed_int(move_vector.y < 0_f) + ff::fixed_int(move_vector.y > 0_f)));
+
+        if ((!player_data.shot_counter || !--player_data.shot_counter) && shot_vector)
+        {
+            player_data.shot_counter = this->difficulty_spec_.player_shot_counter;
+            this->create_player_bullet(entity, this->bounds_box(entity).center(), retron::position::canon_direction(shot_vector));
+        }
     }
 }
 
@@ -456,7 +466,7 @@ void retron::level::advance_player_bullet(entt::entity entity)
 
 void retron::level::advance_grunt(entt::entity entity)
 {
-    if (!this->registry.try_get<::particle_effect_follows_entity>(entity))
+    if (this->phase == phase_t::playing)
     {
         ::grunt_data& data = this->registry.get<::grunt_data>(entity);
         if (!--data.move_counter)
@@ -487,18 +497,15 @@ void retron::level::advance_animation(entt::entity entity)
 
     for (const ff::animation_event& event : events)
     {
-        if (event.event_id == anim_events::NEW_PARTICLES)
+        if (event.event_id == anim_events::NEW_PARTICLES && event.params)
         {
-            if (event.params)
-            {
-                std::string name = event.params->get<std::string>("name");
-                auto i = this->particle_effects.find(name);
-                assert(i != this->particle_effects.end());
+            std::string name = event.params->get<std::string>("name");
+            auto i = this->particle_effects.find(name);
+            assert(i != this->particle_effects.end());
 
-                if (i != this->particle_effects.end())
-                {
-                    i->second.add(this->particles, this->position.get(entity));
-                }
+            if (i != this->particle_effects.end())
+            {
+                i->second.add(this->particles, this->position.get(entity));
             }
         }
         else if (event.event_id == anim_events::DELETE_ANIMATION)
@@ -527,6 +534,34 @@ void retron::level::advance_follow_entity_positions()
         if (!this->entities.deleted(follow.entity))
         {
             this->position.set(entity, this->position.get(follow.entity) + follow.offset);
+        }
+    }
+}
+
+void retron::level::advance_phase()
+{
+    this->frame_count++;
+
+    if (++this->phase_count >= this->phase_length)
+    {
+        switch (this->phase)
+        {
+            case phase_t::show_enemies:
+                this->phase = phase_t::show_players;
+                this->phase_count = 0;
+                this->phase_length = 0;
+
+                for (size_t i = 0; i < this->level_service_.player_count(); i++)
+                {
+                    this->create_player(i);
+                }
+                break;
+
+            case phase_t::show_players:
+                this->phase = phase_t::playing;
+                this->phase_count = 0;
+                this->phase_length = 0;
+                break;
         }
     }
 }
@@ -664,6 +699,10 @@ void retron::level::handle_entity_collision(entt::entity target_entity, entt::en
     }
 }
 
+void retron::level::handle_particle_effect_done(int effect_id)
+{
+}
+
 void retron::level::destroy_player_bullet(entt::entity bullet_entity, entt::entity by_entity, retron::entity_box_type by_type)
 {
     if (this->entities.delay_delete(bullet_entity))
@@ -676,20 +715,27 @@ void retron::level::destroy_player_bullet(entt::entity bullet_entity, entt::enti
                     ff::fixed_int angle = this->position.reverse_velocity_as_angle(bullet_entity);
                     ff::point_fixed pos = this->position.get(bullet_entity);
                     ff::point_fixed pos2(pos.x + (vel.x ? std::copysign(1_f, vel.x) : 0), pos.y + (vel.y ? std::copysign(1_f, vel.y) : 0));
-                    std::array<ff::point_fixed, 2> pos_array{ pos, pos2 };
 
                     retron::particles::effect_options options;
                     options.angle = std::make_pair(angle - 60_f, angle + 60_f);
                     options.type = static_cast<uint8_t>(::get_player_index_for_bullet(this->registry, bullet_entity));
-                    this->particle_effects["player_bullet_hit_bounds"].add(this->particles, pos_array.data(), pos_array.size(), &options);
+                    this->particle_effects["player_bullet_explode"].add(this->particles, pos, &options);
+                    this->particle_effects["player_bullet_smoke"].add(this->particles, pos2);
                 }
                 break;
 
             default:
                 {
+                    ff::point_fixed pos = this->bounds_box(by_entity).center();
+
                     retron::particles::effect_options options;
                     options.type = static_cast<uint8_t>(::get_player_index_for_bullet(this->registry, bullet_entity));
-                    this->particle_effects["player_bullet_hit_bounds"].add(this->particles, this->position.get(bullet_entity), &options);
+                    this->particle_effects["player_bullet_explode"].add(this->particles, pos, &options);
+
+                    if (by_type != retron::entity_box_type::obstacle)
+                    {
+                        this->particle_effects["player_bullet_smoke"].add(this->particles, pos);
+                    }
                 }
                 break;
         }
@@ -811,7 +857,8 @@ void retron::level::render_entity(entt::entity entity, entity_type type, ff::dra
 
 void retron::level::render_player(entt::entity entity, ff::draw_base& draw)
 {
-    if (!this->registry.try_get<::particle_effect_follows_entity>(entity))
+    if (this->phase >= phase_t::show_players && this->phase <= phase_t::playing &&
+        !this->registry.try_get<::particle_effect_follows_entity>(entity))
     {
         ::player_data& player_data = this->registry.get<::player_data>(entity);
         ff::palette_base& palette = retron::app_service::get().player_palette(player_data.player.get().index);
@@ -829,7 +876,7 @@ void retron::level::render_player(entt::entity entity, ff::draw_base& draw)
 void retron::level::render_player_bullet(entt::entity entity, ff::draw_base& draw)
 {
     ::player_bullet_data& data = this->registry.get<::player_bullet_data>(entity);
-    this->render_animation(entity, draw, this->player_bullet_anim.object().get(), this->frame_count - data.start_frame);
+    this->render_animation(entity, draw, this->player_bullet_anim.object().get(), 0);
 }
 
 void retron::level::render_bonus(entt::entity entity, entity_type type, ff::draw_base& draw)

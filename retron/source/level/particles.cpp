@@ -27,15 +27,42 @@ void retron::particles::advance_block()
         this->particles_new.clear();
     }
 
+    ff::stack_vector<int, 32> effect_done;
+
     for (auto& i : this->groups)
     {
         if (!i.refs)
         {
+            if (std::find(effect_done.cbegin(), effect_done.cend(), i.effect_id) == effect_done.cend())
+            {
+                effect_done.push_back(i.effect_id);
+            }
+
             // Allow reuse of this group
             i.refs = -1;
             i.effect_id = 0;
             i.animations.clear();
         }
+    }
+
+    if (!effect_done.empty())
+    {
+        for (auto& i : this->groups)
+        {
+            if (i.refs != -1)
+            {
+                auto h = std::find(effect_done.cbegin(), effect_done.cend(), i.effect_id);
+                if (h != effect_done.cend())
+                {
+                    effect_done.erase(h);
+                }
+            }
+        }
+    }
+
+    for (int i : effect_done)
+    {
+        this->effect_done_signal.notify(i);
     }
 }
 
@@ -158,6 +185,11 @@ void retron::particles::effect_position(int effect_id, ff::point_fixed pos)
     }
 }
 
+ff::signal_sink<int>& retron::particles::effect_done_sink()
+{
+    return this->effect_done_signal;
+}
+
 template<typename ValueT, typename T = typename ff::type::value_derived_traits<ValueT>::raw_type>
 static std::pair<T, T> read_pair(const ff::dict& dict, std::string_view name, T default1, T default2, bool* has_value)
 {
@@ -243,12 +275,14 @@ static T random_range(const std::pair<T, T>& range)
     return (range.first != range.second) ? ff::math::random_range(range.first, range.second) : range.first;
 }
 
-void retron::particles::spec_t::add(particles& particles, ff::point_fixed pos, int effect_id, const retron::particles::effect_options& options) const
+size_t retron::particles::spec_t::add(particles& particles, ff::point_fixed pos, int effect_id, const retron::particles::effect_options& options) const
 {
+    size_t max_life = 0;
+
     const int count = ::random_range(this->count);
     if (count <= 0)
     {
-        return;
+        return max_life;
     }
 
     uint16_t group_id = particles.add_group(ff::pixel_transform(pos, scale * options.scale, rotate + options.rotate), effect_id, count, this->animations);
@@ -296,9 +330,12 @@ void retron::particles::spec_t::add(particles& particles, ff::point_fixed pos, i
         }
 
         p.delay += options.delay;
+        max_life = std::max(max_life, static_cast<size_t>(p.delay) + static_cast<size_t>(p.life));
 
         particles.particles_new.push_back(p);
     }
+
+    return max_life;
 }
 
 retron::particles::effect_t::effect_t(const ff::value* value)
@@ -334,29 +371,31 @@ retron::particles::effect_t::effect_t(const ff::value* value)
     }
 }
 
-int retron::particles::effect_t::add(particles& particles, ff::point_fixed pos, const retron::particles::effect_options* options) const
+std::tuple<int, size_t> retron::particles::effect_t::add(particles& particles, ff::point_fixed pos, const retron::particles::effect_options* options) const
 {
     return this->add(particles, &pos, 1, options);
 }
 
-int retron::particles::effect_t::add(particles& particles, const ff::point_fixed* pos, size_t posCount, const retron::particles::effect_options* options) const
+std::tuple<int, size_t> retron::particles::effect_t::add(particles& particles, const ff::point_fixed* pos, size_t pos_count, const retron::particles::effect_options* options) const
 {
     static std::atomic_int s_effect_id;
     int effect_id = s_effect_id.fetch_add(1) + 1;
+    size_t max_life = 0;
 
     static retron::particles::effect_options default_options;
     options = options ? options : &default_options;
 
     for (const spec_t& spec : this->specs)
     {
-        spec.add(particles, *pos, effect_id, *options);
+        size_t life = spec.add(particles, *pos, effect_id, *options);
+        max_life = std::max(max_life, life);
 
-        if (posCount > 1)
+        if (pos_count > 1)
         {
-            posCount--;
+            pos_count--;
             pos++;
         }
     }
 
-    return effect_id;
+    return std::make_tuple(effect_id, max_life);
 }
