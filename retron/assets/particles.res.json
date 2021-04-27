@@ -14,6 +14,18 @@
     }
   },
 
+  "player_dither_random":
+  {
+    "res:type": "random_sprite",
+    "sprites":
+    [
+      { "sprite": "ref:sprites.player_dither[0]" },
+      { "sprite": "ref:sprites.player_dither[1]" },
+      { "sprite": "ref:sprites.player_dither[2]" },
+      { "sprite": null, "weight": 2 }
+    ]
+  },
+
   "level_particles":
   {
     "electrode_die":
@@ -98,7 +110,7 @@
         "delay": 20,
         "count": 1,
         "distance": 0,
-        "animations": [ "ref:sprites.player_dither[0]" ],
+        "animations": [ "ref:player_dither_random" ],
         "angle": 0
       },
       {
@@ -106,7 +118,7 @@
         "delay": 40,
         "count": 1,
         "distance": 0,
-        "animations": [ "ref:sprites.player_dither[1]" ],
+        "animations": [ "ref:player_dither_random" ],
         "angle": 0
       },
       {
@@ -114,7 +126,7 @@
         "delay": 60,
         "count": 1,
         "distance": 0,
-        "animations": [ "ref:sprites.player_dither[2]" ],
+        "animations": [ "ref:player_dither_random" ],
         "angle": 0
       }
     ],
