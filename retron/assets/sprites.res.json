@@ -146,8 +146,8 @@
       "player_bullet":
       {
         "file": "file:graphics/player_bullet.png",
-        "size": [ 8, 2 ],
-        "handle": [ 8, 1 ]
+        "size": [ 16, 16 ],
+        "handle": [ 8, 8 ]
       },
 
       "grunt":

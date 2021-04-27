@@ -1255,7 +1255,8 @@ void retron::level::render_player(entt::entity entity, ff::draw_base& draw)
 
         if (anim)
         {
-            this->render_animation(entity, draw, anim, frame);
+            draw.draw_palette_filled_circle(this->position.get(entity) + ff::point_fixed(0, -6), 6, 251);
+            //this->render_animation(entity, draw, anim, frame);
         }
 
         draw.pop_palette_remap();
