@@ -24,6 +24,12 @@
         "offset": [ 10, 0 ],
         "repeat": 3
       },
+      "player_life":
+      {
+        "file": "file:graphics/player.png",
+        "pos": [ 0, 100 ],
+        "size": [ 8, 8 ]
+      },
       "player_part_left":
       {
         "file": "file:graphics/player.png",

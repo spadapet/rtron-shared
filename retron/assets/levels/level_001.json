@@ -24,10 +24,10 @@
                  "visible":true,
                  "width":0,
                  "x":240,
-                 "y":135
+                 "y":140
                 }, 
                 {
-                 "height":256,
+                 "height":248,
                  "id":4,
                  "name":"bounds",
                  "rotation":0,
@@ -35,7 +35,7 @@
                  "visible":true,
                  "width":464,
                  "x":8,
-                 "y":8
+                 "y":16
                 }, 
                 {
                  "height":48,
@@ -82,7 +82,7 @@
          "name":"objects",
          "objects":[
                 {
-                 "height":248,
+                 "height":240,
                  "id":11,
                  "name":"objects",
                  "properties":[
@@ -106,7 +106,7 @@
                  "visible":true,
                  "width":456,
                  "x":12,
-                 "y":12
+                 "y":20
                 }],
          "opacity":1,
          "type":"objectgroup",
