@@ -23,6 +23,8 @@ static retron::difficulty_spec load_difficulty_spec(const ff::dict& dict, const 
     diff_spec.player_shot_move = ::get_value<ff::fixed_int>(dict, default_dict, "player_shot_move");
     diff_spec.player_shot_start_offset = ::get_value<ff::fixed_int>(dict, default_dict, "player_shot_start_offset");
     diff_spec.player_shot_counter = ::get_value<size_t>(dict, default_dict, "player_shot_counter");
+    diff_spec.first_free_life = ::get_value<size_t>(dict, default_dict, "first_free_life");
+    diff_spec.next_free_life = ::get_value<size_t>(dict, default_dict, "next_free_life");
 
     diff_spec.points_electrode = ::get_value<size_t>(dict, default_dict, "points_electrode");
     diff_spec.points_grunt = ::get_value<size_t>(dict, default_dict, "points_grunt");

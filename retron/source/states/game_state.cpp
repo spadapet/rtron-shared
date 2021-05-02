@@ -30,24 +30,24 @@ std::shared_ptr<ff::state> retron::game_state::advance_time()
     return ff::state::advance_time();
 }
 
-static void render_score_and_lives(
+static void render_points_and_lives(
     ff::draw_base* draw,
     const ff::sprite_font* font,
     const ff::sprite_data& sprite_data,
     ff::point_float top_middle,
-    size_t score,
+    size_t points,
     size_t lives,
     bool active)
 {
     const DirectX::XMFLOAT4 color = ff::palette_index_to_color(active ? 112 : 232);
 
-    // Score
+    // Points
     {
-        char score_str[_MAX_ITOSTR_BASE10_COUNT];
-        ::_itoa_s(static_cast<int>(score), score_str, 10);
-        size_t score_len = std::strlen(score_str);
-        ff::transform score_pos(ff::point_float(top_middle.x - 8.0f * score_len, top_middle.y), ff::point_float(1, 1), 0, color);
-        font->draw_text(draw, std::string_view(score_str, score_len), score_pos, ff::color::none());
+        char points_str[_MAX_ITOSTR_BASE10_COUNT];
+        ::_itoa_s(static_cast<int>(points), points_str, 10);
+        size_t points_len = std::strlen(points_str);
+        ff::transform points_pos(ff::point_float(top_middle.x - 8.0f * points_len, top_middle.y), ff::point_float(1, 1), 0, color);
+        font->draw_text(draw, std::string_view(points_str, points_len), points_pos, ff::color::none());
     }
 
     // Lives
@@ -75,7 +75,7 @@ void retron::game_state::render()
         if (this->game_options_.player_count() >= 1)
         {
             const retron::player& player = this->players[0].coop ? *this->players[0].coop : this->players[0];
-            ::render_score_and_lives(draw, this->game_font.object().get(), this->player_life_sprite->sprite_data(), ff::point_float(144, 3), player.score, player.lives, this->playing_level_state == 0);
+            ::render_points_and_lives(draw, this->game_font.object().get(), this->player_life_sprite->sprite_data(), ff::point_float(144, 3), player.points, player.lives, this->playing_level_state == 0);
         }
 
         if (this->game_options_.player_count() >= 2 && !this->players[1].coop)
@@ -84,7 +84,7 @@ void retron::game_state::render()
             draw->push_palette_remap(palette.index_remap(), palette.index_remap_hash());
 
             const retron::player& player = this->players[1];
-            ::render_score_and_lives(draw, this->game_font.object().get(), this->player_life_sprite->sprite_data(), ff::point_float(336, 3), player.score, player.lives, this->playing_level_state == 1);
+            ::render_points_and_lives(draw, this->game_font.object().get(), this->player_life_sprite->sprite_data(), ff::point_float(336, 3), player.points, player.lives, this->playing_level_state == 1);
 
             draw->pop_palette_remap();
         }
@@ -172,29 +172,29 @@ void retron::game_state::init_input()
     }
 }
 
+static void init_player(retron::player& player, const retron::difficulty_spec& difficulty)
+{
+    player.lives = difficulty.lives;
+    player.next_life_points = difficulty.first_free_life;
+}
+
 void retron::game_state::init_players()
 {
     std::memset(this->players.data(), 0, this->players.size() * sizeof(retron::player));
-
-    const bool coop = this->game_options_.coop();
-    if (coop)
-    {
-        retron::player& player = this->coop_player();
-        player.lives = this->difficulty_spec_.lives;
-    }
+    ::init_player(this->coop_player(), this->difficulty_spec_);
 
     for (size_t i = 0; i < this->game_options_.player_count(); i++)
     {
         retron::player& player = this->players[i];
         player.index = i;
 
-        if (coop)
+        if (this->game_options_.coop())
         {
             player.coop = &this->coop_player();
         }
         else
         {
-            player.lives = this->difficulty_spec_.lives;
+            ::init_player(player, this->difficulty_spec_);
         }
     }
 }

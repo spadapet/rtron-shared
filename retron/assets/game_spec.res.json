@@ -29,6 +29,8 @@
           "player_shot_move": 6,
           "player_shot_start_offset": 10,
           "player_shot_counter": 8,
+          "first_free_life": 25000,
+          "next_free_life": 25000,
 
           "points_electrode": 50,
           "points_grunt": 100
@@ -38,7 +40,9 @@
         {
           "name": "Easy",
           "level_set": "easy",
-          "lives": 6
+          "lives": 6,
+          "first_free_life": 20000,
+          "next_free_life": 20000
         },
         "normal":
         {
@@ -48,7 +52,9 @@
         "hard":
         {
           "name": "Hard",
-          "level_set": "hard"
+          "level_set": "hard",
+          "first_free_life": 50000,
+          "next_free_life": 50000
         }
       },
 

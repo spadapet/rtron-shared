@@ -24,7 +24,7 @@ namespace retron
         virtual const retron::player& player_or_coop(size_t index) const override;
 
     private:
-        void player_points(size_t player_index, size_t points);
+        void add_player_points(size_t player_index, size_t points);
 
         const retron::game_service& game_service_;
         retron::level_spec level_spec_;

@@ -50,6 +50,8 @@ namespace retron
         size_t grunt_max_ticks_rate; // frames to decrease max ticks
         size_t grunt_min_ticks;
         size_t player_shot_counter;
+        size_t first_free_life;
+        size_t next_free_life;
 
         size_t points_electrode;
         size_t points_grunt;
@@ -81,6 +83,7 @@ namespace retron
         size_t index;
         size_t level;
         size_t lives;
-        size_t score;
+        size_t points;
+        size_t next_life_points;
     };
 }
