@@ -9,7 +9,9 @@ retron::level_state::level_state(size_t level_index, const retron::game_service&
     , players(std::move(players))
     , level_index_(level_index)
     , level(*this)
-{}
+{
+    this->connections.emplace_front(this->level.player_points_sink().connect(std::bind(&retron::level_state::player_points, this, std::placeholders::_1, std::placeholders::_2)));
+}
 
 std::shared_ptr<ff::state> retron::level_state::advance_time()
 {
@@ -57,4 +59,14 @@ const retron::player& retron::level_state::player_or_coop(size_t index) const
 {
     const retron::player& player = this->player(index);
     return player.coop ? *player.coop : player;
+}
+
+void retron::level_state::player_points(size_t player_index, size_t points)
+{
+    if (player_index < this->player_count())
+    {
+        retron::player& player = *this->players[player_index];
+        retron::player& actual_player = player.coop ? *player.coop : player;
+        actual_player.score += points;
+    }
 }

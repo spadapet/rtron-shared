@@ -50,6 +50,10 @@ namespace retron
         size_t grunt_max_ticks_rate; // frames to decrease max ticks
         size_t grunt_min_ticks;
         size_t player_shot_counter;
+
+        size_t points_electrode;
+        size_t points_grunt;
+
         ff::fixed_int grunt_move;
         ff::fixed_int player_move;
         ff::fixed_int player_move_frame_divisor;

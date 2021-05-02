@@ -84,10 +84,16 @@ static ff::point_fixed get_press_vector(const ff::input_event_provider& input_ev
     return ff::point_fixed(0, 0);
 }
 
-static size_t get_player_index_for_bullet(entt::registry& registry, entt::entity bullet_entity)
+static size_t get_player_index_for_bullet(entt::registry& registry, entt::entity bullet_entity, bool* valid = nullptr)
 {
     ::player_bullet_data& bullet_data = registry.get<::player_bullet_data>(bullet_entity);
     ::player_data* player_data = registry.valid(bullet_data.player) ? registry.try_get<::player_data>(bullet_data.player) : nullptr;
+
+    if (valid)
+    {
+        *valid = (player_data != nullptr);
+    }
+
     return player_data ? player_data->player.get().index : 0;
 }
 
@@ -160,6 +166,11 @@ void retron::level::render(ff::dx11_target_base& target, ff::dx11_depth& depth, 
         this->render_particles(*draw);
         this->render_debug(*draw);
     }
+}
+
+ff::signal_sink<size_t, size_t>& retron::level::player_points_sink()
+{
+    return this->player_points_signal;
 }
 
 void retron::level::init_resources()
@@ -401,7 +412,7 @@ void retron::level::create_objects(size_t count, entity_type type, const ff::rec
             size_t attempt = 0;
             for (; attempt < max_attempts; attempt++)
             {
-                ff::point_fixed corner(std::floor(ff::math::random_range(bounds.left, bounds.right)), 0);
+                ff::point_fixed corner(std::floor(ff::math::random_range(bounds.left, bounds.right - size.x)), 0);
                 if (::place_random_y(corner, size, bounds, cache))
                 {
                     create_func(type, corner - spec.top_left());
@@ -660,8 +671,12 @@ void retron::level::handle_entity_collision(entt::entity target_entity, entt::en
             switch (source_type)
             {
                 case entity_box_type::obstacle:
+                    this->destroy_grunt(target_entity, source_entity, source_type);
+                    break;
+
                 case entity_box_type::player_bullet:
                     this->destroy_grunt(target_entity, source_entity, source_type);
+                    this->add_player_points(source_entity, target_entity);
                     break;
             }
             break;
@@ -670,8 +685,12 @@ void retron::level::handle_entity_collision(entt::entity target_entity, entt::en
             switch (source_type)
             {
                 case entity_box_type::enemy:
+                    this->destroy_obstacle(target_entity, source_entity, source_type);
+                    break;
+
                 case entity_box_type::player_bullet:
                     this->destroy_obstacle(target_entity, source_entity, source_type);
+                    this->add_player_points(source_entity, target_entity);
                     break;
             }
             break;
@@ -691,8 +710,12 @@ void retron::level::handle_entity_collision(entt::entity target_entity, entt::en
             switch (source_type)
             {
                 case entity_box_type::player:
+                    this->entities.delay_delete(target_entity);
+                    break;
+
                 case entity_box_type::player_bullet:
                     this->entities.delay_delete(target_entity);
+                    this->add_player_points(source_entity, target_entity);
                     break;
             }
             break;
@@ -1010,6 +1033,45 @@ ff::point_fixed retron::level::pick_move_destination(entt::entity entity, entt::
     }
 
     return result;
+}
+
+void retron::level::add_player_points(entt::entity player_or_bullet, entt::entity destroyed_entity)
+{
+    size_t player_index = 0;
+    size_t points = 0;
+
+    switch (this->entities.entity_type(player_or_bullet))
+    {
+        case retron::entity_type::player:
+            player_index = this->registry.get<::player_data>(player_or_bullet).player.get().index;
+            break;
+
+        case retron::entity_type::player_bullet:
+            player_index = ::get_player_index_for_bullet(this->registry, player_or_bullet);
+            break;
+
+        default:
+            return;
+    }
+
+    switch (this->entities.entity_type(destroyed_entity))
+    {
+        case retron::entity_type::grunt:
+            points = this->difficulty_spec_.points_grunt;
+            break;
+
+        case retron::entity_type::electrode:
+            points = this->difficulty_spec_.points_electrode;
+            break;
+
+        default:
+            return;
+    }
+
+    if (points)
+    {
+        this->player_points_signal.notify(player_index, points);
+    }
 }
 
 void retron::level::enum_entities(const std::function<void(entt::entity, retron::entity_type)>& func)

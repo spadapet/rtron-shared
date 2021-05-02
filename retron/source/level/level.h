@@ -18,6 +18,8 @@ namespace retron
         void advance(const ff::rect_fixed& camera_rect);
         void render(ff::dx11_target_base& target, ff::dx11_depth& depth, const ff::rect_fixed& target_rect, const ff::rect_fixed& camera_rect);
 
+        ff::signal_sink<size_t, size_t>& player_points_sink();
+
     private:
         void init_resources();
 
@@ -66,6 +68,7 @@ namespace retron
 
         size_t pick_grunt_move_counter();
         ff::point_fixed pick_move_destination(entt::entity entity, entt::entity destEntity, retron::collision_box_type collision_type);
+        void add_player_points(entt::entity player_or_bullet, entt::entity destroyed_entity);
         void enum_entities(const std::function<void(entt::entity, retron::entity_type)>& func);
 
         enum class phase_t
@@ -99,6 +102,8 @@ namespace retron
         std::array<ff::auto_resource<ff::animation_base>, 3> electrode_die_anims;
         ff::auto_resource<ff::animation_base> player_bullet_anim;
         ff::auto_resource<ff::animation_base> grunt_walk_anim;
+
+        ff::signal<size_t, size_t> player_points_signal;
 
         phase_t phase;
         size_t phase_count;

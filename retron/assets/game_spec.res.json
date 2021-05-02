@@ -28,7 +28,10 @@
           "player_move_frame_divisor": 2,
           "player_shot_move": 6,
           "player_shot_start_offset": 10,
-          "player_shot_counter": 8
+          "player_shot_counter": 8,
+
+          "points_electrode": 50,
+          "points_grunt": 100
         },
 
         "easy":

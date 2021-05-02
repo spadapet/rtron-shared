@@ -26,6 +26,7 @@ namespace retron
         void restart_level();
 
     private:
+        void init_resources();
         void init_input();
         void init_players();
         void init_level_states();
@@ -36,6 +37,7 @@ namespace retron
         retron::game_options game_options_;
         retron::difficulty_spec difficulty_spec_;
         retron::level_set_spec level_set_spec;
+        std::forward_list<ff::signal_connection> connections;
 
         // Input
         std::unique_ptr<ff::input_event_provider> game_input_events;
@@ -45,5 +47,9 @@ namespace retron
         // Level
         std::vector<std::shared_ptr<ff::state_wrapper>> level_states;
         size_t playing_level_state;
+
+        // Graphics
+        ff::auto_resource<ff::sprite_base> player_life_sprite;
+        ff::auto_resource<ff::sprite_font> game_font;
     };
 }

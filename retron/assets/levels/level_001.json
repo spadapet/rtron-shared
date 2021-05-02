@@ -27,7 +27,7 @@
                  "y":140
                 }, 
                 {
-                 "height":248,
+                 "height":250,
                  "id":4,
                  "name":"bounds",
                  "rotation":0,
@@ -35,7 +35,7 @@
                  "visible":true,
                  "width":464,
                  "x":8,
-                 "y":16
+                 "y":14
                 }, 
                 {
                  "height":48,
@@ -82,7 +82,7 @@
          "name":"objects",
          "objects":[
                 {
-                 "height":240,
+                 "height":242,
                  "id":11,
                  "name":"objects",
                  "properties":[
@@ -90,27 +90,27 @@
                          "name":"bonus_woman",
                          "type":"int",
                          "value":0
-                        },
+                        }, 
                         {
                          "name":"electrode",
                          "type":"int",
-                         "value":10
+                         "value":50
                         }, 
                         {
                          "name":"grunt",
                          "type":"int",
-                         "value":40
+                         "value":150
                         }],
                  "rotation":0,
                  "type":"objects",
                  "visible":true,
                  "width":456,
                  "x":12,
-                 "y":20
+                 "y":18
                 }],
          "opacity":1,
          "type":"objectgroup",
-         "visible":false,
+         "visible":true,
          "x":0,
          "y":0
         }],
@@ -118,7 +118,7 @@
  "nextobjectid":16,
  "orientation":"orthogonal",
  "renderorder":"right-down",
- "tiledversion":"1.4.2",
+ "tiledversion":"1.4.3",
  "tileheight":8,
  "tilesets":[],
  "tilewidth":8,
