@@ -39,27 +39,30 @@ static void render_points_and_lives(
     size_t lives,
     bool active)
 {
-    const DirectX::XMFLOAT4 color = ff::palette_index_to_color(active ? 112 : 232);
+    const float font_x = retron::constants::FONT_SIZE.cast<float>().x;
+    const DirectX::XMFLOAT4 color = ff::palette_index_to_color(active
+        ? retron::colors::ACTIVE_STATUS
+        : retron::colors::INACTIVE_STATUS);
 
     // Points
     {
         char points_str[_MAX_ITOSTR_BASE10_COUNT];
         ::_itoa_s(static_cast<int>(points), points_str, 10);
         size_t points_len = std::strlen(points_str);
-        ff::transform points_pos(ff::point_float(top_middle.x - 8.0f * points_len, top_middle.y), ff::point_float(1, 1), 0, color);
+        ff::transform points_pos(ff::point_float(top_middle.x - font_x * points_len, top_middle.y), ff::point_float(1, 1), 0, color);
         font->draw_text(draw, std::string_view(points_str, points_len), points_pos, ff::color::none());
     }
 
     // Lives
 
-    for (size_t i = 0; i < 10 && i < lives; i++)
+    for (size_t i = 0; i < retron::constants::MAX_RENDER_LIVES && i < lives; i++)
     {
-        draw->draw_sprite(sprite_data, ff::transform(ff::point_float(top_middle.x + 8.0f * i, top_middle.y)));
+        draw->draw_sprite(sprite_data, ff::transform(ff::point_float(top_middle.x + font_x * i, top_middle.y)));
     }
 
-    if (lives > 10)
+    if (lives > retron::constants::MAX_RENDER_LIVES)
     {
-        font->draw_text(draw, "+", ff::transform(ff::point_float(top_middle.x + 80, top_middle.y), ff::point_float(1, 1), 0, color), ff::color::none());
+        font->draw_text(draw, "+", ff::transform(ff::point_float(top_middle.x + font_x * retron::constants::MAX_RENDER_LIVES, top_middle.y), ff::point_float(1, 1), 0, color), ff::color::none());
     }
 }
 
@@ -72,19 +75,14 @@ void retron::game_state::render()
     ff::draw_ptr draw = retron::app_service::get().draw_device().begin_draw(target, &depth, retron::constants::RENDER_RECT, retron::constants::RENDER_RECT);
     if (draw)
     {
-        if (this->game_options_.player_count() >= 1)
+        for (size_t i = 0; i < (!this->game_options_.coop() ? this->game_options_.player_count() : 1); i++)
         {
-            const retron::player& player = this->players[0].coop ? *this->players[0].coop : this->players[0];
-            ::render_points_and_lives(draw, this->game_font.object().get(), this->player_life_sprite->sprite_data(), ff::point_float(144, 3), player.points, player.lives, this->playing_level_state == 0);
-        }
-
-        if (this->game_options_.player_count() >= 2 && !this->players[1].coop)
-        {
-            ff::palette_base& palette = retron::app_service::get().player_palette(1);
+            const retron::player& player = this->game_options_.coop() ? this->coop_player() : this->players[i];
+            ff::palette_base& palette = retron::app_service::get().player_palette(i);
             draw->push_palette_remap(palette.index_remap(), palette.index_remap_hash());
 
-            const retron::player& player = this->players[1];
-            ::render_points_and_lives(draw, this->game_font.object().get(), this->player_life_sprite->sprite_data(), ff::point_float(336, 3), player.points, player.lives, this->playing_level_state == 1);
+            ::render_points_and_lives(draw, this->game_font.object().get(), this->player_life_sprite->sprite_data(),
+                retron::constants::PLAYER_STATUS_POS[i].cast<float>(), player.points, player.lives, this->playing_level_state == i);
 
             draw->pop_palette_remap();
         }

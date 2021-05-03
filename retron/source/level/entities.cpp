@@ -169,7 +169,7 @@ void retron::entities::flush_delete()
     }
 }
 
-size_t retron::entities::sort_entities()
+const std::vector<std::pair<entt::entity, retron::entity_type>>& retron::entities::sorted_entities(std::vector<std::pair<entt::entity, retron::entity_type>>& pairs)
 {
     if (this->sort_entities_)
     {
@@ -177,22 +177,21 @@ size_t retron::entities::sort_entities()
 
         this->registry.sort<retron::entity_type>([](retron::entity_type type_a, retron::entity_type type_b)
             {
-                // Since we loop backwards
+                // entt loops through a view backwards, so it sorts in reverse order
                 return type_a > type_b;
             });
     }
 
-    return this->entity_count();
-}
+    auto view = this->registry.view<retron::entity_type>();
+    pairs.resize(view.size());
 
-size_t retron::entities::entity_count() const
-{
-    return this->registry.size<retron::entity_type>();
-}
+    size_t i = 0;
+    for (auto [entity, type] : view.each())
+    {
+        pairs[i++] = std::make_pair(entity, type);
+    }
 
-entt::entity retron::entities::entity(size_t index) const
-{
-    return this->registry.view<retron::entity_type>().data()[index];
+    return pairs;
 }
 
 retron::entity_type retron::entities::entity_type(entt::entity entity)

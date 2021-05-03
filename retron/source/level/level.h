@@ -95,6 +95,7 @@ namespace retron
 
         std::unordered_map<std::string_view, retron::particles::effect_t> particle_effects;
         std::vector<std::pair<entt::entity, entt::entity>> collisions;
+        std::vector<std::pair<entt::entity, retron::entity_type>> sorted_entities;
         std::forward_list<ff::signal_connection> connections;
 
         std::array<ff::auto_resource<ff::animation_base>, 8> player_walk_anims;

@@ -54,9 +54,7 @@ namespace retron
         bool deleted(entt::entity entity);
         void flush_delete();
 
-        size_t sort_entities();
-        size_t entity_count() const;
-        entt::entity entity(size_t index) const;
+        const std::vector<std::pair<entt::entity, retron::entity_type>>& sorted_entities(std::vector<std::pair<entt::entity, retron::entity_type>>& pairs);
         retron::entity_type entity_type(entt::entity entity);
 
         ff::signal_sink<entt::entity>& entity_created_sink();

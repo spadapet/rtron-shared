@@ -110,10 +110,10 @@ retron::level::level(const retron::level_service& level_service)
     , position(this->registry)
     , collision(this->registry, this->position, this->entities)
 {
-    this->init_resources();
-
     this->connections.emplace_front(retron::app_service::get().reload_resources_sink().connect(std::bind(&retron::level::init_resources, this)));
     this->connections.emplace_front(this->particles.effect_done_sink().connect(std::bind(&retron::level::handle_particle_effect_done, this, std::placeholders::_1)));
+
+    this->init_resources();
 
     for (const retron::level_rect& level_rect : this->level_spec_.rects)
     {
@@ -148,10 +148,13 @@ retron::level::level(const retron::level_service& level_service)
 
 void retron::level::advance(const ff::rect_fixed& camera_rect)
 {
-    ff::end_scope_action particle_scope = this->particles.advance_async();
-    this->enum_entities(std::bind(&retron::level::advance_entity, this, std::placeholders::_1, std::placeholders::_2));
-    this->handle_collisions();
-    particle_scope.end_now();
+    // Scope for particle async update
+    {
+        ff::end_scope_action particle_scope = this->particles.advance_async();
+        this->enum_entities(std::bind(&retron::level::advance_entity, this, std::placeholders::_1, std::placeholders::_2));
+        this->handle_collisions();
+    }
+
     this->advance_follow_entity_positions();
     this->advance_phase();
     this->entities.flush_delete();
@@ -1076,9 +1079,10 @@ void retron::level::add_player_points(entt::entity player_or_bullet, entt::entit
 
 void retron::level::enum_entities(const std::function<void(entt::entity, retron::entity_type)>& func)
 {
-    for (size_t i = this->entities.sort_entities(); i != 0; i--)
+    this->entities.sorted_entities(this->sorted_entities);
+
+    for (const auto& pair : this->sorted_entities)
     {
-        entt::entity entity = this->entities.entity(i - 1);
-        func(entity, this->entities.entity_type(entity));
+        func(pair.first, pair.second);
     }
 }
