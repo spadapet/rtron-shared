@@ -53,6 +53,7 @@ namespace retron
         bool delay_delete(entt::entity entity);
         bool deleted(entt::entity entity);
         void flush_delete();
+        void delete_all();
 
         const std::vector<std::pair<entt::entity, retron::entity_type>>& sorted_entities(std::vector<std::pair<entt::entity, retron::entity_type>>& pairs);
         retron::entity_type entity_type(entt::entity entity);

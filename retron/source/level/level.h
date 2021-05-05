@@ -10,18 +10,30 @@ namespace retron
 {
     class level_service;
 
+    enum class level_phase
+    {
+        ready,
+        playing,
+        dead,
+        won
+    };
+
     class level
     {
     public:
-        level(const retron::level_service& levelService);
+        level(const retron::level_service& level_service, size_t level_index, retron::level_spec&& level_spec);
 
         void advance(const ff::rect_fixed& camera_rect);
         void render(ff::dx11_target_base& target, ff::dx11_depth& depth, const ff::rect_fixed& target_rect, const ff::rect_fixed& camera_rect);
+
+        retron::level_phase phase() const;
+        void start(); // move from (dead -> reader) or (ready -> playing)
 
         ff::signal_sink<size_t, size_t>& player_points_sink();
 
     private:
         void init_resources();
+        void init_entities();
 
         ff::rect_fixed bounds_box(entt::entity entity);
         ff::rect_fixed hit_box(entt::entity entity);
@@ -35,7 +47,7 @@ namespace retron
         entt::entity create_animation(std::shared_ptr<ff::animation_player_base> player, ff::point_fixed pos, bool top);
         entt::entity create_bounds(const ff::rect_fixed& rect);
         entt::entity create_box(const ff::rect_fixed& rect);
-        void create_objects(size_t count, retron::entity_type type, const ff::rect_fixed& bounds, const std::function<entt::entity(retron::entity_type, const ff::point_fixed&)>& create_func);
+        void create_objects(size_t& count, retron::entity_type type, const ff::rect_fixed& bounds, const std::function<entt::entity(retron::entity_type, const ff::point_fixed&)>& create_func);
 
         void advance_entity(entt::entity entity, retron::entity_type type);
         void advance_player(entt::entity entity);
@@ -69,10 +81,13 @@ namespace retron
         size_t pick_grunt_move_counter();
         ff::point_fixed pick_move_destination(entt::entity entity, entt::entity destEntity, retron::collision_box_type collision_type);
         void add_player_points(entt::entity player_or_bullet, entt::entity destroyed_entity);
+        void remove_tracked_object(entt::entity entity);
         void enum_entities(const std::function<void(entt::entity, retron::entity_type)>& func);
 
-        enum class phase_t
+        enum class internal_phase_t
         {
+            init,
+            ready,
             show_enemies,
             show_players,
             playing,
@@ -82,10 +97,13 @@ namespace retron
             won
         };
 
+        void internal_phase(internal_phase_t new_phase);
+
         const retron::level_service& level_service_;
         const retron::game_spec& game_spec_;
-        const retron::level_spec& level_spec_;
         const retron::difficulty_spec& difficulty_spec_;
+        retron::level_spec level_spec_;
+        size_t level_index;
 
         entt::registry registry;
         retron::entities entities;
@@ -106,7 +124,7 @@ namespace retron
 
         ff::signal<size_t, size_t> player_points_signal;
 
-        phase_t phase;
+        internal_phase_t phase_;
         size_t phase_count;
         size_t phase_length;
         size_t frame_count;

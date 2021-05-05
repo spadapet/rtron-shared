@@ -19,6 +19,11 @@ namespace
         entt::entity player;
     };
 
+    struct tracked_object_data
+    {
+        std::reference_wrapper<size_t> init_object_count;
+    };
+
     struct grunt_data
     {
         size_t index;
@@ -97,12 +102,13 @@ static size_t get_player_index_for_bullet(entt::registry& registry, entt::entity
     return player_data ? player_data->player.get().index : 0;
 }
 
-retron::level::level(const retron::level_service& level_service)
+retron::level::level(const retron::level_service& level_service, size_t level_index, retron::level_spec&& level_spec)
     : level_service_(level_service)
     , game_spec_(retron::app_service::get().game_spec())
-    , level_spec_(level_service.level_spec())
+    , level_spec_(std::move(level_spec))
+    , level_index(level_index)
     , difficulty_spec_(level_service.game_service().difficulty_spec())
-    , phase(phase_t::show_enemies)
+    , phase_(internal_phase_t::init)
     , phase_count(0)
     , phase_length(0)
     , frame_count(0)
@@ -114,36 +120,7 @@ retron::level::level(const retron::level_service& level_service)
     this->connections.emplace_front(this->particles.effect_done_sink().connect(std::bind(&retron::level::handle_particle_effect_done, this, std::placeholders::_1)));
 
     this->init_resources();
-
-    for (const retron::level_rect& level_rect : this->level_spec_.rects)
-    {
-        switch (level_rect.type)
-        {
-            case retron::level_rect::type::bounds:
-                this->create_bounds(level_rect.rect.deflate(constants::LEVEL_BORDER_THICKNESS, constants::LEVEL_BORDER_THICKNESS));
-                break;
-
-            case retron::level_rect::type::box:
-                this->create_box(level_rect.rect);
-                break;
-
-            case retron::level_rect::type::safe:
-                this->entities.delay_delete(this->create_box(level_rect.rect));
-                break;
-        }
-    }
-
-    for (const retron::level_objects_spec& object_spec : this->level_spec_.objects)
-    {
-        this->create_objects(object_spec.bonus_woman, entity_type::bonus_woman, object_spec.rect, std::bind(&retron::level::create_entity, this, std::placeholders::_1, std::placeholders::_2));
-        this->create_objects(object_spec.bonus_man, entity_type::bonus_man, object_spec.rect, std::bind(&retron::level::create_entity, this, std::placeholders::_1, std::placeholders::_2));
-        this->create_objects(object_spec.bonus_child, entity_type::bonus_child, object_spec.rect, std::bind(&retron::level::create_entity, this, std::placeholders::_1, std::placeholders::_2));
-        this->create_objects(object_spec.electrode, entity_type::electrode, object_spec.rect, std::bind(&retron::level::create_electrode, this, std::placeholders::_1, std::placeholders::_2));
-        this->create_objects(object_spec.hulk, entity_type::hulk, object_spec.rect, std::bind(&retron::level::create_entity, this, std::placeholders::_1, std::placeholders::_2));
-        this->create_objects(object_spec.grunt, entity_type::grunt, object_spec.rect, std::bind(&retron::level::create_grunt, this, std::placeholders::_1, std::placeholders::_2));
-    }
-
-    this->entities.flush_delete();
+    this->internal_phase(internal_phase_t::ready);
 }
 
 void retron::level::advance(const ff::rect_fixed& camera_rect)
@@ -168,6 +145,38 @@ void retron::level::render(ff::dx11_target_base& target, ff::dx11_depth& depth, 
         this->enum_entities(std::bind(&retron::level::render_entity, this, std::placeholders::_1, std::placeholders::_2, std::ref(*draw)));
         this->render_particles(*draw);
         this->render_debug(*draw);
+    }
+}
+
+retron::level_phase retron::level::phase() const
+{
+    switch (this->phase_)
+    {
+        case internal_phase_t::ready:
+            return retron::level_phase::ready;
+
+        case internal_phase_t::dead:
+            return retron::level_phase::dead;
+
+        case internal_phase_t::won:
+            return retron::level_phase::dead;
+
+        default:
+            return retron::level_phase::playing;
+    }
+}
+
+void retron::level::start()
+{
+    switch (this->phase_)
+    {
+        case internal_phase_t::ready:
+            this->internal_phase(internal_phase_t::show_enemies);
+            break;
+
+        case internal_phase_t::dead:
+            this->internal_phase(internal_phase_t::ready);
+            break;
     }
 }
 
@@ -206,6 +215,55 @@ void retron::level::init_resources()
     }
 }
 
+void retron::level::init_entities()
+{
+    if (this->phase_ == internal_phase_t::ready)
+    {
+        this->entities.delete_all();
+
+        for (const retron::level_rect& level_rect : this->level_spec_.rects)
+        {
+            switch (level_rect.type)
+            {
+                case retron::level_rect::type::bounds:
+                    this->create_bounds(level_rect.rect.deflate(constants::LEVEL_BORDER_THICKNESS, constants::LEVEL_BORDER_THICKNESS));
+                    break;
+
+                case retron::level_rect::type::box:
+                    this->create_box(level_rect.rect);
+                    break;
+
+                case retron::level_rect::type::safe:
+                    this->entities.delay_delete(this->create_box(level_rect.rect));
+                    break;
+            }
+        }
+    }
+
+    if (this->phase_ == internal_phase_t::show_enemies)
+    {
+        for (retron::level_objects_spec& object_spec : this->level_spec_.objects)
+        {
+            this->create_objects(object_spec.bonus_woman, entity_type::bonus_woman, object_spec.rect, std::bind(&retron::level::create_entity, this, std::placeholders::_1, std::placeholders::_2));
+            this->create_objects(object_spec.bonus_man, entity_type::bonus_man, object_spec.rect, std::bind(&retron::level::create_entity, this, std::placeholders::_1, std::placeholders::_2));
+            this->create_objects(object_spec.bonus_child, entity_type::bonus_child, object_spec.rect, std::bind(&retron::level::create_entity, this, std::placeholders::_1, std::placeholders::_2));
+            this->create_objects(object_spec.electrode, entity_type::electrode, object_spec.rect, std::bind(&retron::level::create_electrode, this, std::placeholders::_1, std::placeholders::_2));
+            this->create_objects(object_spec.hulk, entity_type::hulk, object_spec.rect, std::bind(&retron::level::create_entity, this, std::placeholders::_1, std::placeholders::_2));
+            this->create_objects(object_spec.grunt, entity_type::grunt, object_spec.rect, std::bind(&retron::level::create_grunt, this, std::placeholders::_1, std::placeholders::_2));
+        }
+    }
+
+    if (this->phase_ == internal_phase_t::show_players)
+    {
+        for (size_t i = 0; i < this->level_service_.player_count(); i++)
+        {
+            this->create_player(i);
+        }
+    }
+
+    this->entities.flush_delete();
+}
+
 ff::rect_fixed retron::level::bounds_box(entt::entity entity)
 {
     return this->collision.box(entity, retron::collision_box_type::bounds_box);
@@ -227,7 +285,7 @@ entt::entity retron::level::create_electrode(retron::entity_type type, const ff:
 {
     entt::entity entity = this->create_entity(type, pos);
     size_t index = this->registry.size<::electrode_data>();
-    this->registry.emplace<::electrode_data>(entity, index, this->level_service_.level_index());
+    this->registry.emplace<::electrode_data>(entity, index, this->level_index);
 
     return entity;
 }
@@ -248,7 +306,7 @@ entt::entity retron::level::create_grunt(retron::entity_type type, const ff::poi
     auto [effect_id, max_life] = this->particle_effects[vertical ? "grunt_start_90" : "grunt_start_0"].add(this->particles, center, &options);
     this->registry.emplace<::particle_effect_follows_entity>(entity, effect_id, ff::point_fixed(0, 0));
 
-    if (this->phase == phase_t::show_enemies && !this->phase_count)
+    if (this->phase_ == internal_phase_t::show_enemies && !this->phase_count)
     {
         this->phase_length = std::max(this->phase_length, max_life);
     }
@@ -273,7 +331,7 @@ entt::entity retron::level::create_player(size_t index_in_level)
     auto [effect_id, max_life] = this->particle_effects["player_start"].add(this->particles, pos, &options);
     this->registry.emplace<::particle_effect_follows_entity>(entity, ::particle_effect_follows_entity{ effect_id, ff::point_fixed(0, 0) });
 
-    if (this->phase == phase_t::show_players && !this->phase_count)
+    if (this->phase_ == internal_phase_t::show_players && !this->phase_count)
     {
         this->phase_length = std::max(this->phase_length, max_life);
     }
@@ -400,7 +458,7 @@ static bool place_random_y(ff::point_fixed& corner, const ff::point_fixed& size,
     return false;
 }
 
-void retron::level::create_objects(size_t count, entity_type type, const ff::rect_fixed& bounds, const std::function<entt::entity(retron::entity_type, const ff::point_fixed&)>& create_func)
+void retron::level::create_objects(size_t& count, entity_type type, const ff::rect_fixed& bounds, const std::function<entt::entity(retron::entity_type, const ff::point_fixed&)>& create_func)
 {
     const size_t max_attempts = 256;
     const ff::rect_fixed& spec = retron::get_hit_box_spec(type);
@@ -410,17 +468,25 @@ void retron::level::create_objects(size_t count, entity_type type, const ff::rec
     {
         ::place_random_cache cache{ this->collision };
 
-        for (size_t i = 0; i < count; i++)
+        for (size_t i = 0, original_count = count; i < original_count; i++)
         {
             size_t attempt = 0;
+            entt::entity entity = entt::null;
+
             for (; attempt < max_attempts; attempt++)
             {
                 ff::point_fixed corner(std::floor(ff::math::random_range(bounds.left, bounds.right - size.x)), 0);
                 if (::place_random_y(corner, size, bounds, cache))
                 {
-                    create_func(type, corner - spec.top_left());
+                    entity = create_func(type, corner - spec.top_left());
+                    this->registry.emplace<::tracked_object_data>(entity, std::ref(count));
                     break;
                 }
+            }
+
+            if (entity == entt::null)
+            {
+                count--;
             }
         }
     }
@@ -451,7 +517,7 @@ void retron::level::advance_entity(entt::entity entity, entity_type type)
 
 void retron::level::advance_player(entt::entity entity)
 {
-    if (this->phase == phase_t::playing || (this->phase == phase_t::show_players && this->phase_count >= 60))
+    if (this->phase_ == internal_phase_t::playing || (this->phase_ == internal_phase_t::show_players && this->phase_count >= 60))
     {
         ::player_data& player_data = this->registry.get<::player_data>(entity);
         ff::point_fixed move_vector = ::get_press_vector(player_data.input_events, false);
@@ -480,7 +546,7 @@ void retron::level::advance_player_bullet(entt::entity entity)
 
 void retron::level::advance_grunt(entt::entity entity)
 {
-    if (this->phase == phase_t::playing)
+    if (this->phase_ == internal_phase_t::playing)
     {
         ::grunt_data& data = this->registry.get<::grunt_data>(entity);
         if (!--data.move_counter)
@@ -558,23 +624,14 @@ void retron::level::advance_phase()
 
     if (++this->phase_count >= this->phase_length)
     {
-        switch (this->phase)
+        switch (this->phase_)
         {
-            case phase_t::show_enemies:
-                this->phase = phase_t::show_players;
-                this->phase_count = 0;
-                this->phase_length = 0;
-
-                for (size_t i = 0; i < this->level_service_.player_count(); i++)
-                {
-                    this->create_player(i);
-                }
+            case internal_phase_t::show_enemies:
+                this->internal_phase(internal_phase_t::show_players);
                 break;
 
-            case phase_t::show_players:
-                this->phase = phase_t::playing;
-                this->phase_count = 0;
-                this->phase_length = 0;
+            case internal_phase_t::show_players:
+                this->internal_phase(internal_phase_t::playing);
                 break;
         }
     }
@@ -772,6 +829,8 @@ void retron::level::destroy_grunt(entt::entity grunt_entity, entt::entity by_ent
 {
     if (this->entities.delay_delete(grunt_entity))
     {
+        this->remove_tracked_object(grunt_entity);
+
         retron::particles::effect_options options;
         options.reverse = true;
 
@@ -812,6 +871,8 @@ void retron::level::destroy_obstacle(entt::entity obstacle_entity, entt::entity 
 {
     if (this->entities.delay_delete(obstacle_entity))
     {
+        this->remove_tracked_object(obstacle_entity);
+
         const ::electrode_data *data = this->registry.try_get<::electrode_data>(obstacle_entity);
         std::shared_ptr<ff::animation_base> anim = this->electrode_die_anims[data ? data->electrode_type % this->electrode_die_anims.size() : 0].object();
         this->create_animation(anim, this->position.get(obstacle_entity), false);
@@ -883,7 +944,7 @@ void retron::level::render_entity(entt::entity entity, entity_type type, ff::dra
 
 void retron::level::render_player(entt::entity entity, ff::draw_base& draw)
 {
-    if (this->phase >= phase_t::show_players && this->phase <= phase_t::playing &&
+    if (this->phase_ >= internal_phase_t::show_players && this->phase_ <= internal_phase_t::playing &&
         !this->registry.try_get<::particle_effect_follows_entity>(entity))
     {
         ::player_data& player_data = this->registry.get<::player_data>(entity);
@@ -1077,6 +1138,21 @@ void retron::level::add_player_points(entt::entity player_or_bullet, entt::entit
     }
 }
 
+void retron::level::remove_tracked_object(entt::entity entity)
+{
+    ::tracked_object_data* data = this->registry.try_get<::tracked_object_data>(entity);
+    if (data)
+    {
+        size_t& count =data->init_object_count.get();
+        assert(count);
+
+        if (count)
+        {
+            count--;
+        }
+    }
+}
+
 void retron::level::enum_entities(const std::function<void(entt::entity, retron::entity_type)>& func)
 {
     this->entities.sorted_entities(this->sorted_entities);
@@ -1084,5 +1160,17 @@ void retron::level::enum_entities(const std::function<void(entt::entity, retron:
     for (const auto& pair : this->sorted_entities)
     {
         func(pair.first, pair.second);
+    }
+}
+
+void retron::level::internal_phase(internal_phase_t new_phase)
+{
+    if (this->phase_ != new_phase)
+    {
+        this->phase_ = new_phase;
+        this->phase_count = 0;
+        this->phase_length = 0;
+
+        this->init_entities();
     }
 }

@@ -6,6 +6,8 @@
 
 namespace retron
 {
+    class level_state;
+
     class game_state : public ff::state, public retron::game_service
     {
     public:
@@ -45,7 +47,7 @@ namespace retron
         std::array<retron::player, constants::MAX_PLAYERS + 1> players;
 
         // Level
-        std::vector<std::shared_ptr<ff::state_wrapper>> level_states;
+        std::vector<std::shared_ptr<retron::level_state>> level_states;
         size_t playing_level_state;
 
         // Graphics

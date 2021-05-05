@@ -221,8 +221,9 @@ void retron::game_state::init_level_states()
 
 void retron::game_state::add_level_state(size_t level_index, std::vector<retron::player*>&& players)
 {
-    std::shared_ptr<retron::level_state> level_state = std::make_shared<retron::level_state>(level_index, *this, this->level_spec(level_index), std::move(players));
-    this->level_states.push_back(std::make_shared<ff::state_wrapper>(level_state));
+    retron::level_spec level_spec = this->level_spec(level_index);
+    auto level_state = std::make_shared<retron::level_state>(*this, level_index, std::move(level_spec), std::move(players));
+    this->level_states.push_back(level_state);
 }
 
 retron::player& retron::game_state::coop_player()

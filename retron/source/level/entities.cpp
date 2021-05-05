@@ -169,6 +169,16 @@ void retron::entities::flush_delete()
     }
 }
 
+void retron::entities::delete_all()
+{
+    for (const entt::entity* cur = this->registry.data(), *end = cur + this->registry.size(); cur != end; cur++)
+    {
+        this->delay_delete(*cur);
+    }
+
+    this->flush_delete();
+}
+
 const std::vector<std::pair<entt::entity, retron::entity_type>>& retron::entities::sorted_entities(std::vector<std::pair<entt::entity, retron::entity_type>>& pairs)
 {
     if (this->sort_entities_)
@@ -196,7 +206,8 @@ const std::vector<std::pair<entt::entity, retron::entity_type>>& retron::entitie
 
 retron::entity_type retron::entities::entity_type(entt::entity entity)
 {
-    return this->registry.get<retron::entity_type>(entity);
+    const retron::entity_type* type = this->registry.try_get<retron::entity_type>(entity);
+    return type ? *type : retron::entity_type::none;
 }
 
 ff::signal_sink<entt::entity>& retron::entities::entity_created_sink()
