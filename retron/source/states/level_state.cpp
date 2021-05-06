@@ -1,20 +1,22 @@
 #include "pch.h"
 #include "source/core/app_service.h"
-#include "source/core/game_service.h"
 #include "source/core/render_targets.h"
 #include "source/states/level_state.h"
 
-retron::level_state::level_state(const retron::game_service& game_service, size_t level_index, retron::level_spec&& level_spec, std::vector<retron::player*>&& players)
+retron::level_state::level_state(retron::game_service& game_service, retron::level_spec&& level_spec, std::vector<retron::player*>&& players)
     : game_service_(game_service)
-    , players(std::move(players))
-    , level_(*this, level_index, std::move(level_spec))
-{
-    this->connections.emplace_front(this->level_.player_points_sink().connect(std::bind(&retron::level_state::add_player_points, this, std::placeholders::_1, std::placeholders::_2)));
-}
+    , players_(std::move(players))
+    , level_(*this, std::move(level_spec))
+{}
 
 retron::level& retron::level_state::level()
 {
     return this->level_;
+}
+
+std::vector<retron::player*> retron::level_state::players() const
+{
+    return this->players_;
 }
 
 std::shared_ptr<ff::state> retron::level_state::advance_time()
@@ -26,59 +28,29 @@ std::shared_ptr<ff::state> retron::level_state::advance_time()
 void retron::level_state::render()
 {
     retron::render_targets& targets = *retron::app_service::get().render_targets();
+    ff::dx11_target_base& target = *targets.target(retron::render_target_types::palette_1);
+    ff::dx11_depth& depth = *targets.depth(retron::render_target_types::palette_1);
 
-    this->level_.render(
-        *targets.target(retron::render_target_types::palette_1),
-        *targets.depth(retron::render_target_types::palette_1),
-        constants::RENDER_RECT,
-        constants::RENDER_RECT);
+    this->level_.render(target, depth, constants::RENDER_RECT, constants::RENDER_RECT);
 }
 
-const retron::game_service& retron::level_state::game_service() const
+retron::game_service& retron::level_state::game_service() const
 {
     return this->game_service_;
 }
 
 size_t retron::level_state::player_count() const
 {
-    return this->players.size();
+    return this->players_.size();
 }
 
-const retron::player& retron::level_state::player(size_t index) const
+const retron::player& retron::level_state::player(size_t index_in_level) const
 {
-    return *this->players[index];
+    return *this->players_[index_in_level];
 }
 
-const retron::player& retron::level_state::player_or_coop(size_t index) const
+const retron::player& retron::level_state::player_or_coop(size_t index_in_level) const
 {
-    const retron::player& player = this->player(index);
+    const retron::player& player = this->player(index_in_level);
     return player.coop ? *player.coop : player;
-}
-
-void retron::level_state::add_player_points(size_t player_index, size_t points)
-{
-    if (player_index < this->player_count())
-    {
-        retron::player& temp_player = *this->players[player_index];
-        retron::player& player = temp_player.coop ? *temp_player.coop : temp_player;
-        player.points += points;
-
-        if (player.next_life_points && player.points >= player.next_life_points)
-        {
-            const size_t next = this->game_service_.difficulty_spec().next_free_life;
-            size_t lives = 1;
-
-            if (next)
-            {
-                lives += (player.points - player.next_life_points) / next;
-                player.next_life_points += lives * next;
-            }
-            else
-            {
-                player.next_life_points = 0;
-            }
-
-            player.lives += lives;
-        }
-    }
 }

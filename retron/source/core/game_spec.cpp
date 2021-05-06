@@ -148,7 +148,6 @@ static void load_level_spec_layer(retron::level_spec& level_spec, const ff::dict
 static retron::level_spec load_level_spec(const ff::dict& dict)
 {
     retron::level_spec level_spec{};
-    level_spec.player_start = ff::point_fixed(0, 0);
 
     for (ff::value_ptr layer_value : dict.get<std::vector<ff::value_ptr>>("layers"))
     {

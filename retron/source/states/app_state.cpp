@@ -320,7 +320,7 @@ void retron::app_state::debug_command(size_t command_id)
         std::shared_ptr<retron::game_state> game_state = std::dynamic_pointer_cast<retron::game_state>(this->game_state->wrapped_state());
         if (game_state)
         {
-            game_state->restart_level();
+            game_state->debug_restart_level();
         }
         else
         {

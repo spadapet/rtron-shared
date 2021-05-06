@@ -21,15 +21,14 @@ namespace retron
     class level
     {
     public:
-        level(const retron::level_service& level_service, size_t level_index, retron::level_spec&& level_spec);
+        level(retron::level_service& level_service, retron::level_spec&& level_spec);
 
         void advance(const ff::rect_fixed& camera_rect);
         void render(ff::dx11_target_base& target, ff::dx11_depth& depth, const ff::rect_fixed& target_rect, const ff::rect_fixed& camera_rect);
 
         retron::level_phase phase() const;
+        size_t phase_counter() const;
         void start(); // move from (dead -> reader) or (ready -> playing)
-
-        ff::signal_sink<size_t, size_t>& player_points_sink();
 
     private:
         void init_resources();
@@ -99,11 +98,10 @@ namespace retron
 
         void internal_phase(internal_phase_t new_phase);
 
-        const retron::level_service& level_service_;
+        retron::level_service& level_service_;
         const retron::game_spec& game_spec_;
         const retron::difficulty_spec& difficulty_spec_;
         retron::level_spec level_spec_;
-        size_t level_index;
 
         entt::registry registry;
         retron::entities entities;
@@ -122,10 +120,8 @@ namespace retron
         ff::auto_resource<ff::animation_base> player_bullet_anim;
         ff::auto_resource<ff::animation_base> grunt_walk_anim;
 
-        ff::signal<size_t, size_t> player_points_signal;
-
         internal_phase_t phase_;
-        size_t phase_count;
+        size_t phase_counter_;
         size_t phase_length;
         size_t frame_count;
     };

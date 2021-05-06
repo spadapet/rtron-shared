@@ -32,6 +32,7 @@ namespace retron
         std::vector<retron::level_rect> rects;
         std::vector<retron::level_objects_spec> objects;
         ff::point_fixed player_start;
+        size_t electrode_type;
     };
 
     struct level_set_spec

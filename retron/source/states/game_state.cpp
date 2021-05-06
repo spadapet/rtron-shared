@@ -3,6 +3,7 @@
 #include "source/core/render_targets.h"
 #include "source/states/game_state.h"
 #include "source/states/level_state.h"
+#include "source/states/transition_state.h"
 
 retron::game_state::game_state()
     : game_options_(retron::app_service::get().default_game_options())
@@ -27,7 +28,33 @@ std::shared_ptr<ff::state> retron::game_state::advance_time()
         i->advance();
     }
 
-    return ff::state::advance_time();
+    ff::state::advance_time();
+
+    switch (this->level().phase())
+    {
+        case retron::level_phase::ready:
+            if (this->level().phase_counter() >= 160)
+            {
+                this->level().start();
+            }
+            break;
+
+        case retron::level_phase::won:
+            if (this->level().phase_counter() >= 40)
+            {
+                this->transition_to_next_level();
+            }
+            break;
+
+        case retron::level_phase::dead:
+            if (this->level().phase_counter() >= 40)
+            {
+                this->transition_to_next_level();
+            }
+            break;
+    }
+
+    return nullptr;
 }
 
 static void render_points_and_lives(
@@ -68,6 +95,8 @@ static void render_points_and_lives(
 
 void retron::game_state::render()
 {
+    ff::state::render();
+
     retron::render_targets& targets = *retron::app_service::get().render_targets();
     ff::dx11_target_base& target = *targets.target(retron::render_target_types::palette_1);
     ff::dx11_depth& depth = *targets.depth(retron::render_target_types::palette_1);
@@ -86,19 +115,57 @@ void retron::game_state::render()
 
             draw->pop_palette_remap();
         }
-    }
 
-    ff::state::render();
+        if (this->level().phase() == retron::level_phase::ready && this->level_state().player_count())
+        {
+            bool coop = this->level_state().player(0).coop != nullptr;
+            const retron::player& player = this->level_state().player_or_coop(0);
+            char text_buffer[64];
+            std::string_view text{};
+
+            size_t counter = this->level().phase_counter();
+            if (counter >= 20 && counter < 80)
+            {
+                if (coop)
+                {
+                    strcpy_s(text_buffer, "READY PLAYERS");
+                }
+                else
+                {
+                    sprintf_s(text_buffer, "PLAYER %lu", player.index + 1);
+                }
+
+                text = text_buffer;
+            }
+            else if (counter >= 100 && counter < 160)
+            {
+                sprintf_s(text_buffer, "LEVEL %lu", player.level + 1);
+                text = text_buffer;
+            }
+
+            if (text.size())
+            {
+                ff::palette_base& palette = retron::app_service::get().player_palette(player.index);
+                draw->push_palette_remap(palette.index_remap(), palette.index_remap_hash());
+
+                const ff::point_float scale(2, 2);
+                ff::point_float size = this->game_font->measure_text(text, scale);
+                this->game_font->draw_text(draw, text, ff::transform(retron::constants::RENDER_RECT.center().cast<float>() - size / 2.0f, scale, 0, ff::palette_index_to_color(retron::colors::PLAYER)), ff::color::none());
+
+                draw->pop_palette_remap();
+            }
+        }
+    }
 }
 
 size_t retron::game_state::child_state_count()
 {
-    return (this->playing_level_state < this->level_states.size()) ? 1 : 0;
+    return 1;
 }
 
 ff::state* retron::game_state::child_state(size_t index)
 {
-    return this->level_states[index].get();
+    return this->level_states[this->playing_level_state].second.get();
 }
 
 const retron::game_options& retron::game_state::game_options() const
@@ -116,7 +183,32 @@ const ff::input_event_provider& retron::game_state::input_events(const retron::p
     return *this->player_input_events[player.index];
 }
 
-void retron::game_state::restart_level()
+void retron::game_state::add_player_points(size_t player_index, size_t points)
+{
+    retron::player& temp_player = this->players[player_index];
+    retron::player& player = temp_player.coop ? *temp_player.coop : temp_player;
+    player.points += points;
+
+    if (player.next_life_points && player.points >= player.next_life_points)
+    {
+        const size_t next = this->difficulty_spec().next_free_life;
+        size_t lives = 1;
+
+        if (next)
+        {
+            lives += (player.points - player.next_life_points) / next;
+            player.next_life_points += lives * next;
+        }
+        else
+        {
+            player.next_life_points = 0;
+        }
+
+        player.lives += lives;
+    }
+}
+
+void retron::game_state::debug_restart_level()
 {
     this->init_level_states();
 }
@@ -222,18 +314,41 @@ void retron::game_state::init_level_states()
 void retron::game_state::add_level_state(size_t level_index, std::vector<retron::player*>&& players)
 {
     retron::level_spec level_spec = this->level_spec(level_index);
-    auto level_state = std::make_shared<retron::level_state>(*this, level_index, std::move(level_spec), std::move(players));
-    this->level_states.push_back(level_state);
+    auto level_state = std::make_shared<retron::level_state>(*this, std::move(level_spec), std::move(players));
+    this->level_states.push_back(std::make_pair(level_state, std::make_shared<ff::state_wrapper>(level_state)));
+}
+
+const retron::level_spec& retron::game_state::level_spec(size_t level_index)
+{
+    size_t level = level_index % this->level_set_spec.levels.size();
+    const std::string& level_id = this->level_set_spec.levels[level];
+    return retron::app_service::get().game_spec().levels.at(level_id);
+}
+
+void retron::game_state::transition_to_next_level()
+{
+    auto& pair = this->level_states[this->playing_level_state];
+    auto old_state = pair.first;
+
+    retron::player* player = old_state->players()[0];
+    player = player->coop ? player->coop : player;
+    retron::level_spec level_spec = this->level_spec(++player->level);
+
+    pair.first = std::make_shared<retron::level_state>(*this, std::move(level_spec), old_state->players());
+    *pair.second = std::make_shared<retron::transition_state>(old_state, pair.first, "transition_bg_2.png");
+}
+
+retron::level& retron::game_state::level() const
+{
+    return this->level_state().level();
+}
+
+retron::level_state& retron::game_state::level_state() const
+{
+    return *this->level_states[this->playing_level_state].first;
 }
 
 retron::player& retron::game_state::coop_player()
 {
     return this->players.back();
-}
-
-const retron::level_spec& retron::game_state::level_spec(size_t index) const
-{
-    size_t level = index % this->level_set_spec.levels.size();
-    const std::string& level_id = this->level_set_spec.levels[level];
-    return retron::app_service::get().game_spec().levels.at(level_id);
 }
