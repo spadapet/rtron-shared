@@ -9,7 +9,6 @@ namespace
     struct player_data
     {
         std::reference_wrapper<const retron::player> player;
-        std::reference_wrapper<const retron::player> player_or_coop;
         std::reference_wrapper<const ff::input_event_provider> input_events;
         size_t shot_counter;
     };
@@ -184,16 +183,15 @@ size_t retron::level::phase_counter() const
 
 void retron::level::start()
 {
-    switch (this->phase_)
+    if (this->phase_ == internal_phase_t::ready)
     {
-        case internal_phase_t::ready:
-            this->internal_phase(internal_phase_t::show_enemies);
-            break;
-
-        case internal_phase_t::dead:
-            this->internal_phase(internal_phase_t::ready);
-            break;
+        this->internal_phase(internal_phase_t::show_enemies);
     }
+}
+
+const retron::level_spec& retron::level::level_spec() const
+{
+    return this->level_spec_;
 }
 
 void retron::level::init_resources()
@@ -336,9 +334,8 @@ entt::entity retron::level::create_player(size_t index_in_level)
 
     entt::entity entity = this->create_entity(entity_type::player, pos);
     const retron::player& player = this->level_service_.player(index_in_level);
-    const retron::player& player_or_coop = this->level_service_.player_or_coop(index_in_level);
     const ff::input_event_provider& input_events = this->level_service_.game_service().input_events(player);
-    this->registry.emplace<::player_data>(entity, player, player_or_coop, input_events, 0u);
+    this->registry.emplace<::player_data>(entity, player, input_events, 0u);
 
     retron::particles::effect_options options;
     options.type = static_cast<uint8_t>(player.index);
@@ -560,9 +557,12 @@ void retron::level::advance_player(entt::entity entity)
 
 void retron::level::advance_player_bullet(entt::entity entity)
 {
-    ff::point_fixed pos = this->position.get(entity);
-    ff::point_fixed vel = this->position.velocity(entity);
-    this->position.set(entity, pos + vel);
+    if (this->phase_ == internal_phase_t::playing)
+    {
+        ff::point_fixed pos = this->position.get(entity);
+        ff::point_fixed vel = this->position.velocity(entity);
+        this->position.set(entity, pos + vel);
+    }
 }
 
 void retron::level::advance_grunt(entt::entity entity)
@@ -673,20 +673,23 @@ void retron::level::advance_phase()
 
 void retron::level::handle_collisions()
 {
-    for (auto& [entity1, entity2] : this->collision.detect_collisions(this->collisions, retron::collision_box_type::bounds_box))
+    if (this->phase_ == internal_phase_t::playing)
     {
-        if (!this->entities.deleted(entity1) && !this->entities.deleted(entity2))
+        for (auto& [entity1, entity2] : this->collision.detect_collisions(this->collisions, retron::collision_box_type::bounds_box))
         {
-            this->handle_bounds_collision(entity1, entity2);
+            if (!this->entities.deleted(entity1) && !this->entities.deleted(entity2))
+            {
+                this->handle_bounds_collision(entity1, entity2);
+            }
         }
-    }
 
-    for (auto& [entity1, entity2] : this->collision.detect_collisions(this->collisions, retron::collision_box_type::hit_box))
-    {
-        if (!this->entities.deleted(entity1) && !this->entities.deleted(entity2))
+        for (auto& [entity1, entity2] : this->collision.detect_collisions(this->collisions, retron::collision_box_type::hit_box))
         {
-            this->handle_entity_collision(entity1, entity2);
-            this->handle_entity_collision(entity2, entity1);
+            if (!this->entities.deleted(entity1) && !this->entities.deleted(entity2))
+            {
+                this->handle_entity_collision(entity1, entity2);
+                this->handle_entity_collision(entity2, entity1);
+            }
         }
     }
 }
@@ -731,14 +734,10 @@ void retron::level::handle_entity_collision(entt::entity target_entity, entt::en
         case entity_box_type::player:
             switch (source_type)
             {
-                case entity_box_type::bonus:
-                    // TODO: Get points
-                    break;
-
                 case entity_box_type::enemy:
                 case entity_box_type::enemy_bullet:
                 case entity_box_type::obstacle:
-                    // TODO: Die
+                    this->internal_phase(internal_phase_t::dying);
                     break;
             }
             break;
@@ -747,7 +746,7 @@ void retron::level::handle_entity_collision(entt::entity target_entity, entt::en
             switch (source_type)
             {
                 case entity_box_type::player:
-                    // TODO: Collect (anim, die, sound)
+                    // TODO: Collect (points, anim, die, sound)
                     break;
 
                 case entity_box_type::enemy:
@@ -803,10 +802,6 @@ void retron::level::handle_entity_collision(entt::entity target_entity, entt::en
         case entity_box_type::enemy_bullet:
             switch (source_type)
             {
-                case entity_box_type::player:
-                    this->entities.delay_delete(target_entity);
-                    break;
-
                 case entity_box_type::player_bullet:
                     this->entities.delay_delete(target_entity);
                     this->add_player_points(source_entity, target_entity);
@@ -978,8 +973,7 @@ void retron::level::render_entity(entt::entity entity, entity_type type, ff::dra
 
 void retron::level::render_player(entt::entity entity, ff::draw_base& draw)
 {
-    if (this->phase_ >= internal_phase_t::show_players && this->phase_ <= internal_phase_t::playing &&
-        !this->registry.try_get<::particle_effect_follows_entity>(entity))
+    if (this->phase_ > internal_phase_t::ready && !this->registry.try_get<::particle_effect_follows_entity>(entity))
     {
         ::player_data& player_data = this->registry.get<::player_data>(entity);
         ff::palette_base& palette = retron::app_service::get().player_palette(player_data.player.get().index);
@@ -1203,7 +1197,21 @@ void retron::level::internal_phase(internal_phase_t new_phase)
     {
         this->phase_ = new_phase;
         this->phase_counter_ = 0;
-        this->phase_length = 0;
+
+        switch (this->phase_)
+        {
+            case internal_phase_t::winning:
+                this->phase_length = 40;
+                break;
+
+            case internal_phase_t::dying:
+                this->phase_length = 120;
+                break;
+
+            default:
+                this->phase_length = 0;
+                break;
+        }
 
         this->init_entities();
     }

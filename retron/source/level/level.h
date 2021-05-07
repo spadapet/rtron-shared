@@ -28,7 +28,8 @@ namespace retron
 
         retron::level_phase phase() const;
         size_t phase_counter() const;
-        void start(); // move from (dead -> reader) or (ready -> playing)
+        void start(); // move from ready -> playing
+        const retron::level_spec& level_spec() const;
 
     private:
         void init_resources();
@@ -87,12 +88,15 @@ namespace retron
         {
             init,
             ready,
+
+            // retron::level_phase::playing
             show_enemies,
             show_players,
             playing,
             dying,
-            dead,
             winning,
+
+            dead,
             won
         };
 

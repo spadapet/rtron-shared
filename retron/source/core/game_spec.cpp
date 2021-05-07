@@ -201,3 +201,13 @@ bool retron::game_spec::allow_debug() const
 {
     return this->allow_debug_ || DEBUG;
 }
+
+retron::player& retron::player::self_or_coop()
+{
+    return this->coop ? *this->coop : *this;
+}
+
+const retron::player& retron::player::self_or_coop() const
+{
+    return this->coop ? *this->coop : *this;
+}

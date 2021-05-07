@@ -38,6 +38,7 @@ namespace retron
         void add_level_state(size_t level_index, std::vector<retron::player*>&& players);
         const retron::level_spec& level_spec(size_t level_index);
         void transition_to_next_level();
+        void kill_player_and_reset_level();
 
         retron::level& level() const;
         retron::level_state& level_state() const;

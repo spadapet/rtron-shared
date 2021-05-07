@@ -48,9 +48,3 @@ const retron::player& retron::level_state::player(size_t index_in_level) const
 {
     return *this->players_[index_in_level];
 }
-
-const retron::player& retron::level_state::player_or_coop(size_t index_in_level) const
-{
-    const retron::player& player = this->player(index_in_level);
-    return player.coop ? *player.coop : player;
-}

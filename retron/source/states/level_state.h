@@ -23,7 +23,6 @@ namespace retron
         virtual retron::game_service& game_service() const override;
         virtual size_t player_count() const override;
         virtual const retron::player& player(size_t index_in_level) const override;
-        virtual const retron::player& player_or_coop(size_t index_in_level) const override;
 
     private:
         retron::game_service& game_service_;

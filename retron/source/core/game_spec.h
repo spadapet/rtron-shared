@@ -80,6 +80,9 @@ namespace retron
 
     struct player
     {
+        player& self_or_coop();
+        const player& self_or_coop() const;
+
         retron::player* coop;
         size_t index;
         size_t level;
