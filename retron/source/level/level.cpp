@@ -170,7 +170,7 @@ retron::level_phase retron::level::phase() const
         case internal_phase_t::playing:
             for (auto [entity, data] : this->registry.view<const ::player_data>().each())
             {
-                if (data.state != ::player_state::dead || data.state_counter < 60)
+                if (data.state != ::player_state::dead || data.state_counter < this->difficulty_spec_.player_dead_counter)
                 {
                     return retron::level_phase::playing;
                 }
@@ -354,6 +354,25 @@ entt::entity retron::level::create_player(size_t index_in_level)
     this->registry.emplace<::showing_particle_effect>(entity, effect_id, 0u);
 
     return entity;
+}
+
+void retron::level::recreate_player(entt::entity entity)
+{
+    ::player_data& data = this->registry.get<::player_data>(entity);
+    const retron::player& player = data.player.get();
+
+    data.state = ::player_state::ghost;
+    data.state_counter = 0;
+
+    this->position.set(entity, this->level_spec_.player_start);
+    this->position.direction(entity, {});
+    this->position.velocity(entity, {});
+
+    retron::particles::effect_options options;
+    options.type = static_cast<uint8_t>(player.index);
+
+    auto [effect_id, max_life] = this->particle_effects["player_start"].add(this->particles, this->level_spec_.player_start, &options);
+    this->registry.emplace_or_replace<::showing_particle_effect>(entity, effect_id, 0u);
 }
 
 entt::entity retron::level::create_player_bullet(entt::entity player, ff::point_fixed shot_pos, ff::point_fixed shot_dir)
@@ -541,28 +560,50 @@ void retron::level::advance_entity(entt::entity entity, entity_type type)
 void retron::level::advance_player(entt::entity entity)
 {
     const ::showing_particle_effect* particle_data = this->registry.try_get<::showing_particle_effect>(entity);
-    if (this->phase_ == internal_phase_t::playing || (particle_data && particle_data->counter >= 60))
+    if (this->phase_ == internal_phase_t::playing || (this->phase_ == internal_phase_t::show_players && particle_data && particle_data->counter >= this->difficulty_spec_.player_delay_move_counter))
     {
         ::player_data& player_data = this->registry.get<::player_data>(entity);
         player_data.state_counter++;
 
-        if (player_data.state == ::player_state::alive || player_data.state == ::player_state::ghost)
+        switch (player_data.state)
         {
-            ff::point_fixed move_vector = ::get_press_vector(player_data.input_events, false);
-            ff::point_fixed shot_vector = ::get_press_vector(player_data.input_events, true);
+            case ::player_state::ghost:
+                if (player_data.state_counter >= this->difficulty_spec_.player_ghost_counter)
+                {
+                    player_data.state = ::player_state::alive;
+                }
+                [[fallthrough]];
 
-            this->position.velocity(entity, move_vector * this->difficulty_spec_.player_move);
-            this->position.set(entity, this->position.get(entity) + this->position.velocity(entity));
-            this->position.direction(entity, ff::point_fixed(
-                -ff::fixed_int(move_vector.x < 0_f) + ff::fixed_int(move_vector.x > 0_f),
-                -ff::fixed_int(move_vector.y < 0_f) + ff::fixed_int(move_vector.y > 0_f)));
+            case ::player_state::alive:
+                {
+                    ff::point_fixed move_vector = ::get_press_vector(player_data.input_events, false);
+                    ff::point_fixed shot_vector = ::get_press_vector(player_data.input_events, true);
 
-            if ((!player_data.shot_counter || !--player_data.shot_counter) && shot_vector)
-            {
-                player_data.state = ::player_state::alive; // stop being an invincible ghost after shooting
-                player_data.shot_counter = this->difficulty_spec_.player_shot_counter;
-                this->create_player_bullet(entity, this->bounds_box(entity).center(), retron::position::canon_direction(shot_vector));
-            }
+                    this->position.velocity(entity, move_vector * this->difficulty_spec_.player_move);
+                    this->position.set(entity, this->position.get(entity) + this->position.velocity(entity));
+                    this->position.direction(entity, ff::point_fixed(
+                        -ff::fixed_int(move_vector.x < 0_f) + ff::fixed_int(move_vector.x > 0_f),
+                        -ff::fixed_int(move_vector.y < 0_f) + ff::fixed_int(move_vector.y > 0_f)));
+
+                    if ((!player_data.shot_counter || !--player_data.shot_counter) && shot_vector)
+                    {
+                        player_data.state = ::player_state::alive; // stop being an invincible ghost after shooting
+                        player_data.shot_counter = this->difficulty_spec_.player_shot_counter;
+                        this->create_player_bullet(entity, this->bounds_box(entity).center(), retron::position::canon_direction(shot_vector));
+                    }
+                }
+                break;
+
+            case ::player_state::dead:
+                if (player_data.state_counter >= this->difficulty_spec_.player_dead_counter)
+                {
+                    const retron::player& player = player_data.player.get();
+                    if (this->level_service_.game_service().player_get_life(player.index))
+                    {
+                        this->recreate_player(entity);
+                    }
+                }
+                break;
         }
     }
 }
@@ -922,7 +963,7 @@ void retron::level::destroy_obstacle(entt::entity obstacle_entity, entt::entity 
     {
         this->remove_tracked_object(obstacle_entity);
 
-        const ::electrode_data *data = this->registry.try_get<::electrode_data>(obstacle_entity);
+        const ::electrode_data* data = this->registry.try_get<::electrode_data>(obstacle_entity);
         std::shared_ptr<ff::animation_base> anim = this->electrode_die_anims[data ? data->electrode_type % this->electrode_die_anims.size() : 0].object();
         this->create_animation(anim, this->position.get(obstacle_entity), false);
     }
@@ -1000,9 +1041,30 @@ void retron::level::render_player(entt::entity entity, ff::draw_base& draw)
         draw.push_palette_remap(palette.index_remap(), palette.index_remap_hash());
 
         ff::point_fixed dir = this->position.direction(entity);
-        ff::fixed_int frame = this->position.velocity(entity) ? ff::fixed_int(this->frame_count) / this->difficulty_spec_.player_move_frame_divisor : 0_f;
+        ff::fixed_int frame = (player_data.state != ::player_state::dead && this->position.velocity(entity))
+            ? ff::fixed_int(this->frame_count) / this->difficulty_spec_.player_move_frame_divisor
+            : 0_f;
+
         ff::animation_base* anim = this->player_walk_anims[helpers::dir_to_index(dir)].object().get();
-        this->render_animation(entity, draw, anim, frame);
+        if (player_data.state == ::player_state::ghost)
+        {
+            if (player_data.state_counter >= this->difficulty_spec_.player_ghost_warning_counter)
+            {
+                if (player_data.state_counter % 16 < 8)
+                {
+                    anim = nullptr;
+                }
+            }
+            else if (player_data.state_counter % 32 < 16)
+            {
+                anim = nullptr;
+            }
+        }
+
+        if (anim)
+        {
+            this->render_animation(entity, draw, anim, frame);
+        }
 
         draw.pop_palette_remap();
     }
@@ -1138,7 +1200,7 @@ entt::entity retron::level::player_target(size_t enemy_index) const
         entt::entity entity = view.data()[i % view.size()];
         const ::player_data& player_data = this->registry.get<const ::player_data>(entity);
 
-        if (player_data.state != ::player_state::dead)
+        if (player_data.state == ::player_state::alive)
         {
             return entity;
         }
@@ -1258,7 +1320,7 @@ void retron::level::internal_phase(internal_phase_t new_phase)
         switch (this->phase_)
         {
             case internal_phase_t::winning:
-                this->phase_length = 40;
+                this->phase_length = this->difficulty_spec_.player_winning_counter;
                 break;
 
             default:

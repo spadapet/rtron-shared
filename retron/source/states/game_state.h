@@ -25,6 +25,7 @@ namespace retron
         virtual const retron::difficulty_spec& difficulty_spec() const override;
         virtual const ff::input_event_provider& input_events(const retron::player& player) const override;
         virtual void player_add_points(size_t player_index, size_t points) override;
+        virtual bool player_get_life(size_t player_index) override;
 
         // Debug
         void debug_restart_level();

@@ -48,6 +48,7 @@ namespace retron
         entt::entity create_bounds(const ff::rect_fixed& rect);
         entt::entity create_box(const ff::rect_fixed& rect);
         void create_objects(size_t& count, retron::entity_type type, const ff::rect_fixed& bounds, const std::function<entt::entity(retron::entity_type, const ff::point_fixed&)>& create_func);
+        void recreate_player(entt::entity entity);
 
         void advance_entity(entt::entity entity, retron::entity_type type);
         void advance_player(entt::entity entity);

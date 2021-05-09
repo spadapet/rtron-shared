@@ -29,6 +29,11 @@
           "player_shot_move": 6,
           "player_shot_start_offset": 10,
           "player_shot_counter": 8,
+          "player_dead_counter": 60,
+          "player_ghost_counter": 360,
+          "player_ghost_warning_counter": 240,
+          "player_delay_move_counter": 60,
+          "player_winning_counter": 40,
           "first_free_life": 25000,
           "next_free_life": 25000,
 

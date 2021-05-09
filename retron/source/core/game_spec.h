@@ -46,11 +46,19 @@ namespace retron
         std::string name;
         std::string level_set;
         size_t lives;
+
         size_t grunt_tick_frames; // grunts only move each "tick" number of frames
         size_t grunt_max_ticks; // random 1-max ticks per move
         size_t grunt_max_ticks_rate; // frames to decrease max ticks
         size_t grunt_min_ticks;
+
         size_t player_shot_counter;
+        size_t player_dead_counter;
+        size_t player_ghost_counter;
+        size_t player_ghost_warning_counter;
+        size_t player_delay_move_counter;
+        size_t player_winning_counter;
+
         size_t first_free_life;
         size_t next_free_life;
 

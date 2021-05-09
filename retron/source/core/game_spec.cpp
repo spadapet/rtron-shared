@@ -23,6 +23,11 @@ static retron::difficulty_spec load_difficulty_spec(const ff::dict& dict, const 
     diff_spec.player_shot_move = ::get_value<ff::fixed_int>(dict, default_dict, "player_shot_move");
     diff_spec.player_shot_start_offset = ::get_value<ff::fixed_int>(dict, default_dict, "player_shot_start_offset");
     diff_spec.player_shot_counter = ::get_value<size_t>(dict, default_dict, "player_shot_counter");
+    diff_spec.player_dead_counter = ::get_value<size_t>(dict, default_dict, "player_dead_counter");
+    diff_spec.player_ghost_counter = ::get_value<size_t>(dict, default_dict, "player_ghost_counter");
+    diff_spec.player_ghost_warning_counter = ::get_value<size_t>(dict, default_dict, "player_ghost_warning_counter");
+    diff_spec.player_delay_move_counter = ::get_value<size_t>(dict, default_dict, "player_delay_move_counter");
+    diff_spec.player_winning_counter = ::get_value<size_t>(dict, default_dict, "player_winning_counter");
     diff_spec.first_free_life = ::get_value<size_t>(dict, default_dict, "first_free_life");
     diff_spec.next_free_life = ::get_value<size_t>(dict, default_dict, "next_free_life");
 

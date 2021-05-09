@@ -118,6 +118,20 @@ void retron::game_state::player_add_points(size_t player_index, size_t points)
     }
 }
 
+bool retron::game_state::player_get_life(size_t player_index)
+{
+    assert(player_index < this->game_options_.player_count());
+
+    retron::player& player = this->players[player_index].self_or_coop();
+    if (player.lives > 0)
+    {
+        player.lives--;
+        return true;
+    }
+
+    return false;
+}
+
 void retron::game_state::debug_restart_level()
 {
     this->init_level_states();
@@ -241,7 +255,7 @@ static void render_points_and_lives(
         ::_itoa_s(static_cast<int>(points), points_str, 10);
         size_t points_len = std::strlen(points_str);
         ff::transform points_pos(ff::point_float(top_middle.x - font_x * points_len, top_middle.y), ff::point_float(1, 1), 0, color);
-        font->draw_text(&draw, std::string_view(points_str, points_len), points_pos, ff::color::none());
+        font->draw_text(&draw, std::string_view(points_str, points_len), points_pos, ff::palette_index_to_color(224));
     }
 
     // Lives
