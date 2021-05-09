@@ -54,13 +54,12 @@ namespace retron
         void advance_player_bullet(entt::entity entity);
         void advance_grunt(entt::entity entity);
         void advance_animation(entt::entity entity);
-        void advance_follow_entity_positions();
+        void advance_entity_followers();
         void advance_phase();
 
         void handle_collisions();
         void handle_bounds_collision(entt::entity target_entity, entt::entity level_entity);
         void handle_entity_collision(entt::entity target_entity, entt::entity source_entity);
-        void handle_particle_effect_done(int effect_id);
 
         void destroy_player_bullet(entt::entity bullet_entity, entt::entity by_entity, retron::entity_box_type by_type);
         void destroy_grunt(entt::entity grunt_entity, entt::entity by_entity, retron::entity_box_type by_type);
@@ -78,9 +77,13 @@ namespace retron
         void render_animation(entt::entity entity, ff::draw_base& draw, ff::animation_player_base* player);
         void render_debug(ff::draw_base& draw);
 
+        bool player_active() const;
+        entt::entity player_target(size_t enemy_index) const;
+        void player_add_points(entt::entity player_or_bullet, entt::entity destroyed_entity);
+
         size_t pick_grunt_move_counter();
         ff::point_fixed pick_move_destination(entt::entity entity, entt::entity destEntity, retron::collision_box_type collision_type);
-        void add_player_points(entt::entity player_or_bullet, entt::entity destroyed_entity);
+
         void remove_tracked_object(entt::entity entity);
         void enum_entities(const std::function<void(entt::entity, retron::entity_type)>& func);
 
@@ -88,15 +91,10 @@ namespace retron
         {
             init,
             ready,
-
-            // retron::level_phase::playing
             show_enemies,
             show_players,
             playing,
-            dying,
             winning,
-
-            dead,
             won
         };
 
