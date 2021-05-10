@@ -44,7 +44,7 @@ std::shared_ptr<ff::state> retron::game_state::advance_time()
             break;
 
         case retron::level_phase::dead:
-            // TODL: Check high scores, restart
+            // TODO: Check high scores, restart
             break;
     }
 
@@ -255,7 +255,7 @@ static void render_points_and_lives(
         ::_itoa_s(static_cast<int>(points), points_str, 10);
         size_t points_len = std::strlen(points_str);
         ff::transform points_pos(ff::point_float(top_middle.x - font_x * points_len, top_middle.y), ff::point_float(1, 1), 0, color);
-        font->draw_text(&draw, std::string_view(points_str, points_len), points_pos, ff::palette_index_to_color(224));
+        font->draw_text(&draw, std::string_view(points_str, points_len), points_pos, ff::color::none());
     }
 
     // Lives
@@ -331,7 +331,9 @@ void retron::game_state::render_overlay_text(ff::draw_base& draw)
 
         const ff::point_float scale(2, 2);
         ff::point_float size = this->game_font->measure_text(text, scale);
-        this->game_font->draw_text(&draw, text, ff::transform(retron::constants::RENDER_RECT.center().cast<float>() - size / 2.0f, scale, 0, ff::palette_index_to_color(retron::colors::PLAYER)), ff::color::none());
+        this->game_font->draw_text(&draw, text,
+            ff::transform(retron::constants::RENDER_RECT.center().cast<float>() - size / 2.0f, scale, 0, ff::palette_index_to_color(retron::colors::PLAYER)),
+            ff::palette_index_to_color(224));
 
         draw.pop_palette_remap();
     }

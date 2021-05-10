@@ -20,6 +20,7 @@ namespace
         ::player_state state;
         size_t state_counter;
         size_t shot_counter;
+        size_t index_in_level;
     };
 
     struct player_bullet_data
@@ -345,7 +346,8 @@ entt::entity retron::level::create_player(size_t index_in_level)
     entt::entity entity = this->create_entity(entity_type::player, pos);
     const retron::player& player = this->level_service_.player(index_in_level);
     const ff::input_event_provider& input_events = this->level_service_.game_service().input_events(player);
-    this->registry.emplace<::player_data>(entity, player, input_events, ::player_state::alive, 0u, 0u);
+    ::player_state player_state = (this->phase_ == internal_phase_t::show_players) ? ::player_state::alive : ::player_state::ghost;
+    this->registry.emplace<::player_data>(entity, player, input_events, player_state, 0u, 0u, index_in_level);
 
     retron::particles::effect_options options;
     options.type = static_cast<uint8_t>(player.index);
@@ -354,25 +356,6 @@ entt::entity retron::level::create_player(size_t index_in_level)
     this->registry.emplace<::showing_particle_effect>(entity, effect_id, 0u);
 
     return entity;
-}
-
-void retron::level::recreate_player(entt::entity entity)
-{
-    ::player_data& data = this->registry.get<::player_data>(entity);
-    const retron::player& player = data.player.get();
-
-    data.state = ::player_state::ghost;
-    data.state_counter = 0;
-
-    this->position.set(entity, this->level_spec_.player_start);
-    this->position.direction(entity, {});
-    this->position.velocity(entity, {});
-
-    retron::particles::effect_options options;
-    options.type = static_cast<uint8_t>(player.index);
-
-    auto [effect_id, max_life] = this->particle_effects["player_start"].add(this->particles, this->level_spec_.player_start, &options);
-    this->registry.emplace_or_replace<::showing_particle_effect>(entity, effect_id, 0u);
 }
 
 entt::entity retron::level::create_player_bullet(entt::entity player, ff::point_fixed shot_pos, ff::point_fixed shot_dir)
@@ -597,10 +580,12 @@ void retron::level::advance_player(entt::entity entity)
             case ::player_state::dead:
                 if (player_data.state_counter >= this->difficulty_spec_.player_dead_counter)
                 {
+                    // Don't stop the game in coop, keep going until there are no lives left
                     const retron::player& player = player_data.player.get();
-                    if (this->level_service_.game_service().player_get_life(player.index))
+                    if (player.coop && this->level_service_.game_service().player_get_life(player.index))
                     {
-                        this->recreate_player(entity);
+                        this->entities.delay_delete(entity);
+                        this->create_player(player_data.index_in_level);
                     }
                 }
                 break;
@@ -1046,19 +1031,28 @@ void retron::level::render_player(entt::entity entity, ff::draw_base& draw)
             : 0_f;
 
         ff::animation_base* anim = this->player_walk_anims[helpers::dir_to_index(dir)].object().get();
-        if (player_data.state == ::player_state::ghost)
+        switch (player_data.state)
         {
-            if (player_data.state_counter >= this->difficulty_spec_.player_ghost_warning_counter)
-            {
-                if (player_data.state_counter % 16 < 8)
+            case ::player_state::dead:
+                if (player_data.state_counter >= this->difficulty_spec_.player_dead_counter)
                 {
                     anim = nullptr;
                 }
-            }
-            else if (player_data.state_counter % 32 < 16)
-            {
-                anim = nullptr;
-            }
+                break;
+
+            case ::player_state::ghost:
+                if (player_data.state_counter >= this->difficulty_spec_.player_ghost_warning_counter)
+                {
+                    if (player_data.state_counter % 16 < 8)
+                    {
+                        anim = nullptr;
+                    }
+                }
+                else if (player_data.state_counter % 32 < 16)
+                {
+                    anim = nullptr;
+                }
+                break;
         }
 
         if (anim)
