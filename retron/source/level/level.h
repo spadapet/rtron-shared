@@ -8,7 +8,7 @@
 
 namespace retron
 {
-    class level_service;
+    class game_service;
 
     enum class level_phase
     {
@@ -18,16 +18,15 @@ namespace retron
         won
     };
 
-    class level
+    class level : public ff::state
     {
     public:
-        level(retron::level_service& level_service, retron::level_spec&& level_spec);
+        level(retron::game_service& game_service, const retron::level_spec& level_spec, const std::vector<const retron::player*>& players);
 
-        void advance(const ff::rect_fixed& camera_rect);
-        void render(ff::dx11_target_base& target, ff::dx11_depth& depth, const ff::rect_fixed& target_rect, const ff::rect_fixed& camera_rect);
+        virtual std::shared_ptr<ff::state> advance_time() override;
+        virtual void render() override;
 
         retron::level_phase phase() const;
-        size_t phase_counter() const;
         void start(); // move from ready -> playing
         const retron::level_spec& level_spec() const;
 
@@ -100,10 +99,10 @@ namespace retron
 
         void internal_phase(internal_phase_t new_phase);
 
-        retron::level_service& level_service_;
-        const retron::game_spec& game_spec_;
+        retron::game_service& game_service;
         const retron::difficulty_spec& difficulty_spec_;
         retron::level_spec level_spec_;
+        std::vector<const retron::player*> players;
 
         entt::registry registry;
         retron::entities entities;
@@ -123,8 +122,7 @@ namespace retron
         ff::auto_resource<ff::animation_base> grunt_walk_anim;
 
         internal_phase_t phase_;
-        size_t phase_counter_;
-        size_t phase_length;
+        size_t phase_counter;
         size_t frame_count;
     };
 }

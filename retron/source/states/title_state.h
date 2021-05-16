@@ -5,7 +5,7 @@ namespace retron
     class title_page;
     class ui_view_state;
 
-    class title_state : public ff::state, public std::enable_shared_from_this<retron::title_state>
+    class title_state : public ff::state
     {
     public:
         title_state();

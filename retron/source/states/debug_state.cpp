@@ -8,7 +8,7 @@ bool retron::debug_state::visible()
 
 void retron::debug_state::visible(std::shared_ptr<ff::state> top_state, std::shared_ptr<ff::state> under_state)
 {
-    this->top_state = std::make_shared<ff::state_wrapper>(top_state);
+    this->top_state = top_state->wrap();
     this->under_state = under_state;
 }
 

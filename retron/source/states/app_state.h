@@ -20,7 +20,6 @@ namespace retron
         virtual void advance_input() override;
         virtual void render(ff::dx11_target_base& target, ff::dx11_depth& depth) override;
         virtual void frame_rendered(ff::state::advance_t type, ff::dx11_target_base& target, ff::dx11_depth& depth) override;
-        virtual void save_settings() override;
         virtual size_t child_state_count() override;
         virtual ff::state* child_state(size_t index) override;
 
@@ -50,12 +49,13 @@ namespace retron
         void init_resources();
         void init_game_state();
         void apply_system_options();
+        void save_settings();
 
         void on_custom_debug();
         void on_resources_rebuilt();
 
         // Globals
-        std::shared_ptr<ff::state_wrapper> game_state;
+        std::shared_ptr<ff::state> game_state;
         retron::system_options system_options_;
         retron::game_options game_options_;
         retron::game_spec game_spec_;

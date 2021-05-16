@@ -1,7 +1,7 @@
 #include "pch.h"
 #include "source/core/app_service.h"
 #include "source/core/game_service.h"
-#include "source/core/level_service.h"
+#include "source/core/render_targets.h"
 #include "source/level/level.h"
 
 namespace
@@ -101,7 +101,7 @@ static ff::point_fixed get_press_vector(const ff::input_event_provider& input_ev
     return ff::point_fixed(0, 0);
 }
 
-static size_t get_player_index_for_bullet(entt::registry& registry, entt::entity bullet_entity, bool* valid = nullptr)
+static const retron::player* get_player_for_bullet(entt::registry& registry, entt::entity bullet_entity, bool* valid = nullptr)
 {
     ::player_bullet_data& bullet_data = registry.get<::player_bullet_data>(bullet_entity);
     ::player_data* player_data = registry.valid(bullet_data.player) ? registry.try_get<::player_data>(bullet_data.player) : nullptr;
@@ -111,21 +111,26 @@ static size_t get_player_index_for_bullet(entt::registry& registry, entt::entity
         *valid = (player_data != nullptr);
     }
 
-    return player_data ? player_data->player.get().index : 0;
+    return player_data ? &player_data->player.get() : nullptr;
 }
 
-retron::level::level(retron::level_service& level_service, retron::level_spec&& level_spec)
-    : level_service_(level_service)
-    , game_spec_(retron::app_service::get().game_spec())
-    , level_spec_(std::move(level_spec))
-    , difficulty_spec_(level_service.game_service().difficulty_spec())
-    , phase_(internal_phase_t::init)
-    , phase_counter_(0)
-    , phase_length(0)
-    , frame_count(0)
+static size_t get_player_index_for_bullet(entt::registry& registry, entt::entity bullet_entity, bool* valid = nullptr)
+{
+    const retron::player* player = ::get_player_for_bullet(registry, bullet_entity, valid);
+    return player ? player->index : 0;
+}
+
+retron::level::level(retron::game_service& game_service, const retron::level_spec& level_spec, const std::vector<const retron::player*>& players)
+    : game_service(game_service)
+    , difficulty_spec_(game_service.difficulty_spec())
+    , level_spec_(level_spec)
+    , players(players)
     , entities(this->registry)
     , position(this->registry)
     , collision(this->registry, this->position, this->entities)
+    , phase_(internal_phase_t::init)
+    , phase_counter(0)
+    , frame_count(0)
 {
     this->connections.emplace_front(retron::app_service::get().reload_resources_sink().connect(std::bind(&retron::level::init_resources, this)));
 
@@ -133,9 +138,9 @@ retron::level::level(retron::level_service& level_service, retron::level_spec&& 
     this->internal_phase(internal_phase_t::ready);
 }
 
-void retron::level::advance(const ff::rect_fixed& camera_rect)
+std::shared_ptr<ff::state> retron::level::advance_time()
 {
-    // Scope for particle async update
+    if (this->phase() == retron::level_phase::playing)
     {
         ff::end_scope_action particle_scope = this->particles.advance_async();
         this->enum_entities(std::bind(&retron::level::advance_entity, this, std::placeholders::_1, std::placeholders::_2));
@@ -145,11 +150,17 @@ void retron::level::advance(const ff::rect_fixed& camera_rect)
     this->advance_entity_followers();
     this->advance_phase();
     this->entities.flush_delete();
+
+    return nullptr;
 }
 
-void retron::level::render(ff::dx11_target_base& target, ff::dx11_depth& depth, const ff::rect_fixed& target_rect, const ff::rect_fixed& camera_rect)
+void retron::level::render()
 {
-    ff::draw_ptr draw = retron::app_service::get().draw_device().begin_draw(target, &depth, target_rect, camera_rect);
+    retron::render_targets& targets = *retron::app_service::get().render_targets();
+    ff::dx11_target_base& target = *targets.target(retron::render_target_types::palette_1);
+    ff::dx11_depth& depth = *targets.depth(retron::render_target_types::palette_1);
+
+    ff::draw_ptr draw = retron::app_service::get().draw_device().begin_draw(target, &depth, retron::constants::RENDER_RECT, retron::constants::RENDER_RECT);
     if (draw)
     {
         this->enum_entities(std::bind(&retron::level::render_entity, this, std::placeholders::_1, std::placeholders::_2, std::ref(*draw)));
@@ -184,24 +195,17 @@ retron::level_phase retron::level::phase() const
     }
 }
 
-size_t retron::level::phase_counter() const
-{
-    switch (this->phase_)
-    {
-        case internal_phase_t::ready:
-        case internal_phase_t::won:
-            return this->phase_counter_;
-
-        default:
-            return 0;
-    }
-}
-
 void retron::level::start()
 {
-    if (this->phase_ == internal_phase_t::ready)
+    switch (this->phase())
     {
-        this->internal_phase(internal_phase_t::show_enemies);
+        case retron::level_phase::ready:
+            this->internal_phase(internal_phase_t::show_enemies);
+            break;
+
+        case retron::level_phase::dead:
+            this->internal_phase(internal_phase_t::ready);
+            break;
     }
 }
 
@@ -284,7 +288,7 @@ void retron::level::init_entities()
 
     if (this->phase_ == internal_phase_t::show_players)
     {
-        for (size_t i = 0; i < this->level_service_.player_count(); i++)
+        for (size_t i = 0; i < this->players.size(); i++)
         {
             this->create_player(i);
         }
@@ -341,11 +345,11 @@ entt::entity retron::level::create_grunt(retron::entity_type type, const ff::poi
 entt::entity retron::level::create_player(size_t index_in_level)
 {
     ff::point_fixed pos = this->level_spec_.player_start;
-    pos.x += index_in_level * 16 - this->level_service_.player_count() * 8 + 8;
+    pos.x += index_in_level * 16 - this->players.size() * 8 + 8;
 
     entt::entity entity = this->create_entity(entity_type::player, pos);
-    const retron::player& player = this->level_service_.player(index_in_level);
-    const ff::input_event_provider& input_events = this->level_service_.game_service().input_events(player);
+    const retron::player& player = *this->players[index_in_level];
+    const ff::input_event_provider& input_events = this->game_service.input_events(player);
     ::player_state player_state = (this->phase_ == internal_phase_t::show_players) ? ::player_state::alive : ::player_state::ghost;
     this->registry.emplace<::player_data>(entity, player, input_events, player_state, 0u, 0u, index_in_level);
 
@@ -581,8 +585,7 @@ void retron::level::advance_player(entt::entity entity)
                 if (player_data.state_counter >= this->difficulty_spec_.player_dead_counter)
                 {
                     // Don't stop the game in coop, keep going until there are no lives left
-                    const retron::player& player = player_data.player.get();
-                    if (player.coop && this->level_service_.game_service().player_get_life(player.index))
+                    if (this->players.size() > 1 && this->game_service.player_get_life(player_data.player.get()))
                     {
                         this->entities.delay_delete(entity);
                         this->create_player(player_data.index_in_level);
@@ -683,29 +686,30 @@ void retron::level::advance_entity_followers()
 void retron::level::advance_phase()
 {
     this->frame_count++;
+    this->phase_counter++;
 
-    if (++this->phase_counter_ >= this->phase_length)
+    switch (this->phase_)
     {
-        switch (this->phase_)
-        {
-            case internal_phase_t::show_enemies:
-                if (this->registry.empty<::showing_particle_effect>())
-                {
-                    this->internal_phase(internal_phase_t::show_players);
-                }
-                break;
+        case internal_phase_t::show_enemies:
+            if (this->registry.empty<::showing_particle_effect>())
+            {
+                this->internal_phase(internal_phase_t::show_players);
+            }
+            break;
 
-            case internal_phase_t::show_players:
-                if (this->registry.empty<::showing_particle_effect>())
-                {
-                    this->internal_phase(internal_phase_t::playing);
-                }
-                break;
+        case internal_phase_t::show_players:
+            if (this->registry.empty<::showing_particle_effect>())
+            {
+                this->internal_phase(internal_phase_t::playing);
+            }
+            break;
 
-            case internal_phase_t::winning:
+        case internal_phase_t::winning:
+            if (this->phase_counter >= this->difficulty_spec_.player_winning_counter)
+            {
                 this->internal_phase(internal_phase_t::won);
-                break;
-        }
+            }
+            break;
     }
 
     if (this->phase() == retron::level_phase::playing && this->registry.empty<::clear_to_win_flag>())
@@ -1205,17 +1209,17 @@ entt::entity retron::level::player_target(size_t enemy_index) const
 
 void retron::level::player_add_points(entt::entity player_or_bullet, entt::entity destroyed_entity)
 {
-    size_t player_index = 0;
+    const retron::player* player = nullptr;
     size_t points = 0;
 
     switch (this->entities.entity_type(player_or_bullet))
     {
         case retron::entity_type::player:
-            player_index = this->registry.get<::player_data>(player_or_bullet).player.get().index;
+            player = &this->registry.get<::player_data>(player_or_bullet).player.get();
             break;
 
         case retron::entity_type::player_bullet:
-            player_index = ::get_player_index_for_bullet(this->registry, player_or_bullet);
+            player = ::get_player_for_bullet(this->registry, player_or_bullet);
             break;
 
         default:
@@ -1236,9 +1240,9 @@ void retron::level::player_add_points(entt::entity player_or_bullet, entt::entit
             return;
     }
 
-    if (points)
+    if (player && points)
     {
-        this->level_service_.game_service().player_add_points(player_index, points);
+        this->game_service.player_add_points(*player, points);
     }
 }
 
@@ -1309,19 +1313,7 @@ void retron::level::internal_phase(internal_phase_t new_phase)
     if (this->phase_ != new_phase)
     {
         this->phase_ = new_phase;
-        this->phase_counter_ = 0;
-
-        switch (this->phase_)
-        {
-            case internal_phase_t::winning:
-                this->phase_length = this->difficulty_spec_.player_winning_counter;
-                break;
-
-            default:
-                this->phase_length = 0;
-                break;
-        }
-
+        this->phase_counter = 0;
         this->init_entities();
     }
 }

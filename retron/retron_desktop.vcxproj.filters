@@ -44,9 +44,6 @@
     <ClCompile Include="source\states\game_state.cpp">
       <Filter>source\states</Filter>
     </ClCompile>
-    <ClCompile Include="source\states\level_state.cpp">
-      <Filter>source\states</Filter>
-    </ClCompile>
     <ClCompile Include="source\level\entities.cpp">
       <Filter>source\level</Filter>
     </ClCompile>
@@ -95,6 +92,9 @@
     <ClCompile Include="source\assets\xaml.res.cpp">
       <Filter>source\assets</Filter>
     </ClCompile>
+    <ClCompile Include="source\states\high_score_state.cpp">
+      <Filter>source\states</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h" />
@@ -111,9 +111,6 @@
       <Filter>source\core</Filter>
     </ClInclude>
     <ClInclude Include="source\core\game_spec.h">
-      <Filter>source\core</Filter>
-    </ClInclude>
-    <ClInclude Include="source\core\level_service.h">
       <Filter>source\core</Filter>
     </ClInclude>
     <ClInclude Include="source\core\options.h">
@@ -143,9 +140,6 @@
     <ClInclude Include="source\states\game_state.h">
       <Filter>source\states</Filter>
     </ClInclude>
-    <ClInclude Include="source\states\level_state.h">
-      <Filter>source\states</Filter>
-    </ClInclude>
     <ClInclude Include="source\level\entities.h">
       <Filter>source\level</Filter>
     </ClInclude>
@@ -168,6 +162,9 @@
       <Filter>source\states</Filter>
     </ClInclude>
     <ClInclude Include="source\states\ui_view_state.h">
+      <Filter>source\states</Filter>
+    </ClInclude>
+    <ClInclude Include="source\states\high_score_state.h">
       <Filter>source\states</Filter>
     </ClInclude>
   </ItemGroup>

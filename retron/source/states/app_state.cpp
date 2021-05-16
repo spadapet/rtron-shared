@@ -37,6 +37,7 @@ retron::app_state::app_state()
 
     this->connections.emplace_front(ff::custom_debug_sink().connect(std::bind(&retron::app_state::on_custom_debug, this)));
     this->connections.emplace_front(ff::global_resources::rebuilt_sink().connect(std::bind(&retron::app_state::on_resources_rebuilt, this)));
+    this->connections.emplace_front(ff::request_save_settings_sink().connect(std::bind(&retron::app_state::save_settings, this)));
     this->render_targets_stack.push_back(nullptr);
 
     this->init_options();
@@ -174,19 +175,6 @@ void retron::app_state::frame_rendered(ff::state::advance_t type, ff::dx11_targe
     ff::state::frame_rendered(type, target, depth);
 }
 
-void retron::app_state::save_settings()
-{
-    this->system_options_.full_screen = ff::app_render_target().full_screen();
-
-    ff::dict dict = ff::settings(strings::ID_APP_STATE);
-    dict.set_struct(strings::ID_SYSTEM_OPTIONS, this->system_options_);
-    dict.set_struct(strings::ID_GAME_OPTIONS, this->game_options_);
-
-    ff::settings(strings::ID_APP_STATE, dict);
-
-    ff::state::save_settings();
-}
-
 size_t retron::app_state::child_state_count()
 {
     return 1;
@@ -317,7 +305,7 @@ void retron::app_state::debug_command(size_t command_id)
     }
     else if (command_id == commands::ID_DEBUG_RESTART_LEVEL)
     {
-        std::shared_ptr<retron::game_state> game_state = std::dynamic_pointer_cast<retron::game_state>(this->game_state->wrapped_state());
+        std::shared_ptr<retron::game_state> game_state = std::dynamic_pointer_cast<retron::game_state>(this->game_state->unwrap());
         if (game_state)
         {
             game_state->debug_restart_level();
@@ -413,10 +401,22 @@ void retron::app_state::init_game_state()
     std::shared_ptr<ff::state> title_state = std::make_shared<retron::title_state>();
     std::shared_ptr<retron::transition_state> transition_state = std::make_shared<retron::transition_state>(nullptr, title_state, "transition_bg_1.png", 4, 24);
 
-    this->game_state = std::make_shared<ff::state_wrapper>(transition_state);
+    this->game_state = transition_state->wrap();
 }
 
 void retron::app_state::apply_system_options()
 {
     ff::app_render_target().full_screen(this->system_options_.full_screen);
 }
+
+void retron::app_state::save_settings()
+{
+    this->system_options_.full_screen = ff::app_render_target().full_screen();
+
+    ff::dict dict = ff::settings(strings::ID_APP_STATE);
+    dict.set_struct(strings::ID_SYSTEM_OPTIONS, this->system_options_);
+    dict.set_struct(strings::ID_GAME_OPTIONS, this->game_options_);
+
+    ff::settings(strings::ID_APP_STATE, dict);
+}
+
