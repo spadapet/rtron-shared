@@ -19,6 +19,15 @@ retron::app_service& retron::app_service::get()
     return *::app_service;
 }
 
+ff::draw_ptr retron::app_service::begin_palette_draw()
+{
+    retron::render_targets& targets = *retron::app_service::get().render_targets();
+    ff::dx11_target_base& target = *targets.target(retron::render_target_types::palette_1);
+    ff::dx11_depth& depth = *targets.depth(retron::render_target_types::palette_1);
+
+    return retron::app_service::get().draw_device().begin_draw(target, &depth, retron::constants::RENDER_RECT, retron::constants::RENDER_RECT);
+}
+
 retron::app_state::app_state()
     : viewport(ff::point_int(constants::RENDER_WIDTH, constants::RENDER_HEIGHT))
     , draw_device_(ff::draw_device::create())

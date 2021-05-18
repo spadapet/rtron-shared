@@ -27,6 +27,7 @@ namespace retron
         virtual ~app_service() = default;
 
         static app_service& get();
+        static ff::draw_ptr begin_palette_draw();
 
         // Globals
         virtual retron::audio& audio() = 0;

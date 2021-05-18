@@ -124,7 +124,7 @@ retron::level::level(retron::game_service& game_service, const retron::level_spe
     : game_service(game_service)
     , difficulty_spec_(game_service.difficulty_spec())
     , level_spec_(level_spec)
-    , players(players)
+    , players_(players)
     , entities(this->registry)
     , position(this->registry)
     , collision(this->registry, this->position, this->entities)
@@ -156,11 +156,7 @@ std::shared_ptr<ff::state> retron::level::advance_time()
 
 void retron::level::render()
 {
-    retron::render_targets& targets = *retron::app_service::get().render_targets();
-    ff::dx11_target_base& target = *targets.target(retron::render_target_types::palette_1);
-    ff::dx11_depth& depth = *targets.depth(retron::render_target_types::palette_1);
-
-    ff::draw_ptr draw = retron::app_service::get().draw_device().begin_draw(target, &depth, retron::constants::RENDER_RECT, retron::constants::RENDER_RECT);
+    ff::draw_ptr draw = retron::app_service::begin_palette_draw();
     if (draw)
     {
         this->enum_entities(std::bind(&retron::level::render_entity, this, std::placeholders::_1, std::placeholders::_2, std::ref(*draw)));
@@ -212,6 +208,11 @@ void retron::level::start()
 const retron::level_spec& retron::level::level_spec() const
 {
     return this->level_spec_;
+}
+
+const std::vector<const retron::player*>& retron::level::players() const
+{
+    return this->players_;
 }
 
 void retron::level::init_resources()
@@ -288,7 +289,7 @@ void retron::level::init_entities()
 
     if (this->phase_ == internal_phase_t::show_players)
     {
-        for (size_t i = 0; i < this->players.size(); i++)
+        for (size_t i = 0; i < this->players_.size(); i++)
         {
             this->create_player(i);
         }
@@ -345,10 +346,10 @@ entt::entity retron::level::create_grunt(retron::entity_type type, const ff::poi
 entt::entity retron::level::create_player(size_t index_in_level)
 {
     ff::point_fixed pos = this->level_spec_.player_start;
-    pos.x += index_in_level * 16 - this->players.size() * 8 + 8;
+    pos.x += index_in_level * 16 - this->players_.size() * 8 + 8;
 
     entt::entity entity = this->create_entity(entity_type::player, pos);
-    const retron::player& player = *this->players[index_in_level];
+    const retron::player& player = *this->players_[index_in_level];
     const ff::input_event_provider& input_events = this->game_service.input_events(player);
     ::player_state player_state = (this->phase_ == internal_phase_t::show_players) ? ::player_state::alive : ::player_state::ghost;
     this->registry.emplace<::player_data>(entity, player, input_events, player_state, 0u, 0u, index_in_level);
@@ -585,7 +586,7 @@ void retron::level::advance_player(entt::entity entity)
                 if (player_data.state_counter >= this->difficulty_spec_.player_dead_counter)
                 {
                     // Don't stop the game in coop, keep going until there are no lives left
-                    if (this->players.size() > 1 && this->game_service.player_get_life(player_data.player.get()))
+                    if (this->players_.size() > 1 && this->game_service.player_add_life(player_data.player.get()))
                     {
                         this->entities.delay_delete(entity);
                         this->create_player(player_data.index_in_level);

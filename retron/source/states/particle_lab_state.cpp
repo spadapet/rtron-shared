@@ -24,14 +24,7 @@ std::shared_ptr<ff::state> retron::particle_lab_state::advance_time()
 
 void retron::particle_lab_state::render()
 {
-    retron::render_targets& targets = *retron::app_service::get().render_targets();
-
-    ff::draw_ptr draw = retron::app_service::get().draw_device().begin_draw(
-        *targets.target(retron::render_target_types::palette_1),
-        targets.depth(retron::render_target_types::palette_1).get(),
-        constants::RENDER_RECT,
-        constants::RENDER_RECT);
-
+    ff::draw_ptr draw = retron::app_service::begin_palette_draw();
     if (draw)
     {
         this->particles.render(*draw);

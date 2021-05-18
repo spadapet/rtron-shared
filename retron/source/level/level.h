@@ -15,7 +15,7 @@ namespace retron
         ready,
         playing,
         dead,
-        won
+        won,
     };
 
     class level : public ff::state
@@ -27,8 +27,9 @@ namespace retron
         virtual void render() override;
 
         retron::level_phase phase() const;
-        void start(); // move from ready -> playing
+        void start(); // move from ready->playing, dead->ready
         const retron::level_spec& level_spec() const;
+        const std::vector<const retron::player*>& players() const;
 
     private:
         void init_resources();
@@ -102,7 +103,7 @@ namespace retron
         retron::game_service& game_service;
         const retron::difficulty_spec& difficulty_spec_;
         retron::level_spec level_spec_;
-        std::vector<const retron::player*> players;
+        std::vector<const retron::player*> players_;
 
         entt::registry registry;
         retron::entities entities;

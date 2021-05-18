@@ -29,9 +29,6 @@
     <ClCompile Include="source\states\game_state.cpp">
       <Filter>source\states</Filter>
     </ClCompile>
-    <ClCompile Include="source\states\level_state.cpp">
-      <Filter>source\states</Filter>
-    </ClCompile>
     <ClCompile Include="source\states\title_state.cpp">
       <Filter>source\states</Filter>
     </ClCompile>
@@ -92,6 +89,18 @@
     <ClCompile Include="source\assets\xaml.res.cpp">
       <Filter>source\assets</Filter>
     </ClCompile>
+    <ClCompile Include="source\states\high_score_state.cpp">
+      <Filter>source\states</Filter>
+    </ClCompile>
+    <ClCompile Include="source\states\game_over_state.cpp">
+      <Filter>source\states</Filter>
+    </ClCompile>
+    <ClCompile Include="source\states\ready_state.cpp">
+      <Filter>source\states</Filter>
+    </ClCompile>
+    <ClCompile Include="source\states\score_state.cpp">
+      <Filter>source\states</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h" />
@@ -126,9 +135,6 @@
       <Filter>source\states</Filter>
     </ClInclude>
     <ClInclude Include="source\states\game_state.h">
-      <Filter>source\states</Filter>
-    </ClInclude>
-    <ClInclude Include="source\states\level_state.h">
       <Filter>source\states</Filter>
     </ClInclude>
     <ClInclude Include="source\states\title_state.h">
@@ -166,6 +172,18 @@
     </ClInclude>
     <ClInclude Include="source\ui\particle_lab_page.xaml.h">
       <Filter>source\ui</Filter>
+    </ClInclude>
+    <ClInclude Include="source\states\high_score_state.h">
+      <Filter>source\states</Filter>
+    </ClInclude>
+    <ClInclude Include="source\states\game_over_state.h">
+      <Filter>source\states</Filter>
+    </ClInclude>
+    <ClInclude Include="source\states\ready_state.h">
+      <Filter>source\states</Filter>
+    </ClInclude>
+    <ClInclude Include="source\states\score_state.h">
+      <Filter>source\states</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -326,6 +344,8 @@
     <None Include="retron_TemporaryKey.pfx">
       <Filter>uwp</Filter>
     </None>
+    <None Include="$(NoesisDll)" />
+    <None Include="$(NoesisDll)" />
     <None Include="$(NoesisDll)" />
     <None Include="$(NoesisDll)" />
     <None Include="$(NoesisDll)" />

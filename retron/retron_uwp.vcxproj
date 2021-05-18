@@ -44,9 +44,12 @@
     <ClCompile Include="source\level\position.cpp" />
     <ClCompile Include="source\states\app_state.cpp" />
     <ClCompile Include="source\states\debug_state.cpp" />
+    <ClCompile Include="source\states\game_over_state.cpp" />
     <ClCompile Include="source\states\game_state.cpp" />
-    <ClCompile Include="source\states\level_state.cpp" />
+    <ClCompile Include="source\states\high_score_state.cpp" />
     <ClCompile Include="source\states\particle_lab_state.cpp" />
+    <ClCompile Include="source\states\ready_state.cpp" />
+    <ClCompile Include="source\states\score_state.cpp" />
     <ClCompile Include="source\states\title_state.cpp" />
     <ClCompile Include="source\states\transition_state.cpp" />
     <ClCompile Include="source\states\ui_view_state.cpp" />
@@ -81,9 +84,12 @@
     <ClInclude Include="source\level\position.h" />
     <ClInclude Include="source\states\app_state.h" />
     <ClInclude Include="source\states\debug_state.h" />
+    <ClInclude Include="source\states\game_over_state.h" />
     <ClInclude Include="source\states\game_state.h" />
-    <ClInclude Include="source\states\level_state.h" />
+    <ClInclude Include="source\states\high_score_state.h" />
     <ClInclude Include="source\states\particle_lab_state.h" />
+    <ClInclude Include="source\states\ready_state.h" />
+    <ClInclude Include="source\states\score_state.h" />
     <ClInclude Include="source\states\title_state.h" />
     <ClInclude Include="source\states\transition_state.h" />
     <ClInclude Include="source\states\ui_view_state.h" />
