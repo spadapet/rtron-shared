@@ -5,33 +5,28 @@
 #include "source/level/level.h"
 #include "source/states/ready_state.h"
 
-retron::ready_state::ready_state(const retron::game_service& game_service, std::shared_ptr<retron::level> level, std::shared_ptr<ff::state> next_state)
+static const size_t READY_START_PLAYER = 20;
+static const size_t READY_END_PLAYER = 80;
+static const size_t READY_START_LEVEL = 100;
+static const size_t READY_END_LEVEL = 160;
+static const size_t READY_END_ALL = ::READY_END_LEVEL;
+
+retron::ready_state::ready_state(const retron::game_service& game_service, std::shared_ptr<retron::level> level, std::shared_ptr<ff::state> under_state)
     : game_service(game_service)
     , level(level)
-    , next_state(next_state)
+    , under_state(under_state)
+    , game_font("game_font")
     , counter(0)
-{
-    assert(this->level->phase() == retron::level_phase::ready);
-
-    this->connections.emplace_front(retron::app_service::get().reload_resources_sink().connect(std::bind(&retron::ready_state::init_resources, this)));
-
-    this->init_resources();
-}
+{}
 
 std::shared_ptr<ff::state> retron::ready_state::advance_time()
 {
-    if (this->level->phase() != retron::level_phase::ready || ++this->counter >= 160)
-    {
-        this->level->start();
-        return this->next_state;
-    }
-
-    return nullptr;
+    return (++this->counter >= ::READY_END_ALL) ? this->under_state : nullptr;
 }
 
 void retron::ready_state::render()
 {
-    this->next_state->render();
+    this->under_state->render();
 
     ff::draw_ptr draw = retron::app_service::begin_palette_draw();
     if (draw)
@@ -40,7 +35,7 @@ void retron::ready_state::render()
         char text_buffer[64];
         std::string_view text{};
 
-        if (this->counter >= 20 && this->counter < 80)
+        if (this->counter >= ::READY_START_PLAYER && this->counter < ::READY_END_PLAYER)
         {
             if (this->game_service.game_options().coop())
             {
@@ -52,14 +47,14 @@ void retron::ready_state::render()
             }
             else
             {
-                sprintf_s(text_buffer, "PLAYER %lu", player.index + 1);
+                sprintf_s(text_buffer, "PLAYER %zu", player.index + 1);
             }
 
             text = text_buffer;
         }
-        else if (this->counter >= 100 && this->counter < 160)
+        else if (this->counter >= ::READY_START_LEVEL && this->counter < ::READY_END_LEVEL)
         {
-            sprintf_s(text_buffer, "LEVEL %lu", player.level + 1);
+            sprintf_s(text_buffer, "LEVEL %zu", player.level + 1);
             text = text_buffer;
         }
 
@@ -71,15 +66,10 @@ void retron::ready_state::render()
             const ff::point_float scale(2, 2);
             ff::point_float size = this->game_font->measure_text(text, scale);
             this->game_font->draw_text(draw, text,
-                ff::transform(retron::constants::RENDER_RECT.center().cast<float>() - size / 2.0f, scale, 0, ff::palette_index_to_color(retron::colors::PLAYER)),
+                ff::transform(retron::constants::RENDER_RECT.center().cast<float>() - size / 2.0f, scale, 0, ff::palette_index_to_color(retron::colors::ACTIVE_STATUS)),
                 ff::palette_index_to_color(224));
 
             draw->pop_palette_remap();
         }
     }
-}
-
-void retron::ready_state::init_resources()
-{
-    this->game_font = "game_font";
 }

@@ -175,6 +175,9 @@ retron::level_phase retron::level::phase() const
         case internal_phase_t::won:
             return retron::level_phase::won;
 
+        case internal_phase_t::game_over:
+            return retron::level_phase::game_over;
+
         case internal_phase_t::playing:
             for (auto [entity, data] : this->registry.view<const ::player_data>().each())
             {
@@ -195,12 +198,30 @@ void retron::level::start()
 {
     switch (this->phase())
     {
+        default:
+            assert(false);
+            break;
+
         case retron::level_phase::ready:
-            this->internal_phase(internal_phase_t::show_enemies);
+            this->internal_phase(internal_phase_t::before_show);
             break;
 
         case retron::level_phase::dead:
             this->internal_phase(internal_phase_t::ready);
+            break;
+    }
+}
+
+void retron::level::stop()
+{
+    switch (this->phase())
+    {
+        default:
+            assert(false);
+            break;
+
+        case retron::level_phase::dead:
+            this->internal_phase(internal_phase_t::game_over);
             break;
     }
 }
@@ -586,7 +607,7 @@ void retron::level::advance_player(entt::entity entity)
                 if (player_data.state_counter >= this->difficulty_spec_.player_dead_counter)
                 {
                     // Don't stop the game in coop, keep going until there are no lives left
-                    if (this->players_.size() > 1 && this->game_service.player_add_life(player_data.player.get()))
+                    if (this->players_.size() > 1 && this->game_service.player_take_life(player_data.player.get()))
                     {
                         this->entities.delay_delete(entity);
                         this->create_player(player_data.index_in_level);
@@ -691,6 +712,10 @@ void retron::level::advance_phase()
 
     switch (this->phase_)
     {
+        case internal_phase_t::before_show:
+            this->internal_phase(internal_phase_t::show_enemies);
+            break;
+
         case internal_phase_t::show_enemies:
             if (this->registry.empty<::showing_particle_effect>())
             {
@@ -1024,7 +1049,7 @@ void retron::level::render_entity(entt::entity entity, entity_type type, ff::dra
 
 void retron::level::render_player(entt::entity entity, ff::draw_base& draw)
 {
-    if (this->phase_ > internal_phase_t::ready && !this->registry.all_of<::showing_particle_effect>(entity))
+    if (this->phase_ > internal_phase_t::show_enemies && !this->registry.all_of<::showing_particle_effect>(entity))
     {
         ::player_data& player_data = this->registry.get<::player_data>(entity);
         ff::palette_base& palette = retron::app_service::get().player_palette(player_data.player.get().index);

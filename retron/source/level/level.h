@@ -14,8 +14,9 @@ namespace retron
     {
         ready,
         playing,
-        dead,
         won,
+        dead,
+        game_over,
     };
 
     class level : public ff::state
@@ -28,6 +29,7 @@ namespace retron
 
         retron::level_phase phase() const;
         void start(); // move from ready->playing, dead->ready
+        void stop(); // move from dead->game_over
         const retron::level_spec& level_spec() const;
         const std::vector<const retron::player*>& players() const;
 
@@ -91,11 +93,13 @@ namespace retron
         {
             init,
             ready,
+            before_show,
             show_enemies,
             show_players,
             playing,
             winning,
-            won
+            won,
+            game_over
         };
 
         void internal_phase(internal_phase_t new_phase);

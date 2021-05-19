@@ -30,26 +30,26 @@ std::shared_ptr<ff::state> retron::game_state::advance_time()
 
     ff::state::advance_time();
 
-    std::shared_ptr<ff::state> new_state;
-
-#if 0
-    switch (this->playing().level().phase())
+    playing_t& playing = this->playing_states[this->playing_index];
+    switch (playing.level->phase())
     {
         case retron::level_phase::ready:
-            new_state = this->handle_level_ready();
+            this->handle_level_ready(playing);
             break;
 
         case retron::level_phase::won:
-            new_state = this->handle_level_won();
+            this->handle_level_won(playing);
             break;
 
         case retron::level_phase::dead:
-            new_state = this->handle_level_dead();
+            this->handle_level_dead(playing);
             break;
-    }
-#endif
 
-    return new_state;
+        case retron::level_phase::game_over:
+            return this->handle_game_over(playing);
+    }
+
+    return nullptr;
 }
 
 size_t retron::game_state::child_state_count()
@@ -59,7 +59,7 @@ size_t retron::game_state::child_state_count()
 
 ff::state* retron::game_state::child_state(size_t index)
 {
-    return this->playing().state.get();
+    return this->playing_states[this->playing_index].state.get();
 }
 
 const retron::game_options& retron::game_state::game_options() const
@@ -101,7 +101,7 @@ void retron::game_state::player_add_points(const retron::player& level_player, s
     }
 }
 
-bool retron::game_state::player_add_life(const retron::player& level_player)
+bool retron::game_state::player_take_life(const retron::player& level_player)
 {
     retron::player& player = this->players[level_player.index].self_or_coop();
     if (player.lives > 0)
@@ -212,44 +212,63 @@ void retron::game_state::init_playing_states()
     }
 }
 
-std::shared_ptr<ff::state> retron::game_state::handle_level_ready()
+retron::player& retron::game_state::playing_t::player_or_coop() const
 {
-    this->playing().level->start();
-    return nullptr;
+    return this->players.front()->self_or_coop();
 }
 
-std::shared_ptr<ff::state> retron::game_state::handle_level_won()
+void retron::game_state::handle_level_ready(playing_t& playing)
 {
-#if 0
-    retron::player& player = this->playing().player_or_coop();
-    retron::level_spec level_spec = this->level_spec(++player.level);
-
-    auto old_level_state = this->playing().level_state;
-    this->playing().level_state = std::make_shared<retron::level_state>(*this, std::move(level_spec), std::vector<retron::player*>(old_level_state->players()));
-    *this->playing().play_state = std::make_shared<retron::transition_state>(old_level_state, this->playing().level_state, "transition_bg_2.png");
-#endif
-    return nullptr;
+    playing.level->start();
+    *playing.state = std::make_shared<retron::ready_state>(*this, playing.level, playing.state->unwrap());
 }
 
-std::shared_ptr<ff::state> retron::game_state::handle_level_dead()
+void retron::game_state::handle_level_won(playing_t& playing)
 {
-#if 0
-    if (this->playing().level_state->game_over())
+    playing.player_or_coop().level++;
+
+    playing_t new_playing = this->create_playing(playing.players);
+    new_playing.level->start();
+    *new_playing.state = std::make_shared<retron::transition_state>(playing.state, new_playing.state->unwrap(), "transition_bg_2.png");
+
+    playing = std::move(new_playing);
+}
+
+void retron::game_state::handle_level_dead(playing_t& playing)
+{
+    // Either game over or ready to play again
+    if (this->player_take_life(*playing.players.front()))
     {
-        // Switch to next player that has lives, or show final game over screen
-    }
-    else if (this->player_add_life(0))
-    {
-        this->playing().level().start();
+        playing.level->start();
     }
     else
     {
-        auto new_state = std::make_shared<retron::high_score_state>(this->playing().level_state);
-        *this->playing().play_state = new_state;
+        playing.level->stop();
     }
-#endif
 
-    return nullptr;
+    // Find the next player, which might be the current one for a single player game
+    for (size_t i = 0; i < this->playing_states.size(); i++)
+    {
+        size_t check_index = (this->playing_index + 1 + i) % this->playing_states.size();
+        if (this->playing_states[check_index].level->phase() == retron::level_phase::ready)
+        {
+            this->playing_index = check_index;
+            break;
+        }
+    }
+}
+
+std::shared_ptr<ff::state> retron::game_state::handle_game_over(playing_t& playing)
+{
+    std::shared_ptr<ff::state> next_state = std::make_shared<retron::game_over_state>(this->shared_from_this());
+
+    for (size_t i = !this->game_options_.coop() ? this->players.size() : 1; i > 0; i--)
+    {
+        retron::player& player = this->players[i - 1].self_or_coop();
+        next_state = std::make_shared<retron::high_score_state>(this->game_options_, player, next_state);
+    }
+
+    return next_state;
 }
 
 const retron::level_spec& retron::game_state::level_spec(size_t level_index)
@@ -278,21 +297,8 @@ retron::game_state::playing_t retron::game_state::create_playing(const std::vect
 
     retron::level_spec level_spec = this->level_spec(players.front()->self_or_coop().level);
     auto level = std::make_shared<retron::level>(*this, level_spec, const_players);
-    auto states = std::make_shared<ff::state_list>();
-    states->push(level);
-    states->push(std::make_shared<retron::score_state>(const_all_players, players.front()->index));
+    auto scores = std::make_shared<retron::score_state>(const_all_players, players.front()->index);
+    auto states = std::make_shared<ff::state_list>(ff::state_list{ level, scores });
 
-    auto ready_state = std::make_shared<retron::ready_state>(*this, level, states);
-
-    return playing_t{ players, level, ready_state->wrap() };
-}
-
-retron::game_state::playing_t& retron::game_state::playing()
-{
-    return this->playing_states[this->playing_index];
-}
-
-const retron::game_state::playing_t& retron::game_state::playing() const
-{
-    return this->playing_states[this->playing_index];
+    return playing_t{ players, level, states->wrap() };
 }

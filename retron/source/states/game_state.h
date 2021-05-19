@@ -24,7 +24,7 @@ namespace retron
         virtual const retron::difficulty_spec& difficulty_spec() const override;
         virtual const ff::input_event_provider& input_events(const retron::player& player) const override;
         virtual void player_add_points(const retron::player& level_player, size_t points) override;
-        virtual bool player_add_life(const retron::player& level_player) override;
+        virtual bool player_take_life(const retron::player& level_player) override;
 
         // Debug
         void debug_restart_level();
@@ -34,21 +34,22 @@ namespace retron
         void init_players();
         void init_playing_states();
 
-        std::shared_ptr<ff::state> handle_level_ready();
-        std::shared_ptr<ff::state> handle_level_won();
-        std::shared_ptr<ff::state> handle_level_dead();
-
         struct playing_t
         {
+            retron::player& player_or_coop() const;
+
             std::vector<retron::player*> players;
             std::shared_ptr<retron::level> level;
-            std::shared_ptr<ff::state> state;
+            std::shared_ptr<ff::state_wrapper> state;
         };
+
+        void handle_level_ready(playing_t& playing);
+        void handle_level_won(playing_t& playing);
+        void handle_level_dead(playing_t& playing);
+        std::shared_ptr<ff::state> handle_game_over(playing_t& playing);
 
         const retron::level_spec& level_spec(size_t level_index);
         playing_t create_playing(const std::vector<retron::player*>& players);
-        playing_t& playing();
-        const playing_t& playing() const;
 
         retron::game_options game_options_;
         retron::difficulty_spec difficulty_spec_;
