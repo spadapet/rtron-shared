@@ -357,11 +357,11 @@ void retron::collision::reset_box(entt::entity entity, retron::collision_box_typ
     switch (collision_type)
     {
         case retron::collision_box_type::hit_box:
-            this->registry.remove_if_exists<::hit_box_spec_component>(entity);
+            this->registry.remove<::hit_box_spec_component>(entity);
             break;
 
         case retron::collision_box_type::bounds_box:
-            this->registry.remove_if_exists<::bounds_box_spec_component>(entity);
+            this->registry.remove<::bounds_box_spec_component>(entity);
             break;
 
         default:
@@ -470,12 +470,12 @@ void retron::collision::reset_box_internal(entt::entity entity, retron::collisio
     {
         default:
         case retron::collision_box_type::hit_box:
-            this->registry.remove_if_exists<::hit_box_component>(entity);
+            this->registry.remove<::hit_box_component>(entity);
             break;
 
         case retron::collision_box_type::bounds_box:
-            this->registry.remove_if_exists<::bounds_box_component>(entity);
-            this->registry.remove_if_exists<::grunt_avoid_box_component>(entity);
+            this->registry.remove<::bounds_box_component>(entity);
+            this->registry.remove<::grunt_avoid_box_component>(entity);
             this->dirty_box(entity, retron::collision_box_type::grunt_avoid_box);
             break;
     }
@@ -587,7 +587,7 @@ template<typename BoxType, typename DirtyType>
         fixture->GetShape()->m_radius = 0;
     }
 
-    this->registry.remove_if_exists<DirtyType>(entity);
+    this->registry.remove<DirtyType>(entity);
     return hb.body;
 }
 
@@ -616,18 +616,18 @@ template<typename BoxType, typename DirtyType>
         switch (collision_type)
         {
             case retron::collision_box_type::hit_box:
-                this->registry.remove_if_exists<::hit_box_component>(entity);
-                this->registry.remove_if_exists<::hit_dirty_component>(entity);
+                this->registry.remove<::hit_box_component>(entity);
+                this->registry.remove<::hit_dirty_component>(entity);
                 break;
 
             case retron::collision_box_type::bounds_box:
-                this->registry.remove_if_exists<::bounds_box_component>(entity);
-                this->registry.remove_if_exists<::bounds_dirty_component>(entity);
+                this->registry.remove<::bounds_box_component>(entity);
+                this->registry.remove<::bounds_dirty_component>(entity);
                 break;
 
             case retron::collision_box_type::grunt_avoid_box:
-                this->registry.remove_if_exists<::grunt_avoid_box_component>(entity);
-                this->registry.remove_if_exists<::grunt_avoid_dirty_component>(entity);
+                this->registry.remove<::grunt_avoid_box_component>(entity);
+                this->registry.remove<::grunt_avoid_dirty_component>(entity);
                 break;
 
             default:
@@ -691,7 +691,7 @@ void retron::collision::box_spec_changed(entt::registry& registry, entt::entity 
 
 void retron::collision::bounds_box_removed(entt::registry& registry, entt::entity entity)
 {
-    this->registry.remove_if_exists<::grunt_avoid_box_component>(entity);
+    this->registry.remove<::grunt_avoid_box_component>(entity);
 }
 
 void retron::collision::entity_created(entt::entity entity)
