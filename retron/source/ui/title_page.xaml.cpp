@@ -1,7 +1,7 @@
 #include "pch.h"
 #include "source/core/app_service.h"
 #include "source/core/options.h"
-#include "source/states/game_state.h"
+#include "source/game/game_state.h"
 #include "source/ui/title_page.xaml.h"
 
 NS_IMPLEMENT_REFLECTION(retron::title_page_view_model, "retron.title_page_view_model")

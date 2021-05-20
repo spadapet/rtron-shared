@@ -2,15 +2,14 @@
 #include "source/core/app_service.h"
 #include "source/core/game_spec.h"
 #include "source/core/render_targets.h"
-#include "source/states/score_state.h"
+#include "source/game/score_state.h"
 
 static void render_points_and_lives(
     ff::draw_base& draw,
     const ff::sprite_font* font,
     const ff::sprite_data& sprite_data,
     ff::point_float top_middle,
-    size_t points,
-    size_t lives,
+    const retron::player& player,
     bool active)
 {
     const float font_x = retron::constants::FONT_SIZE.cast<float>().x;
@@ -21,7 +20,7 @@ static void render_points_and_lives(
     // Points
     {
         char points_str[_MAX_ITOSTR_BASE10_COUNT];
-        ::_itoa_s(static_cast<int>(points), points_str, 10);
+        ::_itoa_s(static_cast<int>(player.points), points_str, 10);
         size_t points_len = std::strlen(points_str);
         ff::transform points_pos(ff::point_float(top_middle.x - font_x * points_len, top_middle.y), ff::point_float(1, 1), 0, color);
         font->draw_text(&draw, std::string_view(points_str, points_len), points_pos, ff::color::none());
@@ -29,12 +28,14 @@ static void render_points_and_lives(
 
     // Lives
 
-    for (size_t i = 0; i < retron::constants::MAX_RENDER_LIVES && i < lives; i++)
+    size_t render_lives = player.lives + ((active || player.game_over) ? 0 : 1);
+
+    for (size_t i = 0; i < retron::constants::MAX_RENDER_LIVES && i < render_lives; i++)
     {
         draw.draw_sprite(sprite_data, ff::transform(ff::point_float(top_middle.x + font_x * i, top_middle.y)));
     }
 
-    if (lives > retron::constants::MAX_RENDER_LIVES)
+    if (render_lives > retron::constants::MAX_RENDER_LIVES)
     {
         font->draw_text(&draw, "+", ff::transform(ff::point_float(top_middle.x + font_x * retron::constants::MAX_RENDER_LIVES, top_middle.y), ff::point_float(1, 1), 0, color), ff::color::none());
     }
@@ -61,7 +62,7 @@ void retron::score_state::render()
             draw->push_palette_remap(palette.index_remap(), palette.index_remap_hash());
 
             ::render_points_and_lives(*draw, this->game_font.object().get(), this->player_sprite->sprite_data(),
-                retron::constants::PLAYER_STATUS_POS[i].cast<float>(), player.points, player.lives, this->active_player == i);
+                retron::constants::PLAYER_STATUS_POS[i].cast<float>(), player, this->active_player == i);
 
             draw->pop_palette_remap();
         }

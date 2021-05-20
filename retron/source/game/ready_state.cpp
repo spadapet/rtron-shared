@@ -2,8 +2,8 @@
 #include "source/core/app_service.h"
 #include "source/core/game_service.h"
 #include "source/core/options.h"
+#include "source/game/ready_state.h"
 #include "source/level/level.h"
-#include "source/states/ready_state.h"
 
 static const size_t READY_START_PLAYER = 20;
 static const size_t READY_END_PLAYER = 80;

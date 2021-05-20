@@ -1,6 +1,6 @@
 #include "pch.h"
 #include "source/core/app_service.h"
-#include "source/states/game_over_state.h"
+#include "source/game/game_over_state.h"
 
 retron::game_over_state::game_over_state(std::shared_ptr<ff::state> under_state)
     : under_state(under_state)

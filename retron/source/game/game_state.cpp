@@ -1,11 +1,11 @@
 #include "pch.h"
 #include "source/core/app_service.h"
+#include "source/game/game_over_state.h"
+#include "source/game/game_state.h"
+#include "source/game/high_score_state.h"
+#include "source/game/ready_state.h"
+#include "source/game/score_state.h"
 #include "source/level/level.h"
-#include "source/states/game_over_state.h"
-#include "source/states/game_state.h"
-#include "source/states/high_score_state.h"
-#include "source/states/ready_state.h"
-#include "source/states/score_state.h"
 #include "source/states/transition_state.h"
 
 retron::game_state::game_state()
@@ -163,7 +163,7 @@ void retron::game_state::init_input()
 
 static void init_player(retron::player& player, const retron::difficulty_spec& difficulty)
 {
-    player.lives = difficulty.lives;
+    player.lives = difficulty.lives ? (difficulty.lives - 1) : 0;
     player.next_life_points = difficulty.first_free_life;
 }
 
@@ -243,6 +243,11 @@ void retron::game_state::handle_level_dead(playing_t& playing)
     }
     else
     {
+        for (retron::player* player : playing.players)
+        {
+            player->game_over = true;
+        }
+
         playing.level->stop();
     }
 

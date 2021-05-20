@@ -26,9 +26,6 @@
     <ClCompile Include="source\states\debug_state.cpp">
       <Filter>source\states</Filter>
     </ClCompile>
-    <ClCompile Include="source\states\game_state.cpp">
-      <Filter>source\states</Filter>
-    </ClCompile>
     <ClCompile Include="source\states\title_state.cpp">
       <Filter>source\states</Filter>
     </ClCompile>
@@ -89,17 +86,20 @@
     <ClCompile Include="source\assets\xaml.res.cpp">
       <Filter>source\assets</Filter>
     </ClCompile>
-    <ClCompile Include="source\states\high_score_state.cpp">
-      <Filter>source\states</Filter>
+    <ClCompile Include="source\game\game_over_state.cpp">
+      <Filter>source\game</Filter>
     </ClCompile>
-    <ClCompile Include="source\states\game_over_state.cpp">
-      <Filter>source\states</Filter>
+    <ClCompile Include="source\game\game_state.cpp">
+      <Filter>source\game</Filter>
     </ClCompile>
-    <ClCompile Include="source\states\ready_state.cpp">
-      <Filter>source\states</Filter>
+    <ClCompile Include="source\game\high_score_state.cpp">
+      <Filter>source\game</Filter>
     </ClCompile>
-    <ClCompile Include="source\states\score_state.cpp">
-      <Filter>source\states</Filter>
+    <ClCompile Include="source\game\ready_state.cpp">
+      <Filter>source\game</Filter>
+    </ClCompile>
+    <ClCompile Include="source\game\score_state.cpp">
+      <Filter>source\game</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -132,9 +132,6 @@
       <Filter>source\states</Filter>
     </ClInclude>
     <ClInclude Include="source\states\debug_state.h">
-      <Filter>source\states</Filter>
-    </ClInclude>
-    <ClInclude Include="source\states\game_state.h">
       <Filter>source\states</Filter>
     </ClInclude>
     <ClInclude Include="source\states\title_state.h">
@@ -173,17 +170,20 @@
     <ClInclude Include="source\ui\particle_lab_page.xaml.h">
       <Filter>source\ui</Filter>
     </ClInclude>
-    <ClInclude Include="source\states\high_score_state.h">
-      <Filter>source\states</Filter>
+    <ClInclude Include="source\game\game_over_state.h">
+      <Filter>source\game</Filter>
     </ClInclude>
-    <ClInclude Include="source\states\game_over_state.h">
-      <Filter>source\states</Filter>
+    <ClInclude Include="source\game\game_state.h">
+      <Filter>source\game</Filter>
     </ClInclude>
-    <ClInclude Include="source\states\ready_state.h">
-      <Filter>source\states</Filter>
+    <ClInclude Include="source\game\high_score_state.h">
+      <Filter>source\game</Filter>
     </ClInclude>
-    <ClInclude Include="source\states\score_state.h">
-      <Filter>source\states</Filter>
+    <ClInclude Include="source\game\ready_state.h">
+      <Filter>source\game</Filter>
+    </ClInclude>
+    <ClInclude Include="source\game\score_state.h">
+      <Filter>source\game</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -356,6 +356,7 @@
     <None Include="$(NoesisDll)" />
     <None Include="$(NoesisDll)" />
     <None Include="$(NoesisDll)" />
+    <None Include="$(NoesisDll)" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="source">
@@ -384,6 +385,9 @@
     </Filter>
     <Filter Include="source\assets">
       <UniqueIdentifier>{447e6b8c-cb6c-4d00-9fd5-d98cf58a745c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="source\game">
+      <UniqueIdentifier>{9e5b6e11-3828-43ed-b34e-0aa0460d361a}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>

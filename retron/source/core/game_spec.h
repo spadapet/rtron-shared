@@ -97,5 +97,6 @@ namespace retron
         size_t lives;
         size_t points;
         size_t next_life_points;
+        bool game_over;
     };
 }

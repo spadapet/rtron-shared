@@ -41,9 +41,6 @@
     <ClCompile Include="source\states\app_state.cpp">
       <Filter>source\states</Filter>
     </ClCompile>
-    <ClCompile Include="source\states\game_state.cpp">
-      <Filter>source\states</Filter>
-    </ClCompile>
     <ClCompile Include="source\level\entities.cpp">
       <Filter>source\level</Filter>
     </ClCompile>
@@ -92,17 +89,20 @@
     <ClCompile Include="source\assets\xaml.res.cpp">
       <Filter>source\assets</Filter>
     </ClCompile>
-    <ClCompile Include="source\states\high_score_state.cpp">
-      <Filter>source\states</Filter>
+    <ClCompile Include="source\game\game_over_state.cpp">
+      <Filter>source\game</Filter>
     </ClCompile>
-    <ClCompile Include="source\states\game_over_state.cpp">
-      <Filter>source\states</Filter>
+    <ClCompile Include="source\game\game_state.cpp">
+      <Filter>source\game</Filter>
     </ClCompile>
-    <ClCompile Include="source\states\ready_state.cpp">
-      <Filter>source\states</Filter>
+    <ClCompile Include="source\game\high_score_state.cpp">
+      <Filter>source\game</Filter>
     </ClCompile>
-    <ClCompile Include="source\states\score_state.cpp">
-      <Filter>source\states</Filter>
+    <ClCompile Include="source\game\ready_state.cpp">
+      <Filter>source\game</Filter>
+    </ClCompile>
+    <ClCompile Include="source\game\score_state.cpp">
+      <Filter>source\game</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -146,9 +146,6 @@
     <ClInclude Include="source\states\app_state.h">
       <Filter>source\states</Filter>
     </ClInclude>
-    <ClInclude Include="source\states\game_state.h">
-      <Filter>source\states</Filter>
-    </ClInclude>
     <ClInclude Include="source\level\entities.h">
       <Filter>source\level</Filter>
     </ClInclude>
@@ -173,17 +170,20 @@
     <ClInclude Include="source\states\ui_view_state.h">
       <Filter>source\states</Filter>
     </ClInclude>
-    <ClInclude Include="source\states\high_score_state.h">
-      <Filter>source\states</Filter>
+    <ClInclude Include="source\game\game_over_state.h">
+      <Filter>source\game</Filter>
     </ClInclude>
-    <ClInclude Include="source\states\game_over_state.h">
-      <Filter>source\states</Filter>
+    <ClInclude Include="source\game\game_state.h">
+      <Filter>source\game</Filter>
     </ClInclude>
-    <ClInclude Include="source\states\ready_state.h">
-      <Filter>source\states</Filter>
+    <ClInclude Include="source\game\high_score_state.h">
+      <Filter>source\game</Filter>
     </ClInclude>
-    <ClInclude Include="source\states\score_state.h">
-      <Filter>source\states</Filter>
+    <ClInclude Include="source\game\ready_state.h">
+      <Filter>source\game</Filter>
+    </ClInclude>
+    <ClInclude Include="source\game\score_state.h">
+      <Filter>source\game</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -210,6 +210,9 @@
     </Filter>
     <Filter Include="source\assets">
       <UniqueIdentifier>{e5ff3d30-f7b2-47a2-a482-b082dbc0e12c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="source\game">
+      <UniqueIdentifier>{3172adb8-c585-4cec-be07-fa096cdb3f8d}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
