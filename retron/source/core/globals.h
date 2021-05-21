@@ -11,8 +11,9 @@ namespace retron::colors
 {
     const int LEVEL_BORDER = 77;
     const int PLAYER = 232;
+    const int PLAYER_GOGGLES = 112;
     const int INACTIVE_STATUS = retron::colors::PLAYER;
-    const int ACTIVE_STATUS = 112;
+    const int ACTIVE_STATUS = 1;
 }
 
 namespace retron::input_events
@@ -68,7 +69,7 @@ namespace retron::constants
     const ff::rect_fixed RENDER_RECT_HIGH(0, 0, RENDER_WIDTH_HIGH, RENDER_HEIGHT_HIGH);
 
     const ff::point_fixed FONT_SIZE(8, 8);
-    const ff::point_fixed PLAYER_STATUS_POS[retron::constants::MAX_PLAYERS] = { ff::point_fixed(144, 3), ff::point_fixed(336, 3) };
+    const ff::point_fixed PLAYER_STATUS_POS[retron::constants::MAX_PLAYERS] = { ff::point_fixed(144, 2), ff::point_fixed(336, 2) };
 }
 
 namespace retron::helpers

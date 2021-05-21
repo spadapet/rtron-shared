@@ -24,7 +24,7 @@ namespace retron
         virtual const retron::difficulty_spec& difficulty_spec() const override;
         virtual const ff::input_event_provider& input_events(const retron::player& player) const override;
         virtual void player_add_points(const retron::player& level_player, size_t points) override;
-        virtual bool player_take_life(const retron::player& level_player) override;
+        virtual bool coop_take_life(const retron::player& level_player) override;
 
         // Debug
         void debug_restart_level();
@@ -50,6 +50,7 @@ namespace retron
 
         const retron::level_spec& level_spec(size_t level_index);
         playing_t create_playing(const std::vector<retron::player*>& players);
+        bool player_take_life(const retron::player& player);
 
         retron::game_options game_options_;
         retron::difficulty_spec difficulty_spec_;
@@ -63,5 +64,6 @@ namespace retron
         // Playing
         std::vector<playing_t> playing_states;
         size_t playing_index;
+        bool showed_player_ready;
     };
 }

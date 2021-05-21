@@ -28,7 +28,8 @@ namespace retron
         virtual void render() override;
 
         retron::level_phase phase() const;
-        void start(); // move from ready->playing, dead->ready
+        void start(); // move from ready->playing
+        void restart(); // move from dead->ready
         void stop(); // move from dead->game_over
         const retron::level_spec& level_spec() const;
         const std::vector<const retron::player*>& players() const;

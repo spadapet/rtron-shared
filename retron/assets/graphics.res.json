@@ -42,7 +42,7 @@
   {
     "res:type": "font",
     "data": "ref:game_font_small_data",
-    "size": 6,
+    "size": 8,
     "outline": 1
   },
 

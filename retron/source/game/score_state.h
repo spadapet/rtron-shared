@@ -15,8 +15,11 @@ namespace retron
 
         std::forward_list<ff::signal_connection> connections;
         std::vector<const retron::player*> players;
+        std::string level_text;
+        std::string level_measure_text;
         ff::auto_resource<ff::sprite_base> player_sprite;
         ff::auto_resource<ff::sprite_font> game_font;
+        ff::auto_resource<ff::sprite_font> game_font_small;
         size_t active_player;
     };
 }

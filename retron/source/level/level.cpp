@@ -196,33 +196,31 @@ retron::level_phase retron::level::phase() const
 
 void retron::level::start()
 {
-    switch (this->phase())
+    assert(this->phase() == retron::level_phase::ready);
+
+    if (this->phase() == retron::level_phase::ready)
     {
-        default:
-            assert(false);
-            break;
+        this->internal_phase(internal_phase_t::before_show);
+    }
+}
 
-        case retron::level_phase::ready:
-            this->internal_phase(internal_phase_t::before_show);
-            break;
+void retron::level::restart()
+{
+    assert(this->phase() == retron::level_phase::dead);
 
-        case retron::level_phase::dead:
-            this->internal_phase(internal_phase_t::ready);
-            break;
+    if (this->phase() == retron::level_phase::dead)
+    {
+        this->internal_phase(internal_phase_t::ready);
     }
 }
 
 void retron::level::stop()
 {
-    switch (this->phase())
-    {
-        default:
-            assert(false);
-            break;
+    assert(this->phase() == retron::level_phase::dead);
 
-        case retron::level_phase::dead:
-            this->internal_phase(internal_phase_t::game_over);
-            break;
+    if (this->phase() == retron::level_phase::dead)
+    {
+        this->internal_phase(internal_phase_t::game_over);
     }
 }
 
@@ -271,6 +269,7 @@ void retron::level::init_entities()
     if (this->phase_ == internal_phase_t::ready)
     {
         this->entities.delete_all();
+        this->frame_count = 0;
 
         for (const retron::level_rect& level_rect : this->level_spec_.rects)
         {
@@ -604,14 +603,10 @@ void retron::level::advance_player(entt::entity entity)
                 break;
 
             case ::player_state::dead:
-                if (player_data.state_counter >= this->difficulty_spec_.player_dead_counter)
+                if (player_data.state_counter >= this->difficulty_spec_.player_dead_counter && this->game_service.coop_take_life(player_data.player.get()))
                 {
-                    // Don't stop the game in coop, keep going until there are no lives left
-                    if (this->players_.size() > 1 && this->game_service.player_take_life(player_data.player.get()))
-                    {
-                        this->entities.delay_delete(entity);
-                        this->create_player(player_data.index_in_level);
-                    }
+                    this->entities.delay_delete(entity);
+                    this->create_player(player_data.index_in_level);
                 }
                 break;
         }

@@ -35,7 +35,7 @@
                  "visible":true,
                  "width":464,
                  "x":8,
-                 "y":14
+                 "y":12
                 }, 
                 {
                  "height":48,
@@ -99,14 +99,14 @@
                         {
                          "name":"grunt",
                          "type":"int",
-                         "value":50
+                         "value":10
                         }],
                  "rotation":0,
                  "type":"objects",
                  "visible":true,
                  "width":456,
                  "x":12,
-                 "y":18
+                 "y":16
                 }],
          "opacity":1,
          "type":"objectgroup",

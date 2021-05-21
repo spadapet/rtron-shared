@@ -1,4 +1,4 @@
-#include "pch.h"
+﻿#include "pch.h"
 #include "source/core/app_service.h"
 #include "source/core/game_spec.h"
 #include "source/core/render_targets.h"
@@ -48,6 +48,26 @@ retron::score_state::score_state(const std::vector<const retron::player*>& playe
     this->connections.emplace_front(retron::app_service::get().reload_resources_sink().connect(std::bind(&retron::score_state::init_resources, this)));
 
     this->init_resources();
+
+    char level_text_buffer[64];
+    char level_measure_text_buffer[64];
+
+    if (this->players.size() == 1)
+    {
+        size_t level = this->players[0]->level + 1;
+        sprintf_s(level_text_buffer, "\x01" "%lu  " "\x70" "LEVEL", level);
+        sprintf_s(level_measure_text_buffer, "%lu  LEVEL  %lu", level, level);
+        this->level_text = level_text_buffer;
+        this->level_measure_text = level_measure_text_buffer;
+    }
+    else if (this->players.size() >= 2)
+    {
+        size_t level0 = this->players[0]->level + 1;
+        size_t level1 = this->players[1]->level + 1;
+        sprintf_s(level_text_buffer, "\x01" "%lu  " "\x70" "LEVEL" "\x01" "  %lu", level0, level1);
+        this->level_text = level_text_buffer;
+        this->level_measure_text = level_text;
+    }
 }
 
 void retron::score_state::render()
@@ -57,14 +77,20 @@ void retron::score_state::render()
     {
         for (size_t i = 0; i < this->players.size(); i++)
         {
-            const retron::player& player = this->players[i]->self_or_coop();
-            ff::palette_base& palette = retron::app_service::get().player_palette(player.index);
+            ff::palette_base& palette = retron::app_service::get().player_palette(this->players[i]->index);
             draw->push_palette_remap(palette.index_remap(), palette.index_remap_hash());
 
             ::render_points_and_lives(*draw, this->game_font.object().get(), this->player_sprite->sprite_data(),
-                retron::constants::PLAYER_STATUS_POS[i].cast<float>(), player, this->active_player == i);
+                retron::constants::PLAYER_STATUS_POS[i].cast<float>(), *this->players[i], this->active_player == i);
 
             draw->pop_palette_remap();
+        }
+
+
+        if (this->level_text.size() && this->level_measure_text.size())
+        {
+            ff::point_float size = this->game_font_small->measure_text(this->level_measure_text, ff::point_float(1, 1));
+            this->game_font_small->draw_text(draw, this->level_text, ff::transform(ff::point_fixed(std::floor(240.0f - size.x / 2.0f), 263)), ff::color::none());
         }
     }
 }
@@ -73,4 +99,5 @@ void retron::score_state::init_resources()
 {
     this->player_sprite = "sprites.player_life";
     this->game_font = "game_font";
+    this->game_font_small = "game_font_small";
 }
