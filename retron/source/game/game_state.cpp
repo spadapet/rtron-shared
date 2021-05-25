@@ -200,6 +200,7 @@ void retron::game_state::init_playing_states()
 {
     this->playing_states.clear();
     this->playing_index = 0;
+    this->showed_player_ready = false;
 
     if (this->game_options_.coop())
     {

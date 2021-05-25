@@ -42,7 +42,8 @@ namespace retron
         ff::rect_fixed hit_box(entt::entity entity);
 
         entt::entity create_entity(retron::entity_type type, const ff::point_fixed& pos);
-        entt::entity create_electrode(retron::entity_type type, const ff::point_fixed& pos);
+        entt::entity create_bonus(retron::entity_type type, const ff::point_fixed& pos, retron::bonus_type bonus_type);
+        entt::entity create_electrode(retron::entity_type type, const ff::point_fixed& pos, size_t electrode_type);
         entt::entity create_grunt(retron::entity_type type, const ff::point_fixed& pos);
         entt::entity create_player(size_t index_in_level);
         entt::entity create_player_bullet(entt::entity player, ff::point_fixed shot_pos, ff::point_fixed shot_dir);
@@ -60,6 +61,8 @@ namespace retron
         void advance_entity_followers();
         void advance_phase();
 
+        void handle_entity_created(entt::entity entity);
+        void handle_entity_deleted(entt::entity entity);
         void handle_collisions();
         void handle_bounds_collision(entt::entity target_entity, entt::entity level_entity);
         void handle_entity_collision(entt::entity target_entity, entt::entity source_entity);
@@ -87,7 +90,6 @@ namespace retron
         size_t pick_grunt_move_counter();
         ff::point_fixed pick_move_destination(entt::entity entity, entt::entity destEntity, retron::collision_box_type collision_type);
 
-        void remove_tracked_object(entt::entity entity);
         void enum_entities(const std::function<void(entt::entity, retron::entity_type)>& func);
 
         enum class internal_phase_t

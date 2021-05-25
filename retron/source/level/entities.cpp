@@ -1,10 +1,36 @@
 #include "pch.h"
+#include "source/core/game_spec.h"
 #include "source/level/entities.h"
 
 namespace
 {
     struct pending_delete
     {};
+}
+
+retron::entity_type retron::bonus_entity_type(retron::bonus_type type)
+{
+    switch (type)
+    {
+        default:
+            assert(false);
+            return retron::entity_type::none;
+
+        case retron::bonus_type::none:
+            return retron::entity_type::none;
+
+        case retron::bonus_type::woman:
+        case retron::bonus_type::man:
+            return retron::entity_type::bonus_adult;
+
+        case retron::bonus_type::boy:
+        case retron::bonus_type::girl:
+            return retron::entity_type::bonus_child;
+
+        case retron::bonus_type::dog:
+        case retron::bonus_type::cat:
+            return retron::entity_type::bonus_pet;
+    }
 }
 
 retron::entity_box_type retron::box_type(retron::entity_type type)
@@ -15,9 +41,9 @@ retron::entity_box_type retron::box_type(retron::entity_type type)
         retron::entity_box_type::none, // animation_top
         retron::entity_box_type::player_bullet, // player_bullet
         retron::entity_box_type::player, // player
-        retron::entity_box_type::bonus, // bonus_woman
-        retron::entity_box_type::bonus, // bonus_man
+        retron::entity_box_type::bonus, // bonus_adult
         retron::entity_box_type::bonus, // bonus_child
+        retron::entity_box_type::bonus, // bonus_pet
         retron::entity_box_type::enemy, // grunt
         retron::entity_box_type::enemy, // hulk
         retron::entity_box_type::obstacle, // electrode
@@ -38,10 +64,10 @@ const ff::rect_fixed& retron::get_hit_box_spec(retron::entity_type type)
         ff::rect_fixed(0, 0, 0, 0), // none
         ff::rect_fixed(0, 0, 0, 0), // animation_top
         ff::rect_fixed(-8, -1, 0, 1), // player_bullet
-        ff::rect_fixed(-3, -10, 4, 0), // player
-        ff::rect_fixed(-4, -8, 4, 0), // bonus_woman
-        ff::rect_fixed(-4, -8, 4, 0), // bonus_man
-        ff::rect_fixed(-4, -8, 4, 0), // bonus_child
+        ff::rect_fixed(-3, -13, 4, 0), // player
+        ff::rect_fixed(-3, -12, 4, 0), // bonus_adult
+        ff::rect_fixed(-3, -10, 4, 0), // bonus_child
+        ff::rect_fixed(-4, -5, 5, 0), // bonus_pet
         ff::rect_fixed(-5, -15, 6, 0), // grunt
         ff::rect_fixed(-5, -8, 5, 0), // hulk
         ff::rect_fixed(-5, -5, 6, 6), // electrode
@@ -63,9 +89,9 @@ const ff::rect_fixed& retron::get_bounds_box_spec(retron::entity_type type)
         ff::rect_fixed(0, 0, 0, 0), // animation_top
         ff::rect_fixed(-8, -1, 0, 1), // player_bullet
         ff::rect_fixed(-4, -14, 5, 0), // player
-        ff::rect_fixed(-5, -12, 5, 0), // bonus_woman
-        ff::rect_fixed(-5, -12, 5, 0), // bonus_man
-        ff::rect_fixed(-5, -12, 5, 0), // bonus_child
+        ff::rect_fixed(-3, -12, 4, 0), // bonus_adult
+        ff::rect_fixed(-3, -10, 4, 0), // bonus_child
+        ff::rect_fixed(-4, -5, 5, 0), // bonus_pet
         ff::rect_fixed(-5, -15, 6, 0), // grunt
         ff::rect_fixed(-5, -12, 5, 0), // hulk
         ff::rect_fixed(-5, -5, 6, 6), // electrode
@@ -165,6 +191,7 @@ void retron::entities::flush_delete()
 {
     for (entt::entity entity : this->registry.view<::pending_delete>())
     {
+        this->entity_deleted_signal.notify(entity);
         this->registry.destroy(entity);
     }
 }
@@ -215,7 +242,12 @@ ff::signal_sink<entt::entity>& retron::entities::entity_created_sink()
     return this->entity_created_signal;
 }
 
-ff::signal_sink<entt::entity>& retron::entities::entity_deleted_sink()
+ff::signal_sink<entt::entity>& retron::entities::entity_deleting_sink()
 {
     return this->entity_deleting_signal;
+}
+
+ff::signal_sink<entt::entity>& retron::entities::entity_deleted_sink()
+{
+    return this->entity_deleted_signal;
 }

@@ -58,9 +58,50 @@ static retron::level_objects_spec load_level_objects_spec(ff::rect_fixed rect, c
         std::string property_name = property_dict.get<std::string>("name");
         size_t property_value = property_dict.get<size_t>("value");
 
-        if (property_name == "electrode")
+        if (property_name == "bonus")
+        {
+            objects_spec.bonus = property_value;
+        }
+        else if (property_name == "bonus_type")
+        {
+            std::string property_value_string = property_dict.get<std::string>("value");
+
+            if (property_value_string == "woman")
+            {
+                objects_spec.bonus_type = retron::bonus_type::woman;
+            }
+            else if (property_value_string == "man")
+            {
+                objects_spec.bonus_type = retron::bonus_type::man;
+            }
+            else if (property_value_string == "boy")
+            {
+                objects_spec.bonus_type = retron::bonus_type::boy;
+            }
+            else if (property_value_string == "girl")
+            {
+                objects_spec.bonus_type = retron::bonus_type::girl;
+            }
+            else if (property_value_string == "dog")
+            {
+                objects_spec.bonus_type = retron::bonus_type::dog;
+            }
+            else if (property_value_string == "cat")
+            {
+                objects_spec.bonus_type = retron::bonus_type::cat;
+            }
+            else
+            {
+                assert(false);
+            }
+        }
+        else if (property_name == "electrode")
         {
             objects_spec.electrode = property_value;
+        }
+        else if (property_name == "electrode_type")
+        {
+            objects_spec.electrode_type = property_value;
         }
         else if (property_name == "grunt")
         {
@@ -69,18 +110,6 @@ static retron::level_objects_spec load_level_objects_spec(ff::rect_fixed rect, c
         else if (property_name == "hulk")
         {
             objects_spec.hulk = property_value;
-        }
-        else if (property_name == "bonus_woman")
-        {
-            objects_spec.bonus_woman = property_value;
-        }
-        else if (property_name == "bonus_man")
-        {
-            objects_spec.bonus_man = property_value;
-        }
-        else if (property_name == "bonus_child")
-        {
-            objects_spec.bonus_child = property_value;
         }
         else
         {

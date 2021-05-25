@@ -5,7 +5,7 @@
   {
     "player_start_particles":
     {
-      "life": [ 30, 90 ],
+      "life": [ 20, 40 ],
       "delay": [ 0, 20 ],
       "count": [ 32, 32 ],
       "distance": [ 0, 2 ],
@@ -106,24 +106,8 @@
         "angle": 270
       },
       {
-        "life": 20,
-        "delay": 20,
-        "count": 1,
-        "distance": 0,
-        "animations": [ "ref:player_dither_random" ],
-        "angle": 0
-      },
-      {
-        "life": 20,
-        "delay": 40,
-        "count": 1,
-        "distance": 0,
-        "animations": [ "ref:player_dither_random" ],
-        "angle": 0
-      },
-      {
-        "life": 50,
-        "delay": 60,
+        "life": 30,
+        "delay": 30,
         "count": 1,
         "distance": 0,
         "animations": [ "ref:player_dither_random" ],

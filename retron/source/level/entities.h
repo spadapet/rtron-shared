@@ -2,6 +2,8 @@
 
 namespace retron
 {
+    enum class bonus_type;
+
     // This is added to every entity as a component
     enum class entity_type
     {
@@ -9,9 +11,9 @@ namespace retron
         animation_top,
         player_bullet,
         player,
-        bonus_woman,
-        bonus_man,
+        bonus_adult,
         bonus_child,
+        bonus_pet,
         grunt,
         hulk,
         electrode,
@@ -36,6 +38,7 @@ namespace retron
         count
     };
 
+    retron::entity_type bonus_entity_type(retron::bonus_type type);
     retron::entity_box_type box_type(retron::entity_type type);
 
     const ff::rect_fixed& get_hit_box_spec(retron::entity_type type);
@@ -59,12 +62,14 @@ namespace retron
         retron::entity_type entity_type(entt::entity entity);
 
         ff::signal_sink<entt::entity>& entity_created_sink();
+        ff::signal_sink<entt::entity>& entity_deleting_sink();
         ff::signal_sink<entt::entity>& entity_deleted_sink();
 
     private:
         entt::registry& registry;
         ff::signal<entt::entity> entity_created_signal;
         ff::signal<entt::entity> entity_deleting_signal;
+        ff::signal<entt::entity> entity_deleted_signal;
         bool sort_entities_;
     };
 }

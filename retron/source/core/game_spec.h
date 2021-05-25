@@ -2,6 +2,17 @@
 
 namespace retron
 {
+    enum class bonus_type
+    {
+        none,
+        woman,
+        man,
+        boy,
+        girl,
+        dog,
+        cat,
+    };
+
     struct level_rect
     {
         enum class type
@@ -20,11 +31,11 @@ namespace retron
     struct level_objects_spec : public retron::level_rect
     {
         size_t electrode;
+        size_t electrode_type;
         size_t grunt;
         size_t hulk;
-        size_t bonus_woman;
-        size_t bonus_man;
-        size_t bonus_child;
+        size_t bonus;
+        retron::bonus_type bonus_type;
     };
 
     struct level_spec
@@ -32,7 +43,6 @@ namespace retron
         std::vector<retron::level_rect> rects;
         std::vector<retron::level_objects_spec> objects;
         ff::point_fixed player_start;
-        size_t electrode_type;
     };
 
     struct level_set_spec

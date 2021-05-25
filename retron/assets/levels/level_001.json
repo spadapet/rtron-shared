@@ -87,9 +87,14 @@
                  "name":"objects",
                  "properties":[
                         {
-                         "name":"bonus_woman",
+                         "name":"bonus",
                          "type":"int",
-                         "value":0
+                         "value":5
+                        }, 
+                        {
+                         "name":"bonus_type",
+                         "type":"string",
+                         "value":"woman"
                         }, 
                         {
                          "name":"electrode",

@@ -28,6 +28,11 @@ namespace
         entt::entity player;
     };
 
+    struct bonus_data
+    {
+        retron::bonus_type bonus_type;
+    };
+
     struct tracked_object_data
     {
         std::reference_wrapper<size_t> init_object_count;
@@ -133,6 +138,8 @@ retron::level::level(retron::game_service& game_service, const retron::level_spe
     , frame_count(0)
 {
     this->connections.emplace_front(retron::app_service::get().reload_resources_sink().connect(std::bind(&retron::level::init_resources, this)));
+    this->connections.emplace_front(this->entities.entity_created_sink().connect(std::bind(&retron::level::handle_entity_created, this, std::placeholders::_1)));
+    this->connections.emplace_front(this->entities.entity_deleted_sink().connect(std::bind(&retron::level::handle_entity_deleted, this, std::placeholders::_1)));
 
     this->init_resources();
     this->internal_phase(internal_phase_t::ready);
@@ -147,9 +154,9 @@ std::shared_ptr<ff::state> retron::level::advance_time()
         this->handle_collisions();
     }
 
+    this->entities.flush_delete();
     this->advance_entity_followers();
     this->advance_phase();
-    this->entities.flush_delete();
 
     return nullptr;
 }
@@ -298,10 +305,8 @@ void retron::level::init_entities()
 
         for (retron::level_objects_spec& object_spec : this->level_spec_.objects)
         {
-            this->create_objects(object_spec.bonus_woman, entity_type::bonus_woman, object_spec.rect, std::bind(&retron::level::create_entity, this, std::placeholders::_1, std::placeholders::_2));
-            this->create_objects(object_spec.bonus_man, entity_type::bonus_man, object_spec.rect, std::bind(&retron::level::create_entity, this, std::placeholders::_1, std::placeholders::_2));
-            this->create_objects(object_spec.bonus_child, entity_type::bonus_child, object_spec.rect, std::bind(&retron::level::create_entity, this, std::placeholders::_1, std::placeholders::_2));
-            this->create_objects(object_spec.electrode, entity_type::electrode, object_spec.rect, std::bind(&retron::level::create_electrode, this, std::placeholders::_1, std::placeholders::_2));
+            this->create_objects(object_spec.bonus, retron::bonus_entity_type(object_spec.bonus_type), object_spec.rect, std::bind(&retron::level::create_bonus, this, std::placeholders::_1, std::placeholders::_2, object_spec.bonus_type));
+            this->create_objects(object_spec.electrode, entity_type::electrode, object_spec.rect, std::bind(&retron::level::create_electrode, this, std::placeholders::_1, std::placeholders::_2, object_spec.electrode_type));
             this->create_objects(object_spec.hulk, entity_type::hulk, object_spec.rect, std::bind(&retron::level::create_entity, this, std::placeholders::_1, std::placeholders::_2));
             this->create_objects(object_spec.grunt, entity_type::grunt, object_spec.rect, std::bind(&retron::level::create_grunt, this, std::placeholders::_1, std::placeholders::_2));
         }
@@ -335,11 +340,20 @@ entt::entity retron::level::create_entity(entity_type type, const ff::point_fixe
     return entity;
 }
 
-entt::entity retron::level::create_electrode(retron::entity_type type, const ff::point_fixed& pos)
+entt::entity retron::level::create_bonus(retron::entity_type type, const ff::point_fixed& pos, retron::bonus_type bonus_type)
+{
+    assert(retron::bonus_entity_type(bonus_type) == type);
+    entt::entity entity = this->create_entity(type, pos);
+    this->registry.emplace<::bonus_data>(entity, bonus_type);
+
+    return entity;
+}
+
+entt::entity retron::level::create_electrode(retron::entity_type type, const ff::point_fixed& pos, size_t electrode_type)
 {
     entt::entity entity = this->create_entity(type, pos);
     size_t index = this->registry.size<::electrode_data>();
-    this->registry.emplace<::electrode_data>(entity, index, this->level_spec_.electrode_type);
+    this->registry.emplace<::electrode_data>(entity, index, electrode_type);
 
     return entity;
 }
@@ -401,8 +415,7 @@ entt::entity retron::level::create_animation(std::shared_ptr<ff::animation_base>
 
 entt::entity retron::level::create_animation(std::shared_ptr<ff::animation_player_base> player, ff::point_fixed pos, bool top)
 {
-    entt::entity entity = this->entities.create(retron::entity_type::animation_bottom);
-    this->position.set(entity, pos);
+    entt::entity entity = this->create_entity(retron::entity_type::animation_bottom, pos);
     this->registry.emplace<::animation_data>(entity, std::move(player));
     return entity;
 }
@@ -502,16 +515,15 @@ static bool place_random_y(ff::point_fixed& corner, const ff::point_fixed& size,
     return false;
 }
 
-void retron::level::create_objects(size_t& count, entity_type type, const ff::rect_fixed& bounds, const std::function<entt::entity(retron::entity_type, const ff::point_fixed&)>& create_func)
+void retron::level::create_objects(size_t& count, retron::entity_type type, const ff::rect_fixed& bounds, const std::function<entt::entity(retron::entity_type, const ff::point_fixed&)>& create_func)
 {
     const size_t max_attempts = 256;
     const ff::rect_fixed& spec = retron::get_hit_box_spec(type);
     const ff::point_fixed size = spec.size();
 
-    if (count > 0 && bounds.width() >= size.x && bounds.height() >= size.y)
+    if (count > 0 && type != retron::entity_type::none && bounds.width() >= size.x && bounds.height() >= size.y)
     {
         ::place_random_cache cache{ this->collision };
-        bool clear_to_win = (retron::box_type(type) == retron::entity_box_type::enemy);
 
         for (size_t i = 0, original_count = count; i < original_count; i++)
         {
@@ -525,11 +537,6 @@ void retron::level::create_objects(size_t& count, entity_type type, const ff::re
                 {
                     entity = create_func(type, corner - spec.top_left());
                     this->registry.emplace<::tracked_object_data>(entity, std::ref(count));
-
-                    if (clear_to_win)
-                    {
-                        this->registry.emplace<::clear_to_win_flag>(entity);
-                    }
                     break;
                 }
             }
@@ -739,6 +746,32 @@ void retron::level::advance_phase()
     }
 }
 
+void retron::level::handle_entity_created(entt::entity entity)
+{
+    if (retron::box_type(this->entities.entity_type(entity)) == retron::entity_box_type::enemy)
+    {
+        this->registry.emplace<::clear_to_win_flag>(entity);
+    }
+}
+
+void retron::level::handle_entity_deleted(entt::entity entity)
+{
+    if (this->phase_ != internal_phase_t::ready)
+    {
+        ::tracked_object_data* data = this->registry.try_get<::tracked_object_data>(entity);
+        if (data)
+        {
+            size_t& count = data->init_object_count.get();
+            assert(count);
+
+            if (count)
+            {
+                count--;
+            }
+        }
+    }
+}
+
 void retron::level::handle_collisions()
 {
     if (this->phase_ == internal_phase_t::playing)
@@ -929,8 +962,6 @@ void retron::level::destroy_grunt(entt::entity grunt_entity, entt::entity by_ent
 {
     if (this->entities.delay_delete(grunt_entity))
     {
-        this->remove_tracked_object(grunt_entity);
-
         retron::particles::effect_options options;
         options.reverse = true;
 
@@ -971,8 +1002,6 @@ void retron::level::destroy_obstacle(entt::entity obstacle_entity, entt::entity 
 {
     if (this->entities.delay_delete(obstacle_entity))
     {
-        this->remove_tracked_object(obstacle_entity);
-
         const ::electrode_data* data = this->registry.try_get<::electrode_data>(obstacle_entity);
         std::shared_ptr<ff::animation_base> anim = this->electrode_die_anims[data ? data->electrode_type % this->electrode_die_anims.size() : 0].object();
         this->create_animation(anim, this->position.get(obstacle_entity), false);
@@ -1011,9 +1040,9 @@ void retron::level::render_entity(entt::entity entity, entity_type type, ff::dra
             this->render_player_bullet(entity, draw);
             break;
 
-        case entity_type::bonus_woman:
-        case entity_type::bonus_man:
+        case entity_type::bonus_adult:
         case entity_type::bonus_child:
+        case entity_type::bonus_pet:
             this->render_bonus(entity, type, draw);
             break;
 
@@ -1097,15 +1126,8 @@ void retron::level::render_player_bullet(entt::entity entity, ff::draw_base& dra
 
 void retron::level::render_bonus(entt::entity entity, entity_type type, ff::draw_base& draw)
 {
-    int color = 251;
-    switch (type)
-    {
-        case entity_type::bonus_woman: color = 238; break;
-        case entity_type::bonus_man: color = 246; break;
-    }
-
-    ff::point_fixed pos = this->position.get(entity);
-    draw.draw_palette_filled_rectangle(this->hit_box(entity), color);
+    retron::bonus_type bonus_type = this->registry.get<::bonus_data>(entity).bonus_type;
+    draw.draw_palette_filled_rectangle(this->bounds_box(entity), 256 - 32 + static_cast<int>(bonus_type));
 }
 
 void retron::level::render_electrode(entt::entity entity, ff::draw_base& draw)
@@ -1176,7 +1198,7 @@ void retron::level::render_debug(ff::draw_base& draw)
     {
         for (auto [entity, data] : this->registry.view<::grunt_data>().each())
         {
-            draw.draw_palette_line(this->position.get(entity), data.dest_pos, 245, 1);
+            draw.draw_line(this->position.get(entity), data.dest_pos, ff::palette_index_to_color(245, 0.375f), 1);
         }
     }
 
@@ -1302,21 +1324,6 @@ ff::point_fixed retron::level::pick_move_destination(entt::entity entity, entt::
     }
 
     return result;
-}
-
-void retron::level::remove_tracked_object(entt::entity entity)
-{
-    ::tracked_object_data* data = this->registry.try_get<::tracked_object_data>(entity);
-    if (data)
-    {
-        size_t& count = data->init_object_count.get();
-        assert(count);
-
-        if (count)
-        {
-            count--;
-        }
-    }
 }
 
 void retron::level::enum_entities(const std::function<void(entt::entity, retron::entity_type)>& func)
