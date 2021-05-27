@@ -45,12 +45,14 @@ namespace retron
         entt::entity create_bonus(retron::entity_type type, const ff::point_fixed& pos, retron::bonus_type bonus_type);
         entt::entity create_electrode(retron::entity_type type, const ff::point_fixed& pos, size_t electrode_type);
         entt::entity create_grunt(retron::entity_type type, const ff::point_fixed& pos);
+        entt::entity create_hulk(retron::entity_type type, const ff::point_fixed& pos);
         entt::entity create_player(size_t index_in_level);
         entt::entity create_player_bullet(entt::entity player, ff::point_fixed shot_pos, ff::point_fixed shot_dir);
         entt::entity create_animation(std::shared_ptr<ff::animation_base> anim, ff::point_fixed pos, bool top);
         entt::entity create_animation(std::shared_ptr<ff::animation_player_base> player, ff::point_fixed pos, bool top);
         entt::entity create_bounds(const ff::rect_fixed& rect);
         entt::entity create_box(const ff::rect_fixed& rect);
+        void create_enemy_start_particles(entt::entity entity, std::string_view name_0, std::string_view name_90);
         void create_objects(size_t& count, retron::entity_type type, const ff::rect_fixed& bounds, const std::function<entt::entity(retron::entity_type, const ff::point_fixed&)>& create_func);
 
         void advance_entity(entt::entity entity, retron::entity_type type);
@@ -68,7 +70,7 @@ namespace retron
         void handle_entity_collision(entt::entity target_entity, entt::entity source_entity);
 
         void destroy_player_bullet(entt::entity bullet_entity, entt::entity by_entity, retron::entity_box_type by_type);
-        void destroy_grunt(entt::entity grunt_entity, entt::entity by_entity, retron::entity_box_type by_type);
+        void destroy_enemy(entt::entity entity, entt::entity by_entity, retron::entity_box_type by_type);
         void destroy_obstacle(entt::entity obstacle_entity, entt::entity by_entity, retron::entity_box_type by_type);
 
         void render_particles(ff::draw_base& draw);
@@ -128,6 +130,7 @@ namespace retron
         std::array<ff::auto_resource<ff::animation_base>, 3> electrode_die_anims;
         ff::auto_resource<ff::animation_base> player_bullet_anim;
         ff::auto_resource<ff::animation_base> grunt_walk_anim;
+        ff::auto_resource<ff::animation_base> hulk_walk_anim;
 
         internal_phase_t phase_;
         size_t phase_counter;

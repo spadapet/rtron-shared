@@ -201,6 +201,57 @@
         "repeat": 8
       },
 
+      "hulk":
+      {
+        "file": "file:graphics/hulk.png",
+        "pos": [ 0, 0 ],
+        "size": [ 19, 18 ],
+        "handle": [ 9, 18 ]
+      },
+      "hulk_dither":
+      {
+        "file": "file:graphics/hulk.png",
+        "pos": [ 20, 0 ],
+        "size": [ 19, 18 ],
+        "handle": [ 9, 8 ]
+      },
+      "hulk_part_left":
+      {
+        "file": "file:graphics/hulk.png",
+        "pos": [ 29, 0 ],
+        "size": [ 1, 18 ],
+        "handle": [ 0, 8 ],
+        "offset": [ -2, 0 ],
+        "repeat": 5
+      },
+      "hulk_part_right":
+      {
+        "file": "file:graphics/hulk.png",
+        "pos": [ 29, 0 ],
+        "size": [ 1, 18 ],
+        "handle": [ 0, 8 ],
+        "offset": [ 2, 0 ],
+        "repeat": 5
+      },
+      "hulk_part_top":
+      {
+        "file": "file:graphics/hulk.png",
+        "pos": [ 20, 8 ],
+        "size": [ 19, 1 ],
+        "handle": [ 9, 0 ],
+        "offset": [ 0, -2 ],
+        "repeat": 5
+      },
+      "hulk_part_bottom":
+      {
+        "file": "file:graphics/hulk.png",
+        "pos": [ 20, 8 ],
+        "size": [ 19, 1 ],
+        "handle": [ 9, 0 ],
+        "offset": [ 0, 2 ],
+        "repeat": 5
+      },
+
       "electrode":
       {
         "file": "file:graphics/electrodes.png",

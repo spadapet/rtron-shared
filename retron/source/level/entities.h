@@ -38,6 +38,7 @@ namespace retron
         count
     };
 
+    bool is_indestructible(retron::entity_type type);
     retron::entity_type bonus_entity_type(retron::bonus_type type);
     retron::entity_box_type box_type(retron::entity_type type);
 

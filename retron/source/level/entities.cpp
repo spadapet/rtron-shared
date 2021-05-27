@@ -8,6 +8,22 @@ namespace
     {};
 }
 
+bool retron::is_indestructible(retron::entity_type type)
+{
+    switch (type)
+    {
+        default:
+            return false;
+
+        case retron::entity_type::hulk:
+        case retron::entity_type::level_bounds:
+        case retron::entity_type::level_box:
+        case retron::entity_type::animation_top:
+        case retron::entity_type::animation_bottom:
+            return true;
+    }
+}
+
 retron::entity_type retron::bonus_entity_type(retron::bonus_type type)
 {
     switch (type)
@@ -28,7 +44,6 @@ retron::entity_type retron::bonus_entity_type(retron::bonus_type type)
             return retron::entity_type::bonus_child;
 
         case retron::bonus_type::dog:
-        case retron::bonus_type::cat:
             return retron::entity_type::bonus_pet;
     }
 }
@@ -69,7 +84,7 @@ const ff::rect_fixed& retron::get_hit_box_spec(retron::entity_type type)
         ff::rect_fixed(-3, -10, 4, 0), // bonus_child
         ff::rect_fixed(-4, -5, 5, 0), // bonus_pet
         ff::rect_fixed(-5, -15, 6, 0), // grunt
-        ff::rect_fixed(-5, -8, 5, 0), // hulk
+        ff::rect_fixed(-7, -16, 8, 0), // hulk
         ff::rect_fixed(-5, -5, 6, 6), // electrode
         ff::rect_fixed(0, 0, 0, 0), // animation_under
         ff::rect_fixed(0, 0, 0, 0), // level_border
@@ -93,7 +108,7 @@ const ff::rect_fixed& retron::get_bounds_box_spec(retron::entity_type type)
         ff::rect_fixed(-3, -10, 4, 0), // bonus_child
         ff::rect_fixed(-4, -5, 5, 0), // bonus_pet
         ff::rect_fixed(-5, -15, 6, 0), // grunt
-        ff::rect_fixed(-5, -12, 5, 0), // hulk
+        ff::rect_fixed(-9, -18, 10, 0), // hulk
         ff::rect_fixed(-5, -5, 6, 6), // electrode
         ff::rect_fixed(0, 0, 0, 0), // animation_under
         ff::rect_fixed(0, 0, 0, 0), // level_border

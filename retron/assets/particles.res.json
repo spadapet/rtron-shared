@@ -11,7 +11,39 @@
       "distance": [ 0, 2 ],
       "velocity": [ 1, 12 ],
       "reverse": true
-    }
+    },
+
+    "enemy_start_particles":
+    [
+      {
+        "life": [ 10, 30 ],
+        "delay": [ 0, 8 ],
+        "count": [ 12, 12 ],
+        "distance": [ 0, 2 ],
+        "velocity": [ 1, 8 ],
+        "animations": "res:anims_0",
+        "angle": "res:angle_0",
+        "reverse": true
+      },
+      {
+        "life": [ 10, 30 ],
+        "delay": [ 0, 8 ],
+        "count": [ 12, 12 ],
+        "distance": [ 0, 2 ],
+        "velocity": [ 1, 8 ],
+        "animations": "res:anims_1",
+        "angle": "res:angle_1",
+        "reverse": true
+      },
+      {
+        "life": 6,
+        "delay": 32,
+        "count": 1,
+        "distance": 0,
+        "animations": "res:dither",
+        "angle": 0
+      }
+    ]
   },
 
   "player_dither_random":
@@ -116,67 +148,55 @@
     ],
 
     "grunt_start_0":
-    [
+    {
+      "res:template": "enemy_start_particles",
+      "res:values":
       {
-        "life": [ 10, 30 ],
-        "delay": [ 0, 8 ],
-        "count": [ 12, 12 ],
-        "distance": [ 0, 2 ],
-        "velocity": [ 1, 8 ],
-        "animations": [ "ref:sprites.grunt_part_right[0]", "ref:sprites.grunt_part_right[1]", "ref:sprites.grunt_part_right[2]", "ref:sprites.grunt_part_right[3]", "ref:sprites.grunt_part_right[4]", "ref:sprites.grunt_part_right[5]" ],
-        "angle": 0,
-        "reverse": true
-      },
-      {
-        "life": [ 10, 30 ],
-        "delay": [ 0, 8 ],
-        "count": [ 12, 12 ],
-        "distance": [ 0, 2 ],
-        "velocity": [ 1, 8 ],
-        "animations": [ "ref:sprites.grunt_part_left[0]", "ref:sprites.grunt_part_left[1]", "ref:sprites.grunt_part_left[2]", "ref:sprites.grunt_part_left[3]", "ref:sprites.grunt_part_left[4]", "ref:sprites.grunt_part_left[5]" ],
-        "angle": 180,
-        "reverse": true
-      },
-      {
-        "life": 6,
-        "delay": 32,
-        "count": 1,
-        "distance": 0,
-        "animations": [ "ref:sprites.grunt_dither" ],
-        "angle": 0
+        "anims_0": [ "ref:sprites.grunt_part_right[0]", "ref:sprites.grunt_part_right[1]", "ref:sprites.grunt_part_right[2]", "ref:sprites.grunt_part_right[3]", "ref:sprites.grunt_part_right[4]", "ref:sprites.grunt_part_right[5]" ],
+        "angle_0": 0,
+        "anims_1": [ "ref:sprites.grunt_part_left[0]", "ref:sprites.grunt_part_left[1]", "ref:sprites.grunt_part_left[2]", "ref:sprites.grunt_part_left[3]", "ref:sprites.grunt_part_left[4]", "ref:sprites.grunt_part_left[5]" ],
+        "angle_1": 180,
+        "dither": [ "ref:sprites.grunt_dither" ]
       }
-    ],
+    },
 
     "grunt_start_90":
-    [
+    {
+      "res:template": "enemy_start_particles",
+      "res:values":
       {
-        "life": [ 10, 30 ],
-        "delay": [ 0, 8 ],
-        "count": [ 12, 12 ],
-        "distance": [ 0, 2 ],
-        "velocity": [ 1, 6 ],
-        "animations": [ "ref:sprites.grunt_part_bottom[0]", "ref:sprites.grunt_part_bottom[1]", "ref:sprites.grunt_part_bottom[2]", "ref:sprites.grunt_part_bottom[3]", "ref:sprites.grunt_part_bottom[4]", "ref:sprites.grunt_part_bottom[5]", "ref:sprites.grunt_part_bottom[6]", "ref:sprites.grunt_part_bottom[7]" ],
-        "angle": 270,
-        "reverse": true
-      },
-      {
-        "life": [ 10, 30 ],
-        "delay": [ 0, 8 ],
-        "count": [ 12, 12 ],
-        "distance": [ 0, 2 ],
-        "velocity": [ 1, 6 ],
-        "animations": [ "ref:sprites.grunt_part_top[0]", "ref:sprites.grunt_part_top[1]", "ref:sprites.grunt_part_top[2]", "ref:sprites.grunt_part_top[3]", "ref:sprites.grunt_part_top[4]", "ref:sprites.grunt_part_top[5]", "ref:sprites.grunt_part_top[6]", "ref:sprites.grunt_part_top[7]" ],
-        "angle": 90,
-        "reverse": true
-      },
-      {
-        "life": 6,
-        "delay": 32,
-        "count": 1,
-        "distance": 0,
-        "animations": [ "ref:sprites.grunt_dither" ],
-        "angle": 0
+        "anims_0": [ "ref:sprites.grunt_part_bottom[0]", "ref:sprites.grunt_part_bottom[1]", "ref:sprites.grunt_part_bottom[2]", "ref:sprites.grunt_part_bottom[3]", "ref:sprites.grunt_part_bottom[4]", "ref:sprites.grunt_part_bottom[5]", "ref:sprites.grunt_part_bottom[6]", "ref:sprites.grunt_part_bottom[7]" ],
+        "angle_0": 270,
+        "anims_1": [ "ref:sprites.grunt_part_top[0]", "ref:sprites.grunt_part_top[1]", "ref:sprites.grunt_part_top[2]", "ref:sprites.grunt_part_top[3]", "ref:sprites.grunt_part_top[4]", "ref:sprites.grunt_part_top[5]", "ref:sprites.grunt_part_top[6]", "ref:sprites.grunt_part_top[7]" ],
+        "angle_1": 90,
+        "dither": [ "ref:sprites.grunt_dither" ]
       }
-    ]
+    },
+
+    "hulk_start_0":
+    {
+      "res:template": "enemy_start_particles",
+      "res:values":
+      {
+        "anims_0": [ "ref:sprites.hulk_part_right[0]", "ref:sprites.hulk_part_right[1]", "ref:sprites.hulk_part_right[2]", "ref:sprites.hulk_part_right[3]", "ref:sprites.hulk_part_right[4]" ],
+        "angle_0": 0,
+        "anims_1": [ "ref:sprites.hulk_part_left[0]", "ref:sprites.hulk_part_left[1]", "ref:sprites.hulk_part_left[2]", "ref:sprites.hulk_part_left[3]", "ref:sprites.hulk_part_left[4]" ],
+        "angle_1": 180,
+        "dither": [ "ref:sprites.hulk_dither" ]
+      }
+    },
+
+    "hulk_start_90":
+    {
+      "res:template": "enemy_start_particles",
+      "res:values":
+      {
+        "anims_0": [ "ref:sprites.hulk_part_bottom[0]", "ref:sprites.hulk_part_bottom[1]", "ref:sprites.hulk_part_bottom[2]", "ref:sprites.hulk_part_bottom[3]", "ref:sprites.hulk_part_bottom[4]" ],
+        "angle_0": 270,
+        "anims_1": [ "ref:sprites.hulk_part_top[0]", "ref:sprites.hulk_part_top[1]", "ref:sprites.hulk_part_top[2]", "ref:sprites.hulk_part_top[3]", "ref:sprites.hulk_part_top[4]" ],
+        "angle_1": 90,
+        "dither": [ "ref:sprites.hulk_dither" ]
+      }
+    }
   }
 }

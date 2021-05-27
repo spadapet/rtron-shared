@@ -86,10 +86,6 @@ static retron::level_objects_spec load_level_objects_spec(ff::rect_fixed rect, c
             {
                 objects_spec.bonus_type = retron::bonus_type::dog;
             }
-            else if (property_value_string == "cat")
-            {
-                objects_spec.bonus_type = retron::bonus_type::cat;
-            }
             else
             {
                 assert(false);

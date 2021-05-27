@@ -10,7 +10,6 @@ namespace retron
         boy,
         girl,
         dog,
-        cat,
     };
 
     struct level_rect

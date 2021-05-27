@@ -4,6 +4,8 @@
 #include "source/core/render_targets.h"
 #include "source/level/level.h"
 
+static const size_t MAX_DELAY_PARTICLES = 128;
+
 namespace
 {
     enum class player_state
@@ -46,6 +48,11 @@ namespace
         size_t index;
         size_t move_counter;
         ff::point_fixed dest_pos; // for debug render
+    };
+
+    struct hulk_data
+    {
+        size_t index;
     };
 
     struct electrode_data
@@ -263,6 +270,7 @@ void retron::level::init_resources()
     this->player_bullet_anim = "sprites.player_bullet";
 
     this->grunt_walk_anim = "sprites.grunt";
+    this->hulk_walk_anim = "sprites.hulk";
 
     ff::dict level_particles_dict = ff::auto_resource_value("level_particles").value()->get<ff::dict>();
     for (std::string_view name : level_particles_dict.child_names())
@@ -307,8 +315,8 @@ void retron::level::init_entities()
         {
             this->create_objects(object_spec.bonus, retron::bonus_entity_type(object_spec.bonus_type), object_spec.rect, std::bind(&retron::level::create_bonus, this, std::placeholders::_1, std::placeholders::_2, object_spec.bonus_type));
             this->create_objects(object_spec.electrode, entity_type::electrode, object_spec.rect, std::bind(&retron::level::create_electrode, this, std::placeholders::_1, std::placeholders::_2, object_spec.electrode_type));
-            this->create_objects(object_spec.hulk, entity_type::hulk, object_spec.rect, std::bind(&retron::level::create_entity, this, std::placeholders::_1, std::placeholders::_2));
             this->create_objects(object_spec.grunt, entity_type::grunt, object_spec.rect, std::bind(&retron::level::create_grunt, this, std::placeholders::_1, std::placeholders::_2));
+            this->create_objects(object_spec.hulk, entity_type::hulk, object_spec.rect, std::bind(&retron::level::create_hulk, this, std::placeholders::_1, std::placeholders::_2));
         }
     }
 
@@ -360,19 +368,21 @@ entt::entity retron::level::create_electrode(retron::entity_type type, const ff:
 
 entt::entity retron::level::create_grunt(retron::entity_type type, const ff::point_fixed& pos)
 {
-    const size_t max_delay_particles = 128;
-
     entt::entity entity = this->create_entity(type, pos);
-    size_t grunt_index = this->registry.size<::grunt_data>();
-    this->registry.emplace<::grunt_data>(entity, grunt_index, this->pick_grunt_move_counter(), pos);
+    this->registry.emplace<::grunt_data>(entity, this->registry.size<::grunt_data>(), this->pick_grunt_move_counter(), pos);
 
     retron::particles::effect_options options;
-    options.delay = static_cast<int>(grunt_index % max_delay_particles);
+    options.delay = static_cast<int>(this->registry.size<::showing_particle_effect>() % ::MAX_DELAY_PARTICLES);
+    this->create_enemy_start_particles(entity, "grunt_start_0", "grunt_start_90");
 
-    bool vertical = ff::math::random_range(1, 10) > 2 ? true : false;
-    ff::point_fixed center = this->bounds_box(entity).center();
-    auto [effect_id, max_life] = this->particle_effects[vertical ? "grunt_start_90" : "grunt_start_0"].add(this->particles, center, &options);
-    this->registry.emplace<::showing_particle_effect>(entity, effect_id, 0u);
+    return entity;
+}
+
+entt::entity retron::level::create_hulk(retron::entity_type type, const ff::point_fixed& pos)
+{
+    entt::entity entity = this->create_entity(type, pos);
+    this->registry.emplace<::hulk_data>(entity, this->registry.size<::hulk_data>());
+    this->create_enemy_start_particles(entity, "hulk_start_0", "hulk_start_90");
 
     return entity;
 }
@@ -513,6 +523,17 @@ static bool place_random_y(ff::point_fixed& corner, const ff::point_fixed& size,
     }
 
     return false;
+}
+
+void retron::level::create_enemy_start_particles(entt::entity entity, std::string_view name_0, std::string_view name_90)
+{
+    retron::particles::effect_options options;
+    options.delay = static_cast<int>(this->registry.size<::showing_particle_effect>() % ::MAX_DELAY_PARTICLES);
+
+    bool vertical = ff::math::random_range(1, 10) > 2 ? true : false;
+    ff::point_fixed center = this->bounds_box(entity).center();
+    auto [effect_id, max_life] = this->particle_effects[vertical ? name_90 : name_0].add(this->particles, center, &options);
+    this->registry.emplace<::showing_particle_effect>(entity, effect_id, 0u);
 }
 
 void retron::level::create_objects(size_t& count, retron::entity_type type, const ff::rect_fixed& bounds, const std::function<entt::entity(retron::entity_type, const ff::point_fixed&)>& create_func)
@@ -748,7 +769,9 @@ void retron::level::advance_phase()
 
 void retron::level::handle_entity_created(entt::entity entity)
 {
-    if (retron::box_type(this->entities.entity_type(entity)) == retron::entity_box_type::enemy)
+    retron::entity_type type = this->entities.entity_type(entity);
+
+    if (retron::box_type(type) == retron::entity_box_type::enemy && !retron::is_indestructible(type))
     {
         this->registry.emplace<::clear_to_win_flag>(entity);
     }
@@ -872,11 +895,11 @@ void retron::level::handle_entity_collision(entt::entity target_entity, entt::en
             switch (source_type)
             {
                 case entity_box_type::obstacle:
-                    this->destroy_grunt(target_entity, source_entity, source_type);
+                    this->destroy_enemy(target_entity, source_entity, source_type);
                     break;
 
                 case entity_box_type::player_bullet:
-                    this->destroy_grunt(target_entity, source_entity, source_type);
+                    this->destroy_enemy(target_entity, source_entity, source_type);
                     this->player_add_points(source_entity, target_entity);
                     break;
             }
@@ -923,53 +946,47 @@ void retron::level::destroy_player_bullet(entt::entity bullet_entity, entt::enti
 {
     if (this->entities.delay_delete(bullet_entity))
     {
-        switch (by_type)
+        if (retron::is_indestructible(this->entities.entity_type(by_entity)))
         {
-            case retron::entity_box_type::level:
-                {
-                    ff::point_fixed vel = this->position.velocity(bullet_entity);
-                    ff::fixed_int angle = this->position.reverse_velocity_as_angle(bullet_entity);
-                    ff::point_fixed pos = this->position.get(bullet_entity);
-                    ff::point_fixed pos2(pos.x + (vel.x ? std::copysign(1_f, vel.x) : 0), pos.y + (vel.y ? std::copysign(1_f, vel.y) : 0));
+            ff::point_fixed vel = this->position.velocity(bullet_entity);
+            ff::fixed_int angle = this->position.reverse_velocity_as_angle(bullet_entity);
+            ff::point_fixed pos = this->position.get(bullet_entity);
+            ff::point_fixed pos2(pos.x + (vel.x ? std::copysign(1_f, vel.x) : 0), pos.y + (vel.y ? std::copysign(1_f, vel.y) : 0));
 
-                    retron::particles::effect_options options;
-                    options.angle = std::make_pair(angle - 60_f, angle + 60_f);
-                    options.type = static_cast<uint8_t>(::get_player_index_for_bullet(this->registry, bullet_entity));
-                    this->particle_effects["player_bullet_explode"].add(this->particles, pos, &options);
-                    this->particle_effects["player_bullet_smoke"].add(this->particles, pos2);
-                }
-                break;
+            retron::particles::effect_options options;
+            options.angle = std::make_pair(angle - 60_f, angle + 60_f);
+            options.type = static_cast<uint8_t>(::get_player_index_for_bullet(this->registry, bullet_entity));
+            this->particle_effects["player_bullet_explode"].add(this->particles, pos, &options);
+            this->particle_effects["player_bullet_smoke"].add(this->particles, pos2);
+        }
+        else
+        {
+            ff::point_fixed pos = this->bounds_box(by_entity).center();
 
-            default:
-                {
-                    ff::point_fixed pos = this->bounds_box(by_entity).center();
+            retron::particles::effect_options options;
+            options.type = static_cast<uint8_t>(::get_player_index_for_bullet(this->registry, bullet_entity));
+            this->particle_effects["player_bullet_explode"].add(this->particles, pos, &options);
 
-                    retron::particles::effect_options options;
-                    options.type = static_cast<uint8_t>(::get_player_index_for_bullet(this->registry, bullet_entity));
-                    this->particle_effects["player_bullet_explode"].add(this->particles, pos, &options);
-
-                    if (by_type != retron::entity_box_type::obstacle)
-                    {
-                        this->particle_effects["player_bullet_smoke"].add(this->particles, pos);
-                    }
-                }
-                break;
+            if (by_type != retron::entity_box_type::obstacle)
+            {
+                this->particle_effects["player_bullet_smoke"].add(this->particles, pos);
+            }
         }
     }
 }
 
-void retron::level::destroy_grunt(entt::entity grunt_entity, entt::entity by_entity, retron::entity_box_type by_type)
+void retron::level::destroy_enemy(entt::entity entity, entt::entity by_entity, retron::entity_box_type by_type)
 {
-    if (this->entities.delay_delete(grunt_entity))
+    if (this->registry.all_of<::clear_to_win_flag>(entity) && this->entities.delay_delete(entity))
     {
         retron::particles::effect_options options;
         options.reverse = true;
 
         std::string_view name;
-        ff::point_fixed center = this->bounds_box(grunt_entity).center();
+        ff::point_fixed center = this->bounds_box(entity).center();
         bool bullet = (by_type == entity_box_type::player_bullet);
 
-        switch (retron::helpers::dir_to_index(this->position.velocity(bullet ? by_entity : grunt_entity)))
+        switch (retron::helpers::dir_to_index(this->position.velocity(bullet ? by_entity : entity)))
         {
             case 0:
             case 4:
@@ -1139,15 +1156,16 @@ void retron::level::render_electrode(entt::entity entity, ff::draw_base& draw)
 
 void retron::level::render_hulk(entt::entity entity, ff::draw_base& draw)
 {
-    ff::point_fixed pos = this->position.get(entity);
-    draw.draw_palette_filled_rectangle(this->hit_box(entity), 235);
+    if (!this->registry.all_of<::showing_particle_effect>(entity))
+    {
+        this->render_animation(entity, draw, this->hulk_walk_anim.object().get(), 0);
+    }
 }
 
 void retron::level::render_grunt(entt::entity entity, ff::draw_base& draw)
 {
     if (!this->registry.all_of<::showing_particle_effect>(entity))
     {
-        ff::point_fixed pos = this->position.get(entity);
         this->render_animation(entity, draw, this->grunt_walk_anim.object().get(), 0);
     }
 }
