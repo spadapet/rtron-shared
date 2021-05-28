@@ -52,7 +52,7 @@ namespace retron
         entt::entity create_animation(std::shared_ptr<ff::animation_player_base> player, ff::point_fixed pos, bool top);
         entt::entity create_bounds(const ff::rect_fixed& rect);
         entt::entity create_box(const ff::rect_fixed& rect);
-        void create_enemy_start_particles(entt::entity entity, std::string_view name_0, std::string_view name_90);
+        void create_start_particles(entt::entity entity);
         void create_objects(size_t& count, retron::entity_type type, const ff::rect_fixed& bounds, const std::function<entt::entity(retron::entity_type, const ff::point_fixed&)>& create_func);
 
         void advance_entity(entt::entity entity, retron::entity_type type);
@@ -69,7 +69,7 @@ namespace retron
         void handle_bounds_collision(entt::entity target_entity, entt::entity level_entity);
         void handle_entity_collision(entt::entity target_entity, entt::entity source_entity);
 
-        void destroy_player_bullet(entt::entity bullet_entity, entt::entity by_entity, retron::entity_box_type by_type);
+        void destroy_player_bullet(entt::entity bullet_entity, entt::entity by_entity, retron::entity_box_type by_box_type);
         void destroy_enemy(entt::entity entity, entt::entity by_entity, retron::entity_box_type by_type);
         void destroy_obstacle(entt::entity obstacle_entity, entt::entity by_entity, retron::entity_box_type by_type);
 

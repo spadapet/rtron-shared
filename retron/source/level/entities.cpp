@@ -8,22 +8,6 @@ namespace
     {};
 }
 
-bool retron::is_indestructible(retron::entity_type type)
-{
-    switch (type)
-    {
-        default:
-            return false;
-
-        case retron::entity_type::hulk:
-        case retron::entity_type::level_bounds:
-        case retron::entity_type::level_box:
-        case retron::entity_type::animation_top:
-        case retron::entity_type::animation_bottom:
-            return true;
-    }
-}
-
 retron::entity_type retron::bonus_entity_type(retron::bonus_type type)
 {
     switch (type)
@@ -48,6 +32,27 @@ retron::entity_type retron::bonus_entity_type(retron::bonus_type type)
     }
 }
 
+std::pair<std::string_view, std::string_view> start_particle_names_0_90(retron::entity_type type)
+{
+    std::string_view name_0;
+    std::string_view name_90;
+
+    switch (type)
+    {
+        case retron::entity_type::grunt:
+            name_0 = "grunt_start_0";
+            name_90 = "grunt_start_90";
+            break;
+
+        case retron::entity_type::hulk:
+            name_0 = "hulk_start_0";
+            name_90 = "hulk_start_90";
+            break;
+    }
+
+    return std::make_pair(name_0, name_90);
+}
+
 retron::entity_box_type retron::box_type(retron::entity_type type)
 {
     static retron::entity_box_type types[] =
@@ -60,7 +65,7 @@ retron::entity_box_type retron::box_type(retron::entity_type type)
         retron::entity_box_type::bonus, // bonus_child
         retron::entity_box_type::bonus, // bonus_pet
         retron::entity_box_type::enemy, // grunt
-        retron::entity_box_type::enemy, // hulk
+        retron::entity_box_type::enemy_box, // hulk
         retron::entity_box_type::obstacle, // electrode
         retron::entity_box_type::none, // animation_under
         retron::entity_box_type::none, // level_border
@@ -70,6 +75,21 @@ retron::entity_box_type retron::box_type(retron::entity_type type)
     static_assert(_countof(types) == static_cast<size_t>(retron::entity_type::count));
     assert(static_cast<size_t>(type) < _countof(types));
     return types[static_cast<size_t>(type)];
+}
+
+std::pair<std::string_view, std::string_view> retron::start_particle_names_0_90(retron::entity_type type)
+{
+    switch (type)
+    {
+        case retron::entity_type::grunt:
+            return std::make_pair("grunt_start_0"sv, "grunt_start_90"sv);
+
+        case retron::entity_type::hulk:
+            return std::make_pair("hulk_start_0"sv, "hulk_start_90"sv);
+
+        default:
+            return {};
+    }
 }
 
 const ff::rect_fixed& retron::get_hit_box_spec(retron::entity_type type)
@@ -134,17 +154,24 @@ bool retron::can_hit_box_collide(retron::entity_box_type type_a, retron::entity_
             case retron::entity_box_type::player:
                 return type_b == retron::entity_box_type::bonus ||
                     type_b == retron::entity_box_type::enemy ||
+                    type_b == retron::entity_box_type::enemy_box ||
                     type_b == retron::entity_box_type::obstacle ||
                     type_b == retron::entity_box_type::enemy_bullet ||
                     type_b == retron::entity_box_type::level;
 
             case retron::entity_box_type::bonus:
                 return type_b == retron::entity_box_type::enemy ||
+                    type_b == retron::entity_box_type::enemy_box ||
                     type_b == retron::entity_box_type::obstacle ||
                     type_b == retron::entity_box_type::enemy_bullet ||
                     type_b == retron::entity_box_type::level;
 
             case retron::entity_box_type::enemy:
+                return type_b == retron::entity_box_type::obstacle ||
+                    type_b == retron::entity_box_type::player_bullet ||
+                    type_b == retron::entity_box_type::level;
+
+            case retron::entity_box_type::enemy_box:
                 return type_b == retron::entity_box_type::obstacle ||
                     type_b == retron::entity_box_type::player_bullet ||
                     type_b == retron::entity_box_type::level;

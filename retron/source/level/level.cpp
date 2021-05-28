@@ -373,7 +373,7 @@ entt::entity retron::level::create_grunt(retron::entity_type type, const ff::poi
 
     retron::particles::effect_options options;
     options.delay = static_cast<int>(this->registry.size<::showing_particle_effect>() % ::MAX_DELAY_PARTICLES);
-    this->create_enemy_start_particles(entity, "grunt_start_0", "grunt_start_90");
+    this->create_start_particles(entity);
 
     return entity;
 }
@@ -382,7 +382,7 @@ entt::entity retron::level::create_hulk(retron::entity_type type, const ff::poin
 {
     entt::entity entity = this->create_entity(type, pos);
     this->registry.emplace<::hulk_data>(entity, this->registry.size<::hulk_data>());
-    this->create_enemy_start_particles(entity, "hulk_start_0", "hulk_start_90");
+    this->create_start_particles(entity);
 
     return entity;
 }
@@ -525,15 +525,20 @@ static bool place_random_y(ff::point_fixed& corner, const ff::point_fixed& size,
     return false;
 }
 
-void retron::level::create_enemy_start_particles(entt::entity entity, std::string_view name_0, std::string_view name_90)
+void retron::level::create_start_particles(entt::entity entity)
 {
-    retron::particles::effect_options options;
-    options.delay = static_cast<int>(this->registry.size<::showing_particle_effect>() % ::MAX_DELAY_PARTICLES);
+    auto names = retron::start_particle_names_0_90(this->entities.entity_type(entity));
 
-    bool vertical = ff::math::random_range(1, 10) > 2 ? true : false;
-    ff::point_fixed center = this->bounds_box(entity).center();
-    auto [effect_id, max_life] = this->particle_effects[vertical ? name_90 : name_0].add(this->particles, center, &options);
-    this->registry.emplace<::showing_particle_effect>(entity, effect_id, 0u);
+    if (names.first.size())
+    {
+        retron::particles::effect_options options;
+        options.delay = static_cast<int>(this->registry.size<::showing_particle_effect>() % ::MAX_DELAY_PARTICLES);
+
+        bool vertical = ff::math::random_range(1, 10) > 2 ? true : false;
+        ff::point_fixed center = this->bounds_box(entity).center();
+        auto [effect_id, max_life] = this->particle_effects[(vertical && names.second.size()) ? names.second : names.first].add(this->particles, center, &options);
+        this->registry.emplace<::showing_particle_effect>(entity, effect_id, 0u);
+    }
 }
 
 void retron::level::create_objects(size_t& count, retron::entity_type type, const ff::rect_fixed& bounds, const std::function<entt::entity(retron::entity_type, const ff::point_fixed&)>& create_func)
@@ -771,7 +776,7 @@ void retron::level::handle_entity_created(entt::entity entity)
 {
     retron::entity_type type = this->entities.entity_type(entity);
 
-    if (retron::box_type(type) == retron::entity_box_type::enemy && !retron::is_indestructible(type))
+    if (retron::box_type(type) == retron::entity_box_type::enemy)
     {
         this->registry.emplace<::clear_to_win_flag>(entity);
     }
@@ -821,30 +826,17 @@ void retron::level::handle_collisions()
 void retron::level::handle_bounds_collision(entt::entity target_entity, entt::entity level_entity)
 {
     ff::rect_fixed old_rect = this->bounds_box(target_entity);
-    ff::rect_fixed new_rect = old_rect;
-
-    ff::rect_fixed level_rect = this->bounds_box(level_entity);
-    entity_type level_type = this->entities.entity_type(level_entity);
-    switch (level_type)
-    {
-        case entity_type::level_bounds:
-            new_rect = old_rect.move_inside(level_rect);
-            break;
-
-        case entity_type::level_box:
-            new_rect = old_rect.move_outside(level_rect);
-            break;
-    }
+    ff::rect_fixed new_rect = (this->entities.entity_type(level_entity) == entity_type::level_bounds)
+        ? old_rect.move_inside(this->bounds_box(level_entity))
+        : old_rect.move_outside(this->bounds_box(level_entity));
 
     ff::point_fixed offset = new_rect.top_left() - old_rect.top_left();
     ff::point_fixed pos = this->position.get(target_entity) + offset;
     this->position.set(target_entity, pos);
 
-    switch (this->entities.entity_type(target_entity))
+    if (retron::box_type(this->entities.entity_type(target_entity)) == retron::entity_box_type::player_bullet)
     {
-        case entity_type::player_bullet:
-            this->destroy_player_bullet(target_entity, level_entity, retron::entity_box_type::level);
-            break;
+        this->destroy_player_bullet(target_entity, level_entity, retron::entity_box_type::level);
     }
 }
 
@@ -859,6 +851,7 @@ void retron::level::handle_entity_collision(entt::entity target_entity, entt::en
             switch (source_type)
             {
                 case entity_box_type::enemy:
+                case entity_box_type::enemy_box:
                 case entity_box_type::enemy_bullet:
                 case entity_box_type::obstacle:
                     {
@@ -927,6 +920,10 @@ void retron::level::handle_entity_collision(entt::entity target_entity, entt::en
                 case entity_box_type::obstacle:
                     this->destroy_player_bullet(target_entity, source_entity, source_type);
                     break;
+
+                case entity_box_type::enemy_box:
+                    this->handle_bounds_collision(target_entity, source_entity);
+                    break;
             }
             break;
 
@@ -942,11 +939,11 @@ void retron::level::handle_entity_collision(entt::entity target_entity, entt::en
     }
 }
 
-void retron::level::destroy_player_bullet(entt::entity bullet_entity, entt::entity by_entity, retron::entity_box_type by_type)
+void retron::level::destroy_player_bullet(entt::entity bullet_entity, entt::entity by_entity, retron::entity_box_type by_box_type)
 {
     if (this->entities.delay_delete(bullet_entity))
     {
-        if (retron::is_indestructible(this->entities.entity_type(by_entity)))
+        if (by_box_type != retron::entity_box_type::enemy)
         {
             ff::point_fixed vel = this->position.velocity(bullet_entity);
             ff::fixed_int angle = this->position.reverse_velocity_as_angle(bullet_entity);
@@ -967,7 +964,7 @@ void retron::level::destroy_player_bullet(entt::entity bullet_entity, entt::enti
             options.type = static_cast<uint8_t>(::get_player_index_for_bullet(this->registry, bullet_entity));
             this->particle_effects["player_bullet_explode"].add(this->particles, pos, &options);
 
-            if (by_type != retron::entity_box_type::obstacle)
+            if (by_box_type != retron::entity_box_type::obstacle)
             {
                 this->particle_effects["player_bullet_smoke"].add(this->particles, pos);
             }
@@ -977,41 +974,48 @@ void retron::level::destroy_player_bullet(entt::entity bullet_entity, entt::enti
 
 void retron::level::destroy_enemy(entt::entity entity, entt::entity by_entity, retron::entity_box_type by_type)
 {
-    if (this->registry.all_of<::clear_to_win_flag>(entity) && this->entities.delay_delete(entity))
+    if (this->entities.delay_delete(entity))
     {
-        retron::particles::effect_options options;
-        options.reverse = true;
-
-        std::string_view name;
-        ff::point_fixed center = this->bounds_box(entity).center();
-        bool bullet = (by_type == entity_box_type::player_bullet);
-
-        switch (retron::helpers::dir_to_index(this->position.velocity(bullet ? by_entity : entity)))
+        auto names = retron::start_particle_names_0_90(this->entities.entity_type(entity));
+        if (names.first.size())
         {
-            case 0:
-            case 4:
-                name = "grunt_start_90";
-                break;
+            retron::particles::effect_options options;
+            options.reverse = true;
 
-            case 1:
-            case 5:
-                options.rotate = 45;
-                name = "grunt_start_0";
-                break;
+            std::string_view name;
+            ff::point_fixed center = this->bounds_box(entity).center();
+            bool by_bullet = (by_type == entity_box_type::player_bullet);
 
-            case 2:
-            case 6:
-                name = "grunt_start_0";
-                break;
+            switch (retron::helpers::dir_to_index(this->position.velocity(by_bullet ? by_entity : entity)))
+            {
+                case 0:
+                case 4:
+                    name = names.second;
+                    break;
 
-            case 3:
-            case 7:
-                options.rotate = -45;
-                name = "grunt_start_0";
-                break;
+                case 1:
+                case 5:
+                    options.rotate = 45;
+                    name = names.first;
+                    break;
+
+                case 2:
+                case 6:
+                    name = names.first;
+                    break;
+
+                case 3:
+                case 7:
+                    options.rotate = -45;
+                    name = names.first;
+                    break;
+            }
+
+            if (name.size())
+            {
+                this->particle_effects[name].add(this->particles, center, &options);
+            }
         }
-
-        this->particle_effects[name].add(this->particles, center, &options);
     }
 }
 

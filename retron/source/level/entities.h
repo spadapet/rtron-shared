@@ -30,6 +30,7 @@ namespace retron
         player,
         bonus,
         enemy,
+        enemy_box,
         obstacle,
         player_bullet,
         enemy_bullet,
@@ -38,8 +39,8 @@ namespace retron
         count
     };
 
-    bool is_indestructible(retron::entity_type type);
     retron::entity_type bonus_entity_type(retron::bonus_type type);
+    std::pair<std::string_view, std::string_view> start_particle_names_0_90(retron::entity_type type);
     retron::entity_box_type box_type(retron::entity_type type);
 
     const ff::rect_fixed& get_hit_box_spec(retron::entity_type type);
