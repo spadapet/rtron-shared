@@ -24,12 +24,15 @@
           "grunt_min_ticks": 1,
           "grunt_max_ticks_rate": 75,
           "grunt_move": 4,
+
           "hulk_tick_frames": 8,
           "hulk_max_ticks": 32,
           "hulk_min_ticks": 1,
           "hulk_move": [ 4, 2 ],
           "hulk_push": [ 2, 1 ],
-          "hulk_fudge_size": [ 32, 24 ],
+          "hulk_fudge": [ 20, 16 ],
+          "hulk_no_move_chance": 10,
+
           "player_move": 1,
           "player_move_frame_divisor": 2,
           "player_shot_move": 6,

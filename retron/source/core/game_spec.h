@@ -64,7 +64,8 @@ namespace retron
         size_t hulk_tick_frames;
         size_t hulk_max_ticks;
         size_t hulk_min_ticks;
-        ff::point_fixed hulk_fudge_size;
+        size_t hulk_no_move_chance;
+        ff::point_fixed hulk_fudge;
         ff::point_fixed hulk_move;
         ff::point_fixed hulk_push;
 

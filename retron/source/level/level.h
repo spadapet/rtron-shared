@@ -94,7 +94,7 @@ namespace retron
 
         size_t pick_grunt_move_counter();
         ff::point_fixed pick_move_destination(entt::entity entity, entt::entity destEntity, retron::collision_box_type collision_type);
-        entt::entity pick_nearest_target(entt::entity entity);
+        entt::entity pick_hulk_target(entt::entity entity);
 
         void enum_entities(const std::function<void(entt::entity, retron::entity_type)>& func);
 
@@ -139,7 +139,7 @@ namespace retron
         internal_phase_t phase_;
         size_t phase_counter;
         size_t frame_count;
-        size_t next_hulk_turn_frame;
         size_t position_changed_count;
+        std::vector<size_t> next_hulk_group_turn;
     };
 }

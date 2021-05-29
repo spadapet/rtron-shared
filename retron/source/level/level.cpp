@@ -53,9 +53,13 @@ namespace
     struct hulk_data
     {
         size_t index;
+        size_t group;
         entt::entity target_entity;
         bool force_turn;
     };
+
+    struct hulk_target_flag
+    {};
 
     struct electrode_data
     {
@@ -145,7 +149,6 @@ retron::level::level(retron::game_service& game_service, const retron::level_spe
     , phase_(internal_phase_t::init)
     , phase_counter(0)
     , frame_count(0)
-    , next_hulk_turn_frame(0)
     , position_changed_count(1)
 {
     this->connections.emplace_front(retron::app_service::get().reload_resources_sink().connect(std::bind(&retron::level::init_resources, this)));
@@ -300,6 +303,7 @@ void retron::level::init_entities()
     {
         this->entities.delete_all();
         this->frame_count = 0;
+        this->next_hulk_group_turn.clear();
 
         for (const retron::level_rect& level_rect : this->level_spec_.rects)
         {
@@ -368,6 +372,7 @@ entt::entity retron::level::create_bonus(retron::entity_type type, const ff::poi
     assert(retron::bonus_entity_type(bonus_type) == type);
     entt::entity entity = this->create_entity(type, pos);
     this->registry.emplace<::bonus_data>(entity, bonus_type);
+    this->registry.emplace<::hulk_target_flag>(entity);
 
     return entity;
 }
@@ -391,7 +396,7 @@ entt::entity retron::level::create_grunt(retron::entity_type type, const ff::poi
 entt::entity retron::level::create_hulk(retron::entity_type type, const ff::point_fixed& pos)
 {
     entt::entity entity = this->create_entity(type, pos);
-    this->registry.emplace<::hulk_data>(entity, this->registry.size<::hulk_data>(), entt::null, false);
+    this->registry.emplace<::hulk_data>(entity, this->registry.size<::hulk_data>(), this->next_hulk_group_turn.size() - 1, entt::null, false);
     return entity;
 }
 
@@ -405,6 +410,7 @@ entt::entity retron::level::create_player(size_t index_in_level)
     const ff::input_event_provider& input_events = this->game_service.input_events(player);
     ::player_state player_state = (this->phase_ == internal_phase_t::show_players) ? ::player_state::alive : ::player_state::ghost;
     this->registry.emplace<::player_data>(entity, player, input_events, player_state, 0u, 0u, index_in_level);
+    this->registry.emplace<::hulk_target_flag>(entity);
 
     retron::particles::effect_options options;
     options.type = static_cast<uint8_t>(player.index);
@@ -559,6 +565,11 @@ void retron::level::create_objects(size_t& count, retron::entity_type type, cons
     {
         ::place_random_cache cache{ this->collision };
 
+        if (type == retron::entity_type::hulk)
+        {
+            this->next_hulk_group_turn.push_back(0);
+        }
+
         for (size_t i = 0, original_count = count; i < original_count; i++)
         {
             size_t attempt = 0;
@@ -701,35 +712,44 @@ void retron::level::advance_hulk(entt::entity entity)
     {
         ::hulk_data& data = this->registry.get<::hulk_data>(entity);
 
-        if (this->frame_count >= this->next_hulk_turn_frame || data.force_turn || !this->registry.valid(data.target_entity))
+        if (this->frame_count >= this->next_hulk_group_turn[data.group] ||
+            !this->position.velocity(entity) ||
+            !this->registry.valid(data.target_entity) ||
+            data.force_turn)
         {
-            data.force_turn = false;
-
             if (!this->registry.valid(data.target_entity))
             {
-                data.target_entity = this->pick_nearest_target(entity);
+                data.target_entity = this->pick_hulk_target(entity);
             }
 
             if (this->registry.valid(data.target_entity))
             {
-                ff::point_fixed pos = this->position.get(entity);
+                const retron::difficulty_spec& diff = this->difficulty_spec_;
                 ff::point_fixed vel = this->position.velocity(entity);
-                ff::point_fixed fudge = this->difficulty_spec_.hulk_fudge_size / 2_f;
-                ff::point_fixed target = this->position.get(data.target_entity) + ff::point_fixed(ff::math::random_range(-fudge.x, fudge.x), ff::math::random_range(-fudge.y, fudge.y));
 
-                if (vel.x || (!vel && ff::math::random_bool()))
+                if (!vel || data.force_turn || ff::math::random_range(0u, diff.hulk_no_move_chance))
                 {
-                    vel.x = 0;
-                    vel.y = this->difficulty_spec_.hulk_move.y * ((pos.y < target.y) ? 1 : -1);
-                }
-                else
-                {
-                    vel.x = this->difficulty_spec_.hulk_move.x * ((pos.x < target.x) ? 1 : -1);
-                    vel.y = 0;
-                }
+                    ff::point_fixed pos = this->position.get(entity);
+                    ff::point_fixed target = this->position.get(data.target_entity) + ff::point_fixed(
+                        ff::math::random_range(-diff.hulk_fudge.x, diff.hulk_fudge.x),
+                        ff::math::random_range(-diff.hulk_fudge.y, diff.hulk_fudge.y));
 
-                this->position.velocity(entity, vel);
+                    if (vel.x || (!vel && ff::math::random_bool()))
+                    {
+                        vel.x = 0;
+                        vel.y = diff.hulk_move.y * ((pos.y < target.y) ? 1 : -1);
+                    }
+                    else
+                    {
+                        vel.x = diff.hulk_move.x * ((pos.x < target.x) ? 1 : -1);
+                        vel.y = 0;
+                    }
+
+                    this->position.velocity(entity, vel);
+                }
             }
+
+            data.force_turn = false;
         }
 
         if (!(this->frame_count % 8))
@@ -795,9 +815,12 @@ void retron::level::advance_phase()
     this->frame_count++;
     this->phase_counter++;
 
-    if (this->next_hulk_turn_frame < this->frame_count)
+    for (size_t& i : this->next_hulk_group_turn)
     {
-        this->next_hulk_turn_frame = this->frame_count + ff::math::random_range(this->difficulty_spec_.hulk_min_ticks, this->difficulty_spec_.hulk_max_ticks) * this->difficulty_spec_.hulk_tick_frames;
+        if (i < this->frame_count)
+        {
+            i = this->frame_count + ff::math::random_range(this->difficulty_spec_.hulk_min_ticks, this->difficulty_spec_.hulk_max_ticks) * this->difficulty_spec_.hulk_tick_frames;
+        }
     }
 
     switch (this->phase_)
@@ -1456,15 +1479,25 @@ ff::point_fixed retron::level::pick_move_destination(entt::entity entity, entt::
     return result;
 }
 
-entt::entity retron::level::pick_nearest_target(entt::entity entity)
+entt::entity retron::level::pick_hulk_target(entt::entity entity)
 {
-    // TODO: Just pick the first player for now
-    if (!this->registry.view<::player_data>().empty())
+    entt::entity target_entity = entt::null;
+    ff::fixed_int target_dist = -1;
+    ff::point_fixed pos = this->position.get(entity);
+
+    for (entt::entity cur_entity : this->registry.view<::hulk_target_flag>())
     {
-        return this->registry.view<::player_data>().front();
+        ff::point_fixed cur_pos = this->position.get(cur_entity);
+        ff::fixed_int cur_dist = (cur_pos - pos).length_squared();
+
+        if (target_dist < 0_f || cur_dist < target_dist)
+        {
+            target_entity = cur_entity;
+            target_dist = cur_dist;
+        }
     }
 
-    return entt::null;
+    return target_entity;
 }
 
 void retron::level::enum_entities(const std::function<void(entt::entity, retron::entity_type)>& func)

@@ -25,7 +25,8 @@ static retron::difficulty_spec load_difficulty_spec(const ff::dict& dict, const 
     diff_spec.hulk_min_ticks = ::get_value<size_t>(dict, default_dict, "hulk_min_ticks");
     diff_spec.hulk_move = ::get_value<ff::point_fixed>(dict, default_dict, "hulk_move");
     diff_spec.hulk_push = ::get_value<ff::point_fixed>(dict, default_dict, "hulk_push");
-    diff_spec.hulk_fudge_size = ::get_value<ff::point_fixed>(dict, default_dict, "hulk_fudge_size");
+    diff_spec.hulk_fudge = ::get_value<ff::point_fixed>(dict, default_dict, "hulk_fudge");
+    diff_spec.hulk_no_move_chance = ::get_value<size_t>(dict, default_dict, "hulk_no_move_chance");
 
     diff_spec.player_move = ::get_value<ff::fixed_int>(dict, default_dict, "player_move");
     diff_spec.player_move_frame_divisor = ::get_value<ff::fixed_int>(dict, default_dict, "player_move_frame_divisor");
