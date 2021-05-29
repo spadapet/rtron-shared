@@ -59,6 +59,7 @@ namespace retron
         void advance_player(entt::entity entity);
         void advance_player_bullet(entt::entity entity);
         void advance_grunt(entt::entity entity);
+        void advance_hulk(entt::entity entity);
         void advance_animation(entt::entity entity);
         void advance_entity_followers();
         void advance_phase();
@@ -68,10 +69,12 @@ namespace retron
         void handle_collisions();
         void handle_bounds_collision(entt::entity target_entity, entt::entity level_entity);
         void handle_entity_collision(entt::entity target_entity, entt::entity source_entity);
+        void handle_position_changed(entt::entity entity);
 
         void destroy_player_bullet(entt::entity bullet_entity, entt::entity by_entity, retron::entity_box_type by_box_type);
         void destroy_enemy(entt::entity entity, entt::entity by_entity, retron::entity_box_type by_type);
         void destroy_obstacle(entt::entity obstacle_entity, entt::entity by_entity, retron::entity_box_type by_type);
+        void push_enemy(entt::entity enemy_entity, entt::entity by_entity, retron::entity_box_type by_type);
 
         void render_particles(ff::draw_base& draw);
         void render_entity(entt::entity entity, retron::entity_type type, ff::draw_base& draw);
@@ -91,6 +94,7 @@ namespace retron
 
         size_t pick_grunt_move_counter();
         ff::point_fixed pick_move_destination(entt::entity entity, entt::entity destEntity, retron::collision_box_type collision_type);
+        entt::entity pick_nearest_target(entt::entity entity);
 
         void enum_entities(const std::function<void(entt::entity, retron::entity_type)>& func);
 
@@ -135,5 +139,7 @@ namespace retron
         internal_phase_t phase_;
         size_t phase_counter;
         size_t frame_count;
+        size_t next_hulk_turn_frame;
+        size_t position_changed_count;
     };
 }

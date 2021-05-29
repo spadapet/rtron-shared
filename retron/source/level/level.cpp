@@ -53,6 +53,8 @@ namespace
     struct hulk_data
     {
         size_t index;
+        entt::entity target_entity;
+        bool force_turn;
     };
 
     struct electrode_data
@@ -143,10 +145,13 @@ retron::level::level(retron::game_service& game_service, const retron::level_spe
     , phase_(internal_phase_t::init)
     , phase_counter(0)
     , frame_count(0)
+    , next_hulk_turn_frame(0)
+    , position_changed_count(1)
 {
     this->connections.emplace_front(retron::app_service::get().reload_resources_sink().connect(std::bind(&retron::level::init_resources, this)));
     this->connections.emplace_front(this->entities.entity_created_sink().connect(std::bind(&retron::level::handle_entity_created, this, std::placeholders::_1)));
     this->connections.emplace_front(this->entities.entity_deleted_sink().connect(std::bind(&retron::level::handle_entity_deleted, this, std::placeholders::_1)));
+    this->connections.emplace_front(this->position.position_changed_sink().connect(std::bind(&retron::level::handle_position_changed, this, std::placeholders::_1)));
 
     this->init_resources();
     this->internal_phase(internal_phase_t::ready);
@@ -158,7 +163,17 @@ std::shared_ptr<ff::state> retron::level::advance_time()
     {
         ff::end_scope_action particle_scope = this->particles.advance_async();
         this->enum_entities(std::bind(&retron::level::advance_entity, this, std::placeholders::_1, std::placeholders::_2));
-        this->handle_collisions();
+
+        for (size_t i = 0; i < 2; i++)
+        {
+            size_t old_count = this->position_changed_count;
+            this->handle_collisions();
+
+            if (old_count == this->position_changed_count)
+            {
+                break;
+            }
+        }
     }
 
     this->entities.flush_delete();
@@ -370,20 +385,13 @@ entt::entity retron::level::create_grunt(retron::entity_type type, const ff::poi
 {
     entt::entity entity = this->create_entity(type, pos);
     this->registry.emplace<::grunt_data>(entity, this->registry.size<::grunt_data>(), this->pick_grunt_move_counter(), pos);
-
-    retron::particles::effect_options options;
-    options.delay = static_cast<int>(this->registry.size<::showing_particle_effect>() % ::MAX_DELAY_PARTICLES);
-    this->create_start_particles(entity);
-
     return entity;
 }
 
 entt::entity retron::level::create_hulk(retron::entity_type type, const ff::point_fixed& pos)
 {
     entt::entity entity = this->create_entity(type, pos);
-    this->registry.emplace<::hulk_data>(entity, this->registry.size<::hulk_data>());
-    this->create_start_particles(entity);
-
+    this->registry.emplace<::hulk_data>(entity, this->registry.size<::hulk_data>(), entt::null, false);
     return entity;
 }
 
@@ -563,6 +571,7 @@ void retron::level::create_objects(size_t& count, retron::entity_type type, cons
                 {
                     entity = create_func(type, corner - spec.top_left());
                     this->registry.emplace<::tracked_object_data>(entity, std::ref(count));
+                    this->create_start_particles(entity);
                     break;
                 }
             }
@@ -589,6 +598,10 @@ void retron::level::advance_entity(entt::entity entity, entity_type type)
 
         case entity_type::grunt:
             this->advance_grunt(entity);
+            break;
+
+        case entity_type::hulk:
+            this->advance_hulk(entity);
             break;
 
         case entity_type::animation_bottom:
@@ -682,6 +695,50 @@ void retron::level::advance_grunt(entt::entity entity)
     }
 }
 
+void retron::level::advance_hulk(entt::entity entity)
+{
+    if (this->player_active())
+    {
+        ::hulk_data& data = this->registry.get<::hulk_data>(entity);
+
+        if (this->frame_count >= this->next_hulk_turn_frame || data.force_turn || !this->registry.valid(data.target_entity))
+        {
+            data.force_turn = false;
+
+            if (!this->registry.valid(data.target_entity))
+            {
+                data.target_entity = this->pick_nearest_target(entity);
+            }
+
+            if (this->registry.valid(data.target_entity))
+            {
+                ff::point_fixed pos = this->position.get(entity);
+                ff::point_fixed vel = this->position.velocity(entity);
+                ff::point_fixed fudge = this->difficulty_spec_.hulk_fudge_size / 2_f;
+                ff::point_fixed target = this->position.get(data.target_entity) + ff::point_fixed(ff::math::random_range(-fudge.x, fudge.x), ff::math::random_range(-fudge.y, fudge.y));
+
+                if (vel.x || (!vel && ff::math::random_bool()))
+                {
+                    vel.x = 0;
+                    vel.y = this->difficulty_spec_.hulk_move.y * ((pos.y < target.y) ? 1 : -1);
+                }
+                else
+                {
+                    vel.x = this->difficulty_spec_.hulk_move.x * ((pos.x < target.x) ? 1 : -1);
+                    vel.y = 0;
+                }
+
+                this->position.velocity(entity, vel);
+            }
+        }
+
+        if (!(this->frame_count % 8))
+        {
+            this->position.set(entity, this->position.get(entity) + this->position.velocity(entity));
+        }
+    }
+}
+
 void retron::level::advance_animation(entt::entity entity)
 {
     ::animation_data& data = this->registry.get<::animation_data>(entity);
@@ -737,6 +794,11 @@ void retron::level::advance_phase()
 {
     this->frame_count++;
     this->phase_counter++;
+
+    if (this->next_hulk_turn_frame < this->frame_count)
+    {
+        this->next_hulk_turn_frame = this->frame_count + ff::math::random_range(this->difficulty_spec_.hulk_min_ticks, this->difficulty_spec_.hulk_max_ticks) * this->difficulty_spec_.hulk_tick_frames;
+    }
 
     switch (this->phase_)
     {
@@ -812,6 +874,8 @@ void retron::level::handle_collisions()
             }
         }
 
+        size_t old_count = this->position_changed_count;
+
         for (auto& [entity1, entity2] : this->collision.detect_collisions(this->collisions, retron::collision_box_type::hit_box))
         {
             if (!this->entities.deleted(entity1) && !this->entities.deleted(entity2))
@@ -834,26 +898,36 @@ void retron::level::handle_bounds_collision(entt::entity target_entity, entt::en
     ff::point_fixed pos = this->position.get(target_entity) + offset;
     this->position.set(target_entity, pos);
 
-    if (retron::box_type(this->entities.entity_type(target_entity)) == retron::entity_box_type::player_bullet)
+    retron::entity_type target_entity_type = this->entities.entity_type(target_entity);
+    switch (target_entity_type)
     {
-        this->destroy_player_bullet(target_entity, level_entity, retron::entity_box_type::level);
+        case retron::entity_type::player_bullet:
+            this->destroy_player_bullet(target_entity, level_entity, retron::entity_box_type::level);
+            break;
+
+        case retron::entity_type::hulk:
+            if (offset)
+            {
+                this->registry.get<::hulk_data>(target_entity).force_turn = true;
+            }
+            break;
     }
 }
 
 void retron::level::handle_entity_collision(entt::entity target_entity, entt::entity source_entity)
 {
-    entity_box_type target_type = this->collision.box_type(target_entity, retron::collision_box_type::hit_box);
-    entity_box_type source_type = this->collision.box_type(source_entity, retron::collision_box_type::hit_box);
+    retron::entity_box_type target_type = this->collision.box_type(target_entity, retron::collision_box_type::hit_box);
+    retron::entity_box_type source_type = this->collision.box_type(source_entity, retron::collision_box_type::hit_box);
 
     switch (target_type)
     {
-        case entity_box_type::player:
+        case retron::entity_box_type::player:
             switch (source_type)
             {
-                case entity_box_type::enemy:
-                case entity_box_type::enemy_box:
-                case entity_box_type::enemy_bullet:
-                case entity_box_type::obstacle:
+                case retron::entity_box_type::enemy:
+                case retron::entity_box_type::enemy_box:
+                case retron::entity_box_type::enemy_bullet:
+                case retron::entity_box_type::obstacle:
                     {
                         ::player_data& data = this->registry.get<::player_data>(target_entity);
                         if (data.state == ::player_state::alive)
@@ -866,14 +940,14 @@ void retron::level::handle_entity_collision(entt::entity target_entity, entt::en
             }
             break;
 
-        case entity_box_type::bonus:
+        case retron::entity_box_type::bonus:
             switch (source_type)
             {
-                case entity_box_type::player:
+                case retron::entity_box_type::player:
                     // TODO: Collect (points, anim, die, sound)
                     break;
 
-                case entity_box_type::enemy:
+                case retron::entity_box_type::enemy:
                     switch (this->entities.entity_type(source_entity))
                     {
                         case entity_type::hulk:
@@ -884,7 +958,7 @@ void retron::level::handle_entity_collision(entt::entity target_entity, entt::en
             }
             break;
 
-        case entity_box_type::enemy:
+        case retron::entity_box_type::enemy:
             switch (source_type)
             {
                 case entity_box_type::obstacle:
@@ -898,45 +972,59 @@ void retron::level::handle_entity_collision(entt::entity target_entity, entt::en
             }
             break;
 
-        case entity_box_type::obstacle:
+        case retron::entity_box_type::enemy_box:
             switch (source_type)
             {
-                case entity_box_type::enemy:
+                case entity_box_type::player_bullet:
+                    this->push_enemy(target_entity, source_entity, source_type);
+                    break;
+            }
+            break;
+
+        case retron::entity_box_type::obstacle:
+            switch (source_type)
+            {
+                case retron::entity_box_type::enemy:
                     this->destroy_obstacle(target_entity, source_entity, source_type);
                     break;
 
-                case entity_box_type::player_bullet:
+                case retron::entity_box_type::player_bullet:
                     this->destroy_obstacle(target_entity, source_entity, source_type);
                     this->player_add_points(source_entity, target_entity);
                     break;
             }
             break;
 
-        case entity_box_type::player_bullet:
+        case retron::entity_box_type::player_bullet:
             switch (source_type)
             {
-                case entity_box_type::enemy:
-                case entity_box_type::enemy_bullet:
-                case entity_box_type::obstacle:
+                case retron::entity_box_type::enemy:
+                case retron::entity_box_type::enemy_bullet:
+                case retron::entity_box_type::obstacle:
                     this->destroy_player_bullet(target_entity, source_entity, source_type);
                     break;
 
-                case entity_box_type::enemy_box:
+                case retron::entity_box_type::enemy_box:
                     this->handle_bounds_collision(target_entity, source_entity);
                     break;
             }
             break;
 
-        case entity_box_type::enemy_bullet:
+        case retron::entity_box_type::enemy_bullet:
             switch (source_type)
             {
-                case entity_box_type::player_bullet:
+                case retron::entity_box_type::player_bullet:
                     this->entities.delay_delete(target_entity);
                     this->player_add_points(source_entity, target_entity);
                     break;
             }
             break;
     }
+}
+
+void retron::level::handle_position_changed(entt::entity entity)
+{
+    this->position_changed_count++;
 }
 
 void retron::level::destroy_player_bullet(entt::entity bullet_entity, entt::entity by_entity, retron::entity_box_type by_box_type)
@@ -1026,6 +1114,18 @@ void retron::level::destroy_obstacle(entt::entity obstacle_entity, entt::entity 
         const ::electrode_data* data = this->registry.try_get<::electrode_data>(obstacle_entity);
         std::shared_ptr<ff::animation_base> anim = this->electrode_die_anims[data ? data->electrode_type % this->electrode_die_anims.size() : 0].object();
         this->create_animation(anim, this->position.get(obstacle_entity), false);
+    }
+}
+
+void retron::level::push_enemy(entt::entity enemy_entity, entt::entity by_entity, retron::entity_box_type by_type)
+{
+    if (this->entities.entity_type(enemy_entity) == retron::entity_type::hulk && by_type == retron::entity_box_type::player_bullet)
+    {
+        ff::point_fixed by_vel = this->position.velocity(by_entity);
+        ff::point_fixed vel(
+            this->difficulty_spec_.hulk_push.x * (by_vel.x == 0_f ? 0_f : (by_vel.x < 0_f ? -1_f : 1_f)),
+            this->difficulty_spec_.hulk_push.y * (by_vel.y == 0_f ? 0_f : (by_vel.y < 0_f ? -1_f : 1_f)));
+        this->position.set(enemy_entity, this->position.get(enemy_entity) + vel);
     }
 }
 
@@ -1222,6 +1322,14 @@ void retron::level::render_debug(ff::draw_base& draw)
         {
             draw.draw_line(this->position.get(entity), data.dest_pos, ff::palette_index_to_color(245, 0.375f), 1);
         }
+
+        for (auto [entity, data] : this->registry.view<::hulk_data>().each())
+        {
+            if (this->registry.valid(data.target_entity))
+            {
+                draw.draw_line(this->position.get(entity), this->position.get(data.target_entity), ff::palette_index_to_color(245, 0.375f), 1);
+            }
+        }
     }
 
     if (ff::flags::has(render_debug, retron::render_debug_t::collision))
@@ -1346,6 +1454,17 @@ ff::point_fixed retron::level::pick_move_destination(entt::entity entity, entt::
     }
 
     return result;
+}
+
+entt::entity retron::level::pick_nearest_target(entt::entity entity)
+{
+    // TODO: Just pick the first player for now
+    if (!this->registry.view<::player_data>().empty())
+    {
+        return this->registry.view<::player_data>().front();
+    }
+
+    return entt::null;
 }
 
 void retron::level::enum_entities(const std::function<void(entt::entity, retron::entity_type)>& func)

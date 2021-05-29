@@ -61,6 +61,13 @@ namespace retron
         size_t grunt_max_ticks_rate; // frames to decrease max ticks
         size_t grunt_min_ticks;
 
+        size_t hulk_tick_frames;
+        size_t hulk_max_ticks;
+        size_t hulk_min_ticks;
+        ff::point_fixed hulk_fudge_size;
+        ff::point_fixed hulk_move;
+        ff::point_fixed hulk_push;
+
         size_t player_shot_counter;
         size_t player_dead_counter;
         size_t player_ghost_counter;
