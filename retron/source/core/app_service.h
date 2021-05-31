@@ -21,6 +21,13 @@ namespace retron
         set_2 = ai_lines | collision | position,
     };
 
+    enum class debug_cheats_t
+    {
+        none = 0,
+        invincible = 0x01,
+        complete_level = 0x02,
+    };
+
     class app_service
     {
     public:
@@ -52,6 +59,8 @@ namespace retron
         virtual bool rebuilding_resources() const = 0;
         virtual retron::render_debug_t render_debug() const = 0;
         virtual void render_debug(retron::render_debug_t flags) = 0;
+        virtual retron::debug_cheats_t debug_cheats() const = 0;
+        virtual void debug_cheats(retron::debug_cheats_t flags) = 0;
         virtual void debug_command(size_t command_id) = 0;
     };
 }

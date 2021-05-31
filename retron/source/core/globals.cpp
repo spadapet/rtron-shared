@@ -23,6 +23,8 @@ const size_t retron::input_events::ID_DEBUG_CANCEL_STEP_ONE_FRAME = ff::stable_h
 const size_t retron::input_events::ID_DEBUG_SPEED_SLOW = ff::stable_hash_func("speed_slow"sv);
 const size_t retron::input_events::ID_DEBUG_SPEED_FAST = ff::stable_hash_func("speed_fast"sv);
 const size_t retron::input_events::ID_DEBUG_RENDER_TOGGLE = ff::stable_hash_func("debug_render_toggle"sv);
+const size_t retron::input_events::ID_DEBUG_INVINCIBLE_TOGGLE = ff::stable_hash_func("invincible_toggle"sv);
+const size_t retron::input_events::ID_DEBUG_COMPLETE_LEVEL = ff::stable_hash_func("complete_level"sv);
 const size_t retron::input_events::ID_SHOW_CUSTOM_DEBUG = ff::stable_hash_func("show_custom_debug"sv);
 
 const size_t retron::commands::ID_DEBUG_HIDE_UI = ff::stable_hash_func("debug_hide_ui"sv);
@@ -72,4 +74,21 @@ size_t retron::helpers::dir_to_index(ff::point_fixed dir)
     }
 
     return 6;
+}
+
+ff::point_fixed retron::helpers::index_to_dir(size_t index)
+{
+    static const std::array<ff::point_fixed, 8> dirs
+    {
+        ff::point_fixed(1, 0), // 0
+        ff::point_fixed(1, 1), // 1
+        ff::point_fixed(0, 1), // 2
+        ff::point_fixed(-1, 1), // 3
+        ff::point_fixed(-1, 0), // 4
+        ff::point_fixed(-1, -1), // 5
+        ff::point_fixed(0, -1), // 6
+        ff::point_fixed(1, -1), // 7
+    };
+
+    return dirs[index % dirs.size()];
 }

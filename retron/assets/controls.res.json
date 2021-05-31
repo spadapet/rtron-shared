@@ -514,7 +514,25 @@
         {
           "action":
           [
+            "minus"
+          ]
+        }
+      ],
+      "invincible_toggle":
+      [
+        {
+          "action":
+          [
             "0"
+          ]
+        }
+      ],
+      "complete_level":
+      [
+        {
+          "action":
+          [
+            "9"
           ]
         }
       ],

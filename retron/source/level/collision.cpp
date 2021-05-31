@@ -172,24 +172,24 @@ const std::vector<std::pair<entt::entity, entt::entity>>& retron::collision::det
     return collisions;
 }
 
-const std::vector<entt::entity>& retron::collision::hit_test(
+void retron::collision::hit_test(
     const ff::rect_fixed& bounds,
-    std::vector<entt::entity>& entities,
+    ff::push_base<entt::entity>& entities,
     entity_box_type box_type_filter,
     retron::collision_box_type collision_type,
     size_t max_hits)
 {
-    entities.clear();
     this->update_dirty_boxes(collision_type);
 
     class callback_t : public ::b2QueryCallback
     {
     public:
-        callback_t(retron::collision* owner, std::vector<entt::entity>& entities, entity_box_type box_type_filter, retron::collision_box_type collision_type, size_t max_hits)
+        callback_t(retron::collision* owner, ff::push_base<entt::entity>& entities, entity_box_type box_type_filter, retron::collision_box_type collision_type, size_t max_hits)
             : owner(owner)
             , entities(entities)
             , box_type_filter(box_type_filter)
             , collision_type(collision_type)
+            , hit_count(0)
             , max_hits(max_hits)
         {}
 
@@ -198,25 +198,25 @@ const std::vector<entt::entity>& retron::collision::hit_test(
             entt::entity entity = ::entity_from_user_data(fixture->GetUserData());
             if (this->box_type_filter == entity_box_type::none || this->box_type_filter == this->owner->box_type(entity, this->collision_type))
             {
-                this->entities.push_back(entity);
+                this->hit_count++;
+                this->entities.push(entity);
             }
 
-            return !this->max_hits || this->entities.size() < this->max_hits;
+            return !this->max_hits || this->hit_count < this->max_hits;
         }
 
     private:
         retron::collision* owner;
-        std::vector<entt::entity>& entities;
+        ff::push_base<entt::entity>& entities;
         entity_box_type box_type_filter;
         retron::collision_box_type collision_type;
+        size_t hit_count;
         size_t max_hits;
     } callback(this, entities, box_type_filter, collision_type, max_hits);
 
     ff::rect_fixed world_bounds = bounds * ::PIXEL_TO_WORLD_SCALE;
     ::b2World& world = this->worlds[static_cast<size_t>(collision_type)];
     world.QueryAABB(&callback, { { world_bounds.left, world_bounds.top }, { world_bounds.right, world_bounds.bottom } });
-
-    return entities;
 }
 
 std::tuple<entt::entity, ff::point_fixed, ff::point_fixed> retron::collision::ray_test(

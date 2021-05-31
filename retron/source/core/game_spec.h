@@ -10,6 +10,8 @@ namespace retron
         boy,
         girl,
         dog,
+
+        count
     };
 
     struct level_rect
@@ -54,39 +56,42 @@ namespace retron
     {
         std::string name;
         std::string level_set;
+
         size_t lives;
+        size_t first_free_life;
+        size_t next_free_life;
 
         size_t grunt_tick_frames; // grunts only move each "tick" number of frames
         size_t grunt_max_ticks; // random 1-max ticks per move
-        size_t grunt_max_ticks_rate; // frames to decrease max ticks
         size_t grunt_min_ticks;
+        size_t grunt_max_ticks_rate; // frames to decrease max ticks
+        ff::point_fixed grunt_move;
 
         size_t hulk_tick_frames;
         size_t hulk_max_ticks;
         size_t hulk_min_ticks;
         size_t hulk_no_move_chance;
-        ff::point_fixed hulk_fudge;
         ff::point_fixed hulk_move;
         ff::point_fixed hulk_push;
+        ff::point_fixed hulk_fudge;
 
-        size_t player_shot_counter;
-        size_t player_dead_counter;
-        size_t player_ghost_counter;
-        size_t player_ghost_warning_counter;
-        size_t player_delay_move_counter;
-        size_t player_winning_counter;
-
-        size_t first_free_life;
-        size_t next_free_life;
-
-        size_t points_electrode;
-        size_t points_grunt;
-
-        ff::fixed_int grunt_move;
         ff::fixed_int player_move;
         ff::fixed_int player_move_frame_divisor;
         ff::fixed_int player_shot_move;
         ff::fixed_int player_shot_start_offset;
+        size_t player_shot_counter;
+        size_t player_dead_counter;
+        size_t player_ghost_counter;
+        size_t player_ghost_warning_counter;
+        size_t player_winning_counter;
+
+        size_t bonus_tick_frames;
+        size_t bonus_max_ticks;
+        size_t bonus_min_ticks;
+        ff::point_fixed bonus_move;
+
+        size_t points_electrode;
+        size_t points_grunt;
     };
 
     struct game_spec

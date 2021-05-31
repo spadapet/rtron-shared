@@ -36,6 +36,8 @@ namespace retron::input_events
     extern const size_t ID_DEBUG_SPEED_SLOW;
     extern const size_t ID_DEBUG_SPEED_FAST;
     extern const size_t ID_DEBUG_RENDER_TOGGLE;
+    extern const size_t ID_DEBUG_INVINCIBLE_TOGGLE;
+    extern const size_t ID_DEBUG_COMPLETE_LEVEL;
     extern const size_t ID_SHOW_CUSTOM_DEBUG;
 }
 
@@ -76,4 +78,5 @@ namespace retron::helpers
 {
     ff::fixed_int dir_to_degrees(ff::point_fixed dir);
     size_t dir_to_index(ff::point_fixed dir); // degrees = index * 45
+    ff::point_fixed index_to_dir(size_t index); // degrees = index * 45
 }

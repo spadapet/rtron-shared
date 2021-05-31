@@ -60,6 +60,7 @@ namespace retron
         void advance_player_bullet(entt::entity entity);
         void advance_grunt(entt::entity entity);
         void advance_hulk(entt::entity entity);
+        void advance_bonus(entt::entity entity);
         void advance_animation(entt::entity entity);
         void advance_entity_followers();
         void advance_phase();
@@ -88,11 +89,12 @@ namespace retron
         void render_animation(entt::entity entity, ff::draw_base& draw, ff::animation_player_base* player);
         void render_debug(ff::draw_base& draw);
 
+        bool enemies_active() const;
         bool player_active() const;
         entt::entity player_target(size_t enemy_index) const;
         void player_add_points(entt::entity player_or_bullet, entt::entity destroyed_entity);
 
-        size_t pick_grunt_move_counter();
+        size_t pick_grunt_move_frame();
         ff::point_fixed pick_move_destination(entt::entity entity, entt::entity destEntity, retron::collision_box_type collision_type);
         entt::entity pick_hulk_target(entt::entity entity);
 
@@ -132,6 +134,7 @@ namespace retron
         std::array<ff::auto_resource<ff::animation_base>, 8> player_walk_anims;
         std::array<ff::auto_resource<ff::animation_base>, 3> electrode_anims;
         std::array<ff::auto_resource<ff::animation_base>, 3> electrode_die_anims;
+        std::array<ff::auto_resource<ff::animation_base>, static_cast<size_t>(retron::bonus_type::count)> bonus_anims;
         ff::auto_resource<ff::animation_base> player_bullet_anim;
         ff::auto_resource<ff::animation_base> grunt_walk_anim;
         ff::auto_resource<ff::animation_base> hulk_walk_anim;

@@ -19,19 +19,22 @@
         "default":
         {
           "lives": 3,
+          "first_free_life": 25000,
+          "next_free_life": 25000,
+
           "grunt_tick_frames": 4,
           "grunt_max_ticks": 32,
           "grunt_min_ticks": 1,
           "grunt_max_ticks_rate": 75,
-          "grunt_move": 4,
+          "grunt_move": [ 4, 4 ],
 
           "hulk_tick_frames": 8,
           "hulk_max_ticks": 32,
           "hulk_min_ticks": 1,
+          "hulk_no_move_chance": 10,
           "hulk_move": [ 4, 2 ],
           "hulk_push": [ 2, 1 ],
           "hulk_fudge": [ 20, 16 ],
-          "hulk_no_move_chance": 10,
 
           "player_move": 1,
           "player_move_frame_divisor": 2,
@@ -41,10 +44,12 @@
           "player_dead_counter": 60,
           "player_ghost_counter": 360,
           "player_ghost_warning_counter": 240,
-          "player_delay_move_counter": 60,
           "player_winning_counter": 40,
-          "first_free_life": 25000,
-          "next_free_life": 25000,
+
+          "bonus_tick_frames": 8,
+          "bonus_max_ticks": 64,
+          "bonus_min_ticks": 1,
+          "bonus_move": [ 1.5, 1 ],
 
           "points_electrode": 50,
           "points_grunt": 100

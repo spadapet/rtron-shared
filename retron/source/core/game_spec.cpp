@@ -12,21 +12,24 @@ static retron::difficulty_spec load_difficulty_spec(const ff::dict& dict, const 
     retron::difficulty_spec diff_spec{};
     diff_spec.name = ::get_value<std::string>(dict, default_dict, "name");
     diff_spec.level_set = ::get_value<std::string>(dict, default_dict, "level_set");
+
     diff_spec.lives = ::get_value<size_t>(dict, default_dict, "lives");
+    diff_spec.first_free_life = ::get_value<size_t>(dict, default_dict, "first_free_life");
+    diff_spec.next_free_life = ::get_value<size_t>(dict, default_dict, "next_free_life");
 
     diff_spec.grunt_tick_frames = ::get_value<size_t>(dict, default_dict, "grunt_tick_frames");
     diff_spec.grunt_max_ticks = ::get_value<size_t>(dict, default_dict, "grunt_max_ticks");
-    diff_spec.grunt_max_ticks_rate = ::get_value<size_t>(dict, default_dict, "grunt_max_ticks_rate");
     diff_spec.grunt_min_ticks = ::get_value<size_t>(dict, default_dict, "grunt_min_ticks");
-    diff_spec.grunt_move = ::get_value<ff::fixed_int>(dict, default_dict, "grunt_move");
+    diff_spec.grunt_max_ticks_rate = ::get_value<size_t>(dict, default_dict, "grunt_max_ticks_rate");
+    diff_spec.grunt_move = ::get_value<ff::point_fixed>(dict, default_dict, "grunt_move");
 
     diff_spec.hulk_tick_frames = ::get_value<size_t>(dict, default_dict, "hulk_tick_frames");
     diff_spec.hulk_max_ticks = ::get_value<size_t>(dict, default_dict, "hulk_max_ticks");
     diff_spec.hulk_min_ticks = ::get_value<size_t>(dict, default_dict, "hulk_min_ticks");
+    diff_spec.hulk_no_move_chance = ::get_value<size_t>(dict, default_dict, "hulk_no_move_chance");
     diff_spec.hulk_move = ::get_value<ff::point_fixed>(dict, default_dict, "hulk_move");
     diff_spec.hulk_push = ::get_value<ff::point_fixed>(dict, default_dict, "hulk_push");
     diff_spec.hulk_fudge = ::get_value<ff::point_fixed>(dict, default_dict, "hulk_fudge");
-    diff_spec.hulk_no_move_chance = ::get_value<size_t>(dict, default_dict, "hulk_no_move_chance");
 
     diff_spec.player_move = ::get_value<ff::fixed_int>(dict, default_dict, "player_move");
     diff_spec.player_move_frame_divisor = ::get_value<ff::fixed_int>(dict, default_dict, "player_move_frame_divisor");
@@ -36,10 +39,12 @@ static retron::difficulty_spec load_difficulty_spec(const ff::dict& dict, const 
     diff_spec.player_dead_counter = ::get_value<size_t>(dict, default_dict, "player_dead_counter");
     diff_spec.player_ghost_counter = ::get_value<size_t>(dict, default_dict, "player_ghost_counter");
     diff_spec.player_ghost_warning_counter = ::get_value<size_t>(dict, default_dict, "player_ghost_warning_counter");
-    diff_spec.player_delay_move_counter = ::get_value<size_t>(dict, default_dict, "player_delay_move_counter");
     diff_spec.player_winning_counter = ::get_value<size_t>(dict, default_dict, "player_winning_counter");
-    diff_spec.first_free_life = ::get_value<size_t>(dict, default_dict, "first_free_life");
-    diff_spec.next_free_life = ::get_value<size_t>(dict, default_dict, "next_free_life");
+
+    diff_spec.bonus_tick_frames = ::get_value<size_t>(dict, default_dict, "bonus_tick_frames");
+    diff_spec.bonus_max_ticks = ::get_value<size_t>(dict, default_dict, "bonus_max_ticks");
+    diff_spec.bonus_min_ticks = ::get_value<size_t>(dict, default_dict, "bonus_min_ticks");
+    diff_spec.bonus_move = ::get_value<ff::point_fixed>(dict, default_dict, "bonus_move");
 
     diff_spec.points_electrode = ::get_value<size_t>(dict, default_dict, "points_electrode");
     diff_spec.points_grunt = ::get_value<size_t>(dict, default_dict, "points_grunt");

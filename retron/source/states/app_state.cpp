@@ -38,6 +38,7 @@ retron::app_state::app_state()
     , rebuilding_resources_(false)
     , pending_hide_debug_state(false)
     , render_debug_(retron::render_debug_t::none)
+    , debug_cheats_(retron::debug_cheats_t::none)
     , texture_1080(std::make_shared<ff::dx11_texture>(retron::constants::RENDER_SIZE_HIGH.cast<int>(), DXGI_FORMAT_R8G8B8A8_UNORM))
     , target_1080(std::make_shared<ff::dx11_target_texture>(this->texture_1080))
 {
@@ -115,6 +116,16 @@ void retron::app_state::advance_input()
                         this->render_debug_ = retron::render_debug_t::set_0;
                         break;
                 }
+            }
+
+            if (this->debug_input_events->event_hit(input_events::ID_DEBUG_INVINCIBLE_TOGGLE))
+            {
+                this->debug_cheats_ = ff::flags::toggle(this->debug_cheats_, retron::debug_cheats_t::invincible);
+            }
+
+            if (this->debug_input_events->event_hit(input_events::ID_DEBUG_COMPLETE_LEVEL))
+            {
+                this->debug_cheats_ = ff::flags::set(this->debug_cheats_, retron::debug_cheats_t::complete_level);
             }
 
 #ifdef _DEBUG
@@ -279,6 +290,16 @@ retron::render_debug_t retron::app_state::render_debug() const
 void retron::app_state::render_debug(retron::render_debug_t flags)
 {
     this->render_debug_ = flags;
+}
+
+retron::debug_cheats_t retron::app_state::debug_cheats() const
+{
+    return this->debug_cheats_;
+}
+
+void retron::app_state::debug_cheats(retron::debug_cheats_t flags)
+{
+    this->debug_cheats_ = flags;
 }
 
 void retron::app_state::debug_command(size_t command_id)

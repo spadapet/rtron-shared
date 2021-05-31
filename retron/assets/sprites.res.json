@@ -269,6 +269,42 @@
         "handle": [ 5, 5 ],
         "offset": [ 12, 0 ],
         "repeat": 3
+      },
+
+      "bonus_woman":
+      {
+        "file": "file:graphics/bonus.png",
+        "pos": [ 0, 0 ],
+        "size": [ 7, 14 ],
+        "handle": [ 3, 14 ]
+      },
+      "bonus_man":
+      {
+        "file": "file:graphics/bonus.png",
+        "pos": [ 0, 18 ],
+        "size": [ 7, 14 ],
+        "handle": [ 3, 14 ]
+      },
+      "bonus_girl":
+      {
+        "file": "file:graphics/bonus.png",
+        "pos": [ 0, 36 ],
+        "size": [ 5, 12 ],
+        "handle": [ 2, 12 ]
+      },
+      "bonus_boy":
+      {
+        "file": "file:graphics/bonus.png",
+        "pos": [ 0, 52 ],
+        "size": [ 5, 12 ],
+        "handle": [ 2, 12 ]
+      },
+      "bonus_dog":
+      {
+        "file": "file:graphics/bonus.png",
+        "pos": [ 0, 68 ],
+        "size": [ 11, 8 ],
+        "handle": [ 6, 8 ]
       }
     }
   }

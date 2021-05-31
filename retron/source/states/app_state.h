@@ -39,6 +39,8 @@ namespace retron
         virtual bool rebuilding_resources() const override;
         virtual retron::render_debug_t render_debug() const override;
         virtual void render_debug(retron::render_debug_t flags) override;
+        virtual retron::debug_cheats_t debug_cheats() const override;
+        virtual void debug_cheats(retron::debug_cheats_t flags) override;
         virtual void debug_command(size_t command_id) override;
 
         double time_scale() const;
@@ -80,6 +82,7 @@ namespace retron
         ff::auto_resource<ff::input_mapping> debug_input_mapping;
         ff::signal<> reload_resources_signal;
         retron::render_debug_t render_debug_;
+        retron::debug_cheats_t debug_cheats_;
         double debug_time_scale;
         bool debug_stepping_frames;
         bool debug_step_one_frame;
