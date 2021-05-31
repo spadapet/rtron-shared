@@ -60,6 +60,7 @@ namespace retron
         size_t lives;
         size_t first_free_life;
         size_t next_free_life;
+        std::vector<size_t> bonus_points;
 
         size_t grunt_tick_frames; // grunts only move each "tick" number of frames
         size_t grunt_max_ticks; // random 1-max ticks per move

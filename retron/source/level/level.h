@@ -143,6 +143,7 @@ namespace retron
         size_t phase_counter;
         size_t frame_count;
         size_t position_changed_count;
+        size_t bonus_collected;
         std::vector<size_t> next_hulk_group_turn;
     };
 }

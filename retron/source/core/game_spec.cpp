@@ -16,6 +16,7 @@ static retron::difficulty_spec load_difficulty_spec(const ff::dict& dict, const 
     diff_spec.lives = ::get_value<size_t>(dict, default_dict, "lives");
     diff_spec.first_free_life = ::get_value<size_t>(dict, default_dict, "first_free_life");
     diff_spec.next_free_life = ::get_value<size_t>(dict, default_dict, "next_free_life");
+    diff_spec.bonus_points = ::get_value<std::vector<size_t>>(dict, default_dict, "bonus_points");
 
     diff_spec.grunt_tick_frames = ::get_value<size_t>(dict, default_dict, "grunt_tick_frames");
     diff_spec.grunt_max_ticks = ::get_value<size_t>(dict, default_dict, "grunt_max_ticks");

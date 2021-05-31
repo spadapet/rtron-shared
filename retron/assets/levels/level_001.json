@@ -1,11 +1,4 @@
 { "compressionlevel":-1,
- "editorsettings":
-    {
-     "export":
-        {
-         "target":"."
-        }
-    },
  "height":34,
  "infinite":false,
  "layers":[
@@ -83,8 +76,96 @@
          "objects":[
                 {
                  "height":242,
+                 "id":19,
+                 "name":"objects_5",
+                 "properties":[
+                        {
+                         "name":"bonus",
+                         "type":"int",
+                         "value":5
+                        }, 
+                        {
+                         "name":"bonus_type",
+                         "type":"string",
+                         "value":"dog"
+                        }],
+                 "rotation":0,
+                 "type":"objects",
+                 "visible":true,
+                 "width":456,
+                 "x":12,
+                 "y":16
+                }, 
+                {
+                 "height":242,
+                 "id":18,
+                 "name":"objects_4",
+                 "properties":[
+                        {
+                         "name":"bonus",
+                         "type":"int",
+                         "value":5
+                        }, 
+                        {
+                         "name":"bonus_type",
+                         "type":"string",
+                         "value":"boy"
+                        }],
+                 "rotation":0,
+                 "type":"objects",
+                 "visible":true,
+                 "width":456,
+                 "x":12,
+                 "y":16
+                }, 
+                {
+                 "height":242,
+                 "id":17,
+                 "name":"objects_3",
+                 "properties":[
+                        {
+                         "name":"bonus",
+                         "type":"int",
+                         "value":5
+                        }, 
+                        {
+                         "name":"bonus_type",
+                         "type":"string",
+                         "value":"girl"
+                        }],
+                 "rotation":0,
+                 "type":"objects",
+                 "visible":true,
+                 "width":456,
+                 "x":12,
+                 "y":16
+                }, 
+                {
+                 "height":242,
                  "id":11,
-                 "name":"objects",
+                 "name":"objects_2",
+                 "properties":[
+                        {
+                         "name":"bonus",
+                         "type":"int",
+                         "value":5
+                        }, 
+                        {
+                         "name":"bonus_type",
+                         "type":"string",
+                         "value":"man"
+                        }],
+                 "rotation":0,
+                 "type":"objects",
+                 "visible":true,
+                 "width":456,
+                 "x":12,
+                 "y":16
+                }, 
+                {
+                 "height":242,
+                 "id":16,
+                 "name":"objects_1",
                  "properties":[
                         {
                          "name":"bonus",
@@ -104,12 +185,12 @@
                         {
                          "name":"grunt",
                          "type":"int",
-                         "value":100
+                         "value":50
                         }, 
                         {
                          "name":"hulk",
                          "type":"int",
-                         "value":10
+                         "value":5
                         }],
                  "rotation":0,
                  "type":"objects",
@@ -125,14 +206,14 @@
          "y":0
         }],
  "nextlayerid":6,
- "nextobjectid":16,
+ "nextobjectid":20,
  "orientation":"orthogonal",
  "renderorder":"right-down",
- "tiledversion":"1.4.3",
+ "tiledversion":"1.6.0",
  "tileheight":8,
  "tilesets":[],
  "tilewidth":8,
  "type":"map",
- "version":1.4,
+ "version":"1.6",
  "width":60
 }

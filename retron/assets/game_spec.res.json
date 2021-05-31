@@ -21,6 +21,7 @@
           "lives": 3,
           "first_free_life": 25000,
           "next_free_life": 25000,
+          "bonus_points": [ 1000, 2000, 3000, 4000, 5000 ],
 
           "grunt_tick_frames": 4,
           "grunt_max_ticks": 32,

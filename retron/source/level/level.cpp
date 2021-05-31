@@ -152,6 +152,7 @@ retron::level::level(retron::game_service& game_service, const retron::level_spe
     , phase_counter(0)
     , frame_count(0)
     , position_changed_count(1)
+    , bonus_collected(0)
 {
     this->connections.emplace_front(retron::app_service::get().reload_resources_sink().connect(std::bind(&retron::level::init_resources, this)));
     this->connections.emplace_front(this->entities.entity_created_sink().connect(std::bind(&retron::level::handle_entity_created, this, std::placeholders::_1)));
@@ -301,6 +302,7 @@ void retron::level::init_entities()
     {
         this->entities.delete_all();
         this->frame_count = 0;
+        this->bonus_collected = 0;
         this->next_hulk_group_turn.clear();
 
         for (const retron::level_rect& level_rect : this->level_spec_.rects)
@@ -773,10 +775,15 @@ void retron::level::advance_bonus(entt::entity entity)
     if (this->phase() == retron::level_phase::playing)
     {
         ::bonus_data& data = this->registry.get<::bonus_data>(entity);
-        if (data.turn_frame <= this->frame_count || !this->position.direction(entity))
+        if (data.turn_frame <= this->frame_count || !this->position.velocity(entity))
         {
-            this->position.direction(entity, retron::helpers::index_to_dir(ff::math::random_range(0, 7)));
-            //data.turn_frame = this->frame_count + 
+            this->position.velocity(entity, retron::helpers::index_to_dir(ff::math::random_range(0, 7)) * this->difficulty_spec_.bonus_move);
+            data.turn_frame = this->frame_count + ff::math::random_range(this->difficulty_spec_.bonus_min_ticks, this->difficulty_spec_.bonus_max_ticks) * this->difficulty_spec_.bonus_tick_frames;
+        }
+
+        if (!((this->frame_count - data.turn_frame) % this->difficulty_spec_.bonus_tick_frames))
+        {
+            this->position.set(entity, this->position.get(entity) + this->position.velocity(entity));
         }
     }
 }
@@ -963,6 +970,15 @@ void retron::level::handle_bounds_collision(entt::entity target_entity, entt::en
                 this->registry.get<::hulk_data>(target_entity).force_turn = true;
             }
             break;
+
+        case retron::entity_type::bonus_adult:
+        case retron::entity_type::bonus_child:
+        case retron::entity_type::bonus_pet:
+            if (offset)
+            {
+                this->registry.get<::bonus_data>(target_entity).turn_frame = 0;
+            }
+            break;
     }
 }
 
@@ -997,16 +1013,20 @@ void retron::level::handle_entity_collision(entt::entity target_entity, entt::en
             switch (source_type)
             {
                 case retron::entity_box_type::player:
-                    // TODO: Collect (points, anim, die, sound)
+                    this->entities.delay_delete(target_entity);
+                    this->player_add_points(source_entity, target_entity);
                     break;
 
-                case retron::entity_box_type::enemy:
-                    switch (this->entities.entity_type(source_entity))
+                case retron::entity_box_type::enemy_box:
+                    if (!this->registry.all_of<::showing_particle_effect>(source_entity))
                     {
-                        case entity_type::hulk:
-                            // TODO: Crushed (anim, die, sound)
-                            break;
+                        // TODO: Crushed anim, sound
+                        this->entities.delay_delete(target_entity);
                     }
+                    break;
+
+                case retron::entity_box_type::obstacle:
+                    this->handle_bounds_collision(target_entity, source_entity);
                     break;
             }
             break;
@@ -1465,6 +1485,13 @@ void retron::level::player_add_points(entt::entity player_or_bullet, entt::entit
 
         case retron::entity_type::electrode:
             points = this->difficulty_spec_.points_electrode;
+            break;
+
+        case retron::entity_type::bonus_adult:
+        case retron::entity_type::bonus_child:
+        case retron::entity_type::bonus_pet:
+            points = this->difficulty_spec_.bonus_points[this->bonus_collected];
+            this->bonus_collected = std::min(this->bonus_collected + 1, this->difficulty_spec_.bonus_points.size() - 1);
             break;
 
         default:
