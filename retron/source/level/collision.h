@@ -60,6 +60,7 @@ namespace retron
         ::b2Body* update_box(entt::entity entity, retron::collision_box_type collision_type);
         void update_dirty_boxes(retron::collision_box_type collision_type);
         bool needs_level_box_avoid_skin(entt::entity entity, retron::collision_box_type collision_type);
+        std::tuple<bool, entt::entity, entt::entity> does_overlap(::b2Contact* contact, retron::collision_box_type collision_type);
 
         void bounds_box_removed(entt::registry& registry, entt::entity entity);
         void entity_created(entt::entity entity);

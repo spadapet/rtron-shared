@@ -772,7 +772,7 @@ void retron::level::advance_hulk(entt::entity entity)
 
 void retron::level::advance_bonus(entt::entity entity)
 {
-    if (this->phase() == retron::level_phase::playing)
+    if (this->phase_ < internal_phase_t::show_players || this->player_active())
     {
         ::bonus_data& data = this->registry.get<::bonus_data>(entity);
         if (data.turn_frame <= this->frame_count || !this->position.velocity(entity))
@@ -1058,6 +1058,7 @@ void retron::level::handle_entity_collision(entt::entity target_entity, entt::en
             switch (source_type)
             {
                 case retron::entity_box_type::enemy:
+                case retron::entity_box_type::enemy_box:
                     this->destroy_obstacle(target_entity, source_entity, source_type);
                     break;
 
@@ -1281,6 +1282,13 @@ void retron::level::render_player(entt::entity entity, ff::draw_base& draw)
         ff::animation_base* anim = this->player_walk_anims[helpers::dir_to_index(dir)].object().get();
         switch (player_data.state)
         {
+            default:
+                if (ff::flags::has(retron::app_service::get().debug_cheats(), retron::debug_cheats_t::invincible) && player_data.state_counter % 32 < 16)
+                {
+                    anim = nullptr;
+                }
+                break;
+
             case ::player_state::dead:
                 if (player_data.state_counter >= this->difficulty_spec_.player_dead_counter)
                 {
@@ -1393,14 +1401,14 @@ void retron::level::render_debug(ff::draw_base& draw)
     {
         for (auto [entity, data] : this->registry.view<::grunt_data>().each())
         {
-            draw.draw_line(this->position.get(entity), data.dest_pos, ff::palette_index_to_color(245, 0.375f), 1);
+            draw.draw_line(this->position.get(entity), data.dest_pos, ff::palette_index_to_color(245), 1);
         }
 
         for (auto [entity, data] : this->registry.view<::hulk_data>().each())
         {
             if (this->registry.valid(data.target_entity))
             {
-                draw.draw_line(this->position.get(entity), this->position.get(data.target_entity), ff::palette_index_to_color(245, 0.375f), 1);
+                draw.draw_line(this->position.get(entity), this->position.get(data.target_entity), ff::palette_index_to_color(245), 1);
             }
         }
     }

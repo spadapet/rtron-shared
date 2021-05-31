@@ -82,16 +82,19 @@ static ff::rect_fixed box(const ::b2Body* body)
 
 static bool might_overlap(const ::b2Contact* contact)
 {
-    const ::b2Fixture* f1 = contact->GetFixtureA();
-    const ::b2Fixture* f2 = contact->GetFixtureB();
-
-    for (int i1 = 0; i1 < f1->GetShape()->GetChildCount(); i1++)
+    if (contact->IsEnabled() && contact->IsTouching())
     {
-        for (int i2 = 0; i2 < f2->GetShape()->GetChildCount(); i2++)
+        const ::b2Fixture* f1 = contact->GetFixtureA();
+        const ::b2Fixture* f2 = contact->GetFixtureB();
+
+        for (int i1 = 0; i1 < f1->GetShape()->GetChildCount(); i1++)
         {
-            if (::b2TestOverlap(f1->GetShape(), i1, f2->GetShape(), i2, f1->GetBody()->GetTransform(), f2->GetBody()->GetTransform()))
+            for (int i2 = 0; i2 < f2->GetShape()->GetChildCount(); i2++)
             {
-                return true;
+                if (::b2TestOverlap(f1->GetShape(), i1, f2->GetShape(), i2, f1->GetBody()->GetTransform(), f2->GetBody()->GetTransform()))
+                {
+                    return true;
+                }
             }
         }
     }
@@ -156,16 +159,10 @@ const std::vector<std::pair<entt::entity, entt::entity>>& retron::collision::det
 
     for (::b2Contact* i = world.GetContactList(); i; i = i->GetNext())
     {
-        if (i->IsEnabled() && i->IsTouching() && ::might_overlap(i))
+        auto [overlaps, entity_a, entity_b] = this->does_overlap(i, collision_type);
+        if (overlaps)
         {
-            entt::entity entity_a = ::entity_from_user_data(i->GetFixtureA()->GetUserData());
-            entt::entity entity_b = ::entity_from_user_data(i->GetFixtureB()->GetUserData());
-
-            if (this->box(entity_a, collision_type).intersects(this->box(entity_b, collision_type)))
-            {
-                bool a_before_b = this->box_type(entity_a, collision_type) <= this->box_type(entity_b, collision_type);
-                collisions.emplace_back(a_before_b ? entity_a : entity_b, a_before_b ? entity_b : entity_a);
-            }
+            collisions.emplace_back(entity_a, entity_b);
         }
     }
 
@@ -456,7 +453,7 @@ void retron::collision::render_debug(ff::draw_base& draw, retron::collision_box_
         bool hit = false;
         for (const ::b2ContactEdge* i = hb.body->GetContactList(); !hit && i; i = i->next)
         {
-            hit = i->contact->IsEnabled() && i->contact->IsTouching();
+            hit = std::get<bool>(this->does_overlap(i->contact, collision_type));
         }
 
         ff::rect_fixed rect = this->box(entity, collision_type);
@@ -673,6 +670,23 @@ void retron::collision::update_dirty_boxes(retron::collision_box_type collision_
 bool retron::collision::needs_level_box_avoid_skin(entt::entity entity, retron::collision_box_type collision_type)
 {
     return collision_type == retron::collision_box_type::grunt_avoid_box && this->entities_.entity_type(entity) == entity_type::level_box;
+}
+
+std::tuple<bool, entt::entity, entt::entity> retron::collision::does_overlap(::b2Contact* contact, retron::collision_box_type collision_type)
+{
+    if (::might_overlap(contact))
+    {
+        entt::entity entity_a = ::entity_from_user_data(const_cast<::b2Contact*>(contact)->GetFixtureA()->GetUserData());
+        entt::entity entity_b = ::entity_from_user_data(const_cast<::b2Contact*>(contact)->GetFixtureB()->GetUserData());
+
+        if (this->box(entity_a, collision_type).intersects(this->box(entity_b, collision_type)))
+        {
+            bool a_before_b = this->box_type(entity_a, collision_type) <= this->box_type(entity_b, collision_type);
+            return std::make_tuple(true, a_before_b ? entity_a : entity_b, a_before_b ? entity_b : entity_a);
+        }
+    }
+
+    return std::make_tuple(false, entt::null, entt::null);
 }
 
 template<typename T>

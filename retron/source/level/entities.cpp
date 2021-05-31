@@ -100,9 +100,9 @@ const ff::rect_fixed& retron::get_hit_box_spec(retron::entity_type type)
         ff::rect_fixed(0, 0, 0, 0), // animation_top
         ff::rect_fixed(-8, -1, 0, 1), // player_bullet
         ff::rect_fixed(-3, -13, 4, 0), // player
-        ff::rect_fixed(-3, -12, 4, 0), // bonus_adult
-        ff::rect_fixed(-3, -10, 4, 0), // bonus_child
-        ff::rect_fixed(-4, -5, 5, 0), // bonus_pet
+        ff::rect_fixed(-3, -13, 4, 0), // bonus_adult
+        ff::rect_fixed(-3, -11, 4, 0), // bonus_child
+        ff::rect_fixed(-5, -7, 5, 0), // bonus_pet
         ff::rect_fixed(-5, -15, 6, 0), // grunt
         ff::rect_fixed(-7, -16, 8, 0), // hulk
         ff::rect_fixed(-5, -5, 6, 6), // electrode
@@ -124,9 +124,9 @@ const ff::rect_fixed& retron::get_bounds_box_spec(retron::entity_type type)
         ff::rect_fixed(0, 0, 0, 0), // animation_top
         ff::rect_fixed(-8, -1, 0, 1), // player_bullet
         ff::rect_fixed(-4, -14, 5, 0), // player
-        ff::rect_fixed(-3, -12, 4, 0), // bonus_adult
-        ff::rect_fixed(-3, -10, 4, 0), // bonus_child
-        ff::rect_fixed(-4, -5, 5, 0), // bonus_pet
+        ff::rect_fixed(-3, -14, 4, 0), // bonus_adult
+        ff::rect_fixed(-3, -12, 4, 0), // bonus_child
+        ff::rect_fixed(-6, -8, 5, 0), // bonus_pet
         ff::rect_fixed(-5, -15, 6, 0), // grunt
         ff::rect_fixed(-9, -18, 10, 0), // hulk
         ff::rect_fixed(-5, -5, 6, 6), // electrode
