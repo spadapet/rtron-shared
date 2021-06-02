@@ -18,6 +18,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="source\assets\bonus.res.cpp" />
     <ClCompile Include="source\assets\controls.res.cpp" />
     <ClCompile Include="source\assets\electrode.res.cpp" />
     <ClCompile Include="source\assets\game_spec.res.cpp" />
@@ -148,6 +149,9 @@
   </ItemGroup>
   <ItemGroup>
     <ResJson Include="assets\electrode.res.json">
+      <FileType>Document</FileType>
+    </ResJson>
+    <ResJson Include="assets\bonus.res.json">
       <FileType>Document</FileType>
     </ResJson>
     <None Include="assets\levels\level_001.json" />

@@ -75,6 +75,7 @@ namespace retron
         void destroy_player_bullet(entt::entity bullet_entity, entt::entity by_entity, retron::entity_box_type by_box_type);
         void destroy_enemy(entt::entity entity, entt::entity by_entity, retron::entity_box_type by_type);
         void destroy_obstacle(entt::entity obstacle_entity, entt::entity by_entity, retron::entity_box_type by_type);
+        void destroy_bonus(entt::entity bonus_entity, entt::entity by_entity, retron::entity_box_type by_type);
         void push_enemy(entt::entity enemy_entity, entt::entity by_entity, retron::entity_box_type by_type);
 
         void render_particles(ff::draw_base& draw);
@@ -135,6 +136,7 @@ namespace retron
         std::array<ff::auto_resource<ff::animation_base>, 3> electrode_anims;
         std::array<ff::auto_resource<ff::animation_base>, 3> electrode_die_anims;
         std::array<ff::auto_resource<ff::animation_base>, static_cast<size_t>(retron::bonus_type::count)> bonus_anims;
+        std::array<ff::auto_resource<ff::animation_base>, static_cast<size_t>(retron::bonus_type::count)> bonus_die_anims;
         ff::auto_resource<ff::animation_base> player_bullet_anim;
         ff::auto_resource<ff::animation_base> grunt_walk_anim;
         ff::auto_resource<ff::animation_base> hulk_walk_anim;

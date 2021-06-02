@@ -1,0 +1,99 @@
+{
+  "res:namespace": "assets::bonus",
+
+  "res:values":
+  {
+    "anim.bonus_die":
+    {
+      "res:type": "animation",
+      "length": 180,
+      "fps": 60,
+      "visuals":
+      [
+        { "visual": "red_skull", "color": "red_color" },
+        { "visual": "white_skull", "color": "white_color" }
+      ],
+      "keys":
+      {
+        "white_skull":
+        {
+          "length": 120,
+          "values":
+          [
+            { "frame": 0, "value": [ "res:white_sprite" ] }
+          ]
+        },
+        "white_color":
+        {
+          "length": 120,
+          "values":
+          [
+            { "frame": 0, "value": [ 1, 0, 0, 1 ] },
+            { "frame": 60, "value": [ 1, 0, 0, 1 ] },
+            { "frame": 120, "value": [ 1, 0, 0, 0 ] }
+          ]
+        },
+        "red_skull":
+        {
+          "length": 180,
+          "values":
+          [
+            { "frame": 0, "value": [ "res:red_sprite" ] }
+          ]
+        },
+        "red_color":
+        {
+          "length": 180,
+          "values":
+          [
+            { "frame": 0, "value": [ 1, 0, 0, 1 ] },
+            { "frame": 120, "value": [ 1, 0, 0, 1 ] },
+            { "frame": 180, "value": [ 1, 0, 0, 0 ] }
+          ]
+        }
+      },
+      "events":
+      [
+        {
+          "frame": 0,
+          "name": "new_particles",
+          "params": { "name": "electrode_die"  }
+        },
+        {
+          "frame": 180,
+          "name": "delete_animation"
+        }
+      ]
+    }
+  },
+
+  "anim.bonus_die_adult":
+  {
+    "res:template": "anim.bonus_die",
+    "res:values":
+    {
+      "white_sprite": "ref:sprites.bonus_skull_adult[0]",
+      "red_sprite": "ref:sprites.bonus_skull_adult[1]"
+    }
+  },
+
+  "anim.bonus_die_child":
+  {
+    "res:template": "anim.bonus_die",
+    "res:values":
+    {
+      "white_sprite": "ref:sprites.bonus_skull_child[0]",
+      "red_sprite": "ref:sprites.bonus_skull_child[1]"
+    }
+  },
+
+  "anim.bonus_die_pet":
+  {
+    "res:template": "anim.bonus_die",
+    "res:values":
+    {
+      "white_sprite": "ref:sprites.bonus_skull_pet[0]",
+      "red_sprite": "ref:sprites.bonus_skull_pet[1]"
+    }
+  }
+}

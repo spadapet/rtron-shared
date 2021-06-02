@@ -9,7 +9,7 @@
     {
       "app":
       {
-        "allow_debug": false,
+        "allow_debug": true,
         "joystick_min": 0.3,
         "joystick_max": 0.9
       },

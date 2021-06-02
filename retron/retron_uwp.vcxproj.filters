@@ -101,6 +101,9 @@
     <ClCompile Include="source\game\score_state.cpp">
       <Filter>source\game</Filter>
     </ClCompile>
+    <ClCompile Include="source\assets\bonus.res.cpp">
+      <Filter>source\assets</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h" />
@@ -357,6 +360,7 @@
     <None Include="$(NoesisDll)" />
     <None Include="$(NoesisDll)" />
     <None Include="$(NoesisDll)" />
+    <None Include="$(NoesisDll)" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="source">
@@ -418,6 +422,9 @@
       <Filter>assets</Filter>
     </ResJson>
     <ResJson Include="assets\electrode.res.json">
+      <Filter>assets</Filter>
+    </ResJson>
+    <ResJson Include="assets\bonus.res.json">
       <Filter>assets</Filter>
     </ResJson>
   </ItemGroup>

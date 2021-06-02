@@ -305,6 +305,33 @@
         "pos": [ 0, 68 ],
         "size": [ 11, 8 ],
         "handle": [ 6, 8 ]
+      },
+      "bonus_skull_adult":
+      {
+        "file": "file:graphics/bonus.png",
+        "pos": [ 0, 93 ],
+        "size": [ 19, 16 ],
+        "handle": [ 9, 12 ],
+        "offset": [ 20, 0 ],
+        "repeat": 2
+      },
+      "bonus_skull_child":
+      {
+        "file": "file:graphics/bonus.png",
+        "pos": [ 0, 80 ],
+        "size": [ 13, 12 ],
+        "handle": [ 6, 10 ],
+        "offset": [ 14, 0 ],
+        "repeat": 2
+      },
+      "bonus_skull_pet":
+      {
+        "file": "file:graphics/bonus.png",
+        "pos": [ 0, 110 ],
+        "size": [ 16, 14 ],
+        "handle": [ 8, 8 ],
+        "offset": [ 17, 0 ],
+        "repeat": 2
       }
     }
   }

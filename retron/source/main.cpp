@@ -8,6 +8,7 @@
 
 namespace res
 {
+    void register_bonus();
     void register_controls();
     void register_electrode();
     void register_game_spec();
@@ -24,6 +25,7 @@ static std::weak_ptr<retron::app_state> weak_app_state;
 
 static void register_components()
 {
+    ::res::register_bonus();
     ::res::register_controls();
     ::res::register_electrode();
     ::res::register_game_spec();

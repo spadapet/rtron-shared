@@ -284,6 +284,12 @@ void retron::level::init_resources()
     this->bonus_anims[static_cast<size_t>(retron::bonus_type::boy)] = "sprites.bonus_boy";
     this->bonus_anims[static_cast<size_t>(retron::bonus_type::dog)] = "sprites.bonus_dog";
 
+    this->bonus_die_anims[static_cast<size_t>(retron::bonus_type::woman)] = "anim.bonus_die_adult";
+    this->bonus_die_anims[static_cast<size_t>(retron::bonus_type::man)] = "anim.bonus_die_adult";
+    this->bonus_die_anims[static_cast<size_t>(retron::bonus_type::girl)] = "anim.bonus_die_child";
+    this->bonus_die_anims[static_cast<size_t>(retron::bonus_type::boy)] = "anim.bonus_die_child";
+    this->bonus_die_anims[static_cast<size_t>(retron::bonus_type::dog)] = "anim.bonus_die_pet";
+
     this->player_bullet_anim = "sprites.player_bullet";
 
     this->grunt_walk_anim = "sprites.grunt";
@@ -439,7 +445,7 @@ entt::entity retron::level::create_animation(std::shared_ptr<ff::animation_base>
 
 entt::entity retron::level::create_animation(std::shared_ptr<ff::animation_player_base> player, ff::point_fixed pos, bool top)
 {
-    entt::entity entity = this->create_entity(retron::entity_type::animation_bottom, pos);
+    entt::entity entity = this->create_entity(top ? retron::entity_type::animation_top : retron::entity_type::animation_bottom, pos);
     this->registry.emplace<::animation_data>(entity, std::move(player));
     return entity;
 }
@@ -1020,8 +1026,7 @@ void retron::level::handle_entity_collision(entt::entity target_entity, entt::en
                 case retron::entity_box_type::enemy_box:
                     if (!this->registry.all_of<::showing_particle_effect>(source_entity))
                     {
-                        // TODO: Crushed anim, sound
-                        this->entities.delay_delete(target_entity);
+                        this->destroy_bonus(target_entity, source_entity, source_type);
                     }
                     break;
 
@@ -1188,6 +1193,16 @@ void retron::level::destroy_obstacle(entt::entity obstacle_entity, entt::entity 
         const ::electrode_data* data = this->registry.try_get<::electrode_data>(obstacle_entity);
         std::shared_ptr<ff::animation_base> anim = this->electrode_die_anims[data ? data->electrode_type % this->electrode_die_anims.size() : 0].object();
         this->create_animation(anim, this->position.get(obstacle_entity), false);
+    }
+}
+
+void retron::level::destroy_bonus(entt::entity bonus_entity, entt::entity by_entity, retron::entity_box_type by_type)
+{
+    if (this->entities.delay_delete(bonus_entity))
+    {
+        const ::bonus_data* data = this->registry.try_get<::bonus_data>(bonus_entity);
+        std::shared_ptr<ff::animation_base> anim = this->bonus_die_anims[data ? static_cast<size_t>(data->bonus_type) % this->bonus_die_anims.size() : 0].object();
+        this->create_animation(anim, this->position.get(bonus_entity), true);
     }
 }
 
