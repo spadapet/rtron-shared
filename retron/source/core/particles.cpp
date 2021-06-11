@@ -1,5 +1,5 @@
 #include "pch.h"
-#include "source/level/particles.h"
+#include "source/core/particles.h"
 
 retron::particles::particles()
     : async_event(ff::create_event())
@@ -143,7 +143,7 @@ void retron::particles::render(ff::draw_base& draw, uint8_t type)
             DirectX::XMStoreFloat2(&pos,
                 DirectX::XMVector2Transform(
                     DirectX::XMLoadFloat2(&pos),
-                    DirectX::XMLoadFloat4x4(&matrix(p.group))));
+                    DirectX::XMLoadFloat4x4(&this->matrix(p.group))));
 
             if (p.is_color())
             {

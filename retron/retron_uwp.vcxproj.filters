@@ -38,21 +38,6 @@
     <ClCompile Include="source\ui\title_page.xaml.cpp">
       <Filter>source\ui</Filter>
     </ClCompile>
-    <ClCompile Include="source\level\collision.cpp">
-      <Filter>source\level</Filter>
-    </ClCompile>
-    <ClCompile Include="source\level\entities.cpp">
-      <Filter>source\level</Filter>
-    </ClCompile>
-    <ClCompile Include="source\level\level.cpp">
-      <Filter>source\level</Filter>
-    </ClCompile>
-    <ClCompile Include="source\level\particles.cpp">
-      <Filter>source\level</Filter>
-    </ClCompile>
-    <ClCompile Include="source\level\position.cpp">
-      <Filter>source\level</Filter>
-    </ClCompile>
     <ClCompile Include="source\states\particle_lab_state.cpp">
       <Filter>source\states</Filter>
     </ClCompile>
@@ -104,6 +89,21 @@
     <ClCompile Include="source\assets\bonus.res.cpp">
       <Filter>source\assets</Filter>
     </ClCompile>
+    <ClCompile Include="source\core\particles.cpp">
+      <Filter>source\core</Filter>
+    </ClCompile>
+    <ClCompile Include="source\level\collision.cpp">
+      <Filter>source\level</Filter>
+    </ClCompile>
+    <ClCompile Include="source\level\entities.cpp">
+      <Filter>source\level</Filter>
+    </ClCompile>
+    <ClCompile Include="source\level\level.cpp">
+      <Filter>source\level</Filter>
+    </ClCompile>
+    <ClCompile Include="source\level\position.cpp">
+      <Filter>source\level</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h" />
@@ -120,9 +120,6 @@
       <Filter>source\core</Filter>
     </ClInclude>
     <ClInclude Include="source\core\game_spec.h">
-      <Filter>source\core</Filter>
-    </ClInclude>
-    <ClInclude Include="source\core\level_service.h">
       <Filter>source\core</Filter>
     </ClInclude>
     <ClInclude Include="source\core\options.h">
@@ -149,21 +146,6 @@
     <ClInclude Include="source\ui\title_page.xaml.h">
       <Filter>source\ui</Filter>
     </ClInclude>
-    <ClInclude Include="source\level\collision.h">
-      <Filter>source\level</Filter>
-    </ClInclude>
-    <ClInclude Include="source\level\entities.h">
-      <Filter>source\level</Filter>
-    </ClInclude>
-    <ClInclude Include="source\level\level.h">
-      <Filter>source\level</Filter>
-    </ClInclude>
-    <ClInclude Include="source\level\particles.h">
-      <Filter>source\level</Filter>
-    </ClInclude>
-    <ClInclude Include="source\level\position.h">
-      <Filter>source\level</Filter>
-    </ClInclude>
     <ClInclude Include="source\states\particle_lab_state.h">
       <Filter>source\states</Filter>
     </ClInclude>
@@ -187,6 +169,24 @@
     </ClInclude>
     <ClInclude Include="source\game\score_state.h">
       <Filter>source\game</Filter>
+    </ClInclude>
+    <ClInclude Include="source\core\level_base.h">
+      <Filter>source\core</Filter>
+    </ClInclude>
+    <ClInclude Include="source\core\particles.h">
+      <Filter>source\core</Filter>
+    </ClInclude>
+    <ClInclude Include="source\level\collision.h">
+      <Filter>source\level</Filter>
+    </ClInclude>
+    <ClInclude Include="source\level\entities.h">
+      <Filter>source\level</Filter>
+    </ClInclude>
+    <ClInclude Include="source\level\level.h">
+      <Filter>source\level</Filter>
+    </ClInclude>
+    <ClInclude Include="source\level\position.h">
+      <Filter>source\level</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -347,6 +347,10 @@
     <None Include="retron_TemporaryKey.pfx">
       <Filter>uwp</Filter>
     </None>
+    <None Include="$(NoesisDll)" />
+    <None Include="$(NoesisDll)" />
+    <None Include="$(NoesisDll)" />
+    <None Include="$(NoesisDll)" />
     <None Include="$(NoesisDll)" />
     <None Include="$(NoesisDll)" />
     <None Include="$(NoesisDll)" />

@@ -8,215 +8,134 @@ namespace
     {};
 }
 
-retron::entity_type retron::bonus_entity_type(retron::bonus_type type)
+ff::rect_fixed retron::get_hit_box_spec(retron::entity_type type)
 {
+    switch (retron::category(type))
+    {
+        case retron::entity_category::bullet:
+            return { -8, -1, 0, 1 };
+
+        case retron::entity_category::player:
+            return { -3, -13, 4, 0 };
+
+        case retron::entity_category::electrode:
+            return { -5, -5, 6, 6 };
+    }
+
     switch (type)
     {
+        case retron::entity_type::bonus_woman:
+        case retron::entity_type::bonus_man:
+            return { -3, -13, 4, 0 };
+
+        case retron::entity_type::bonus_girl:
+        case retron::entity_type::bonus_boy:
+            return { -3, -11, 4, 0 };
+
+        case retron::entity_type::bonus_dog:
+            return { -5, -7, 5, 0 };
+
+        case retron::entity_type::enemy_grunt:
+            return { -5, -15, 6, 0 };
+
+        case retron::entity_type::enemy_hulk:
+            return { -7, -16, 8, 0 };
+    }
+
+    return {};
+}
+
+ff::rect_fixed retron::get_bounds_box_spec(retron::entity_type type)
+{
+    switch (retron::category(type))
+    {
+        case retron::entity_category::player:
+            return { -4, -14, 5, 0 };
+    }
+
+    switch (type)
+    {
+        case retron::entity_type::bonus_woman:
+        case retron::entity_type::bonus_man:
+            return { -3, -14, 4, 0 };
+
+        case retron::entity_type::bonus_girl:
+        case retron::entity_type::bonus_boy:
+            return { -3, -12, 4, 0 };
+
+        case retron::entity_type::bonus_dog:
+            return { -6, -8, 5, 0 };
+
+        case retron::entity_type::enemy_grunt:
+            return { -5, -15, 6, 0 };
+
+        case retron::entity_type::enemy_hulk:
+            return { -9, -18, 10, 0 };
+    }
+
+    return retron::get_hit_box_spec(type);
+}
+
+bool retron::can_hit_box_collide(retron::entity_type type_a, retron::entity_type type_b)
+{
+    if (type_a > type_b)
+    {
+        std::swap(type_a, type_b);
+    }
+
+    switch (retron::category(type_a))
+    {
+        case retron::entity_category::player:
+            return ff::flags::has_any(type_b, retron::entity_type::category_player_collision);
+
+        case retron::entity_category::bullet:
+            return ff::flags::has_any(type_b, retron::entity_type::category_bullet_collision);
+
+        case retron::entity_category::bonus:
+            return ff::flags::has_any(type_b, retron::entity_type::category_bonus_collision);
+
+        case retron::entity_category::enemy:
+            return ff::flags::has_any(type_b, retron::entity_type::category_enemy_collision);
+
         default:
-            assert(false);
-            return retron::entity_type::none;
-
-        case retron::bonus_type::none:
-            return retron::entity_type::none;
-
-        case retron::bonus_type::woman:
-        case retron::bonus_type::man:
-            return retron::entity_type::bonus_adult;
-
-        case retron::bonus_type::boy:
-        case retron::bonus_type::girl:
-            return retron::entity_type::bonus_child;
-
-        case retron::bonus_type::dog:
-            return retron::entity_type::bonus_pet;
+            return false;
     }
 }
 
-std::pair<std::string_view, std::string_view> start_particle_names_0_90(retron::entity_type type)
+bool retron::can_bounds_box_collide(retron::entity_type type_a, retron::entity_type type_b)
 {
-    std::string_view name_0;
-    std::string_view name_90;
-
-    switch (type)
-    {
-        case retron::entity_type::grunt:
-            name_0 = "grunt_start_0";
-            name_90 = "grunt_start_90";
-            break;
-
-        case retron::entity_type::hulk:
-            name_0 = "hulk_start_0";
-            name_90 = "hulk_start_90";
-            break;
-    }
-
-    return std::make_pair(name_0, name_90);
-}
-
-retron::entity_box_type retron::box_type(retron::entity_type type)
-{
-    static retron::entity_box_type types[] =
-    {
-        retron::entity_box_type::none, // none
-        retron::entity_box_type::none, // animation_top
-        retron::entity_box_type::player_bullet, // player_bullet
-        retron::entity_box_type::player, // player
-        retron::entity_box_type::bonus, // bonus_adult
-        retron::entity_box_type::bonus, // bonus_child
-        retron::entity_box_type::bonus, // bonus_pet
-        retron::entity_box_type::enemy, // grunt
-        retron::entity_box_type::enemy_box, // hulk
-        retron::entity_box_type::obstacle, // electrode
-        retron::entity_box_type::none, // animation_under
-        retron::entity_box_type::none, // level_border
-        retron::entity_box_type::none, // level_box
-    };
-
-    static_assert(_countof(types) == static_cast<size_t>(retron::entity_type::count));
-    assert(static_cast<size_t>(type) < _countof(types));
-    return types[static_cast<size_t>(type)];
-}
-
-std::pair<std::string_view, std::string_view> retron::start_particle_names_0_90(retron::entity_type type)
-{
-    switch (type)
-    {
-        case retron::entity_type::grunt:
-            return std::make_pair("grunt_start_0"sv, "grunt_start_90"sv);
-
-        case retron::entity_type::hulk:
-            return std::make_pair("hulk_start_0"sv, "hulk_start_90"sv);
-
-        default:
-            return {};
-    }
-}
-
-const ff::rect_fixed& retron::get_hit_box_spec(retron::entity_type type)
-{
-    static ff::rect_fixed rects[] =
-    {
-        ff::rect_fixed(0, 0, 0, 0), // none
-        ff::rect_fixed(0, 0, 0, 0), // animation_top
-        ff::rect_fixed(-8, -1, 0, 1), // player_bullet
-        ff::rect_fixed(-3, -13, 4, 0), // player
-        ff::rect_fixed(-3, -13, 4, 0), // bonus_adult
-        ff::rect_fixed(-3, -11, 4, 0), // bonus_child
-        ff::rect_fixed(-5, -7, 5, 0), // bonus_pet
-        ff::rect_fixed(-5, -15, 6, 0), // grunt
-        ff::rect_fixed(-7, -16, 8, 0), // hulk
-        ff::rect_fixed(-5, -5, 6, 6), // electrode
-        ff::rect_fixed(0, 0, 0, 0), // animation_under
-        ff::rect_fixed(0, 0, 0, 0), // level_border
-        ff::rect_fixed(0, 0, 0, 0), // level_box
-    };
-
-    static_assert(_countof(rects) == static_cast<size_t>(retron::entity_type::count));
-    assert(static_cast<size_t>(type) < _countof(rects));
-    return rects[static_cast<size_t>(type)];
-}
-
-const ff::rect_fixed& retron::get_bounds_box_spec(retron::entity_type type)
-{
-    static ff::rect_fixed rects[] =
-    {
-        ff::rect_fixed(0, 0, 0, 0), // none
-        ff::rect_fixed(0, 0, 0, 0), // animation_top
-        ff::rect_fixed(-8, -1, 0, 1), // player_bullet
-        ff::rect_fixed(-4, -14, 5, 0), // player
-        ff::rect_fixed(-3, -14, 4, 0), // bonus_adult
-        ff::rect_fixed(-3, -12, 4, 0), // bonus_child
-        ff::rect_fixed(-6, -8, 5, 0), // bonus_pet
-        ff::rect_fixed(-5, -15, 6, 0), // grunt
-        ff::rect_fixed(-9, -18, 10, 0), // hulk
-        ff::rect_fixed(-5, -5, 6, 6), // electrode
-        ff::rect_fixed(0, 0, 0, 0), // animation_under
-        ff::rect_fixed(0, 0, 0, 0), // level_border
-        ff::rect_fixed(0, 0, 0, 0), // level_box
-    };
-
-    static_assert(_countof(rects) == static_cast<size_t>(retron::entity_type::count));
-    assert(static_cast<size_t>(type) < _countof(rects));
-    return rects[static_cast<size_t>(type)];
-}
-
-bool retron::can_hit_box_collide(retron::entity_box_type type_a, retron::entity_box_type type_b)
-{
-    if (type_a != type_b && type_a != retron::entity_box_type::none && type_b != retron::entity_box_type::none)
-    {
-        if (type_a > type_b)
-        {
-            std::swap(type_a, type_b);
-        }
-
-        switch (type_a)
-        {
-            case retron::entity_box_type::player:
-                return type_b == retron::entity_box_type::bonus ||
-                    type_b == retron::entity_box_type::enemy ||
-                    type_b == retron::entity_box_type::enemy_box ||
-                    type_b == retron::entity_box_type::obstacle ||
-                    type_b == retron::entity_box_type::enemy_bullet ||
-                    type_b == retron::entity_box_type::level;
-
-            case retron::entity_box_type::bonus:
-                return type_b == retron::entity_box_type::enemy ||
-                    type_b == retron::entity_box_type::enemy_box ||
-                    type_b == retron::entity_box_type::obstacle ||
-                    type_b == retron::entity_box_type::enemy_bullet ||
-                    type_b == retron::entity_box_type::level;
-
-            case retron::entity_box_type::enemy:
-                return type_b == retron::entity_box_type::obstacle ||
-                    type_b == retron::entity_box_type::player_bullet ||
-                    type_b == retron::entity_box_type::level;
-
-            case retron::entity_box_type::enemy_box:
-                return type_b == retron::entity_box_type::obstacle ||
-                    type_b == retron::entity_box_type::player_bullet ||
-                    type_b == retron::entity_box_type::level;
-
-            case retron::entity_box_type::obstacle:
-                return type_b == retron::entity_box_type::player_bullet ||
-                    type_b == retron::entity_box_type::enemy_bullet;
-
-            case retron::entity_box_type::player_bullet:
-                return type_b == retron::entity_box_type::enemy_bullet ||
-                    type_b == retron::entity_box_type::level;
-
-            case retron::entity_box_type::enemy_bullet:
-                return type_b == retron::entity_box_type::level;
-        }
-    }
-
-    return false;
-}
-
-bool retron::can_bounds_box_collide(retron::entity_box_type type_a, retron::entity_box_type type_b)
-{
-    return (type_a != type_b) && (type_a == retron::entity_box_type::level || type_b == retron::entity_box_type::level);
+    // One of the two needs to be a level box
+    return ff::flags::has(ff::flags::toggle(type_a, type_b), retron::entity_type::category_level);
 }
 
 retron::entities::entities(entt::registry& registry)
     : registry(registry)
-    , sort_entities_(false)
 {}
 
 entt::entity retron::entities::create(retron::entity_type type)
 {
     entt::entity entity = this->registry.create();
     this->registry.emplace<retron::entity_type>(entity, type);
-    this->sort_entities_ = true;
-    this->entity_created_signal.notify(entity);
-
+    this->entity_created_signal.notify(entity, type);
     return entity;
+}
+
+retron::entity_type retron::entities::type(entt::entity entity) const
+{
+    const retron::entity_type* type = this->registry.try_get<const retron::entity_type>(entity);
+    return type ? *type : retron::entity_type::none;
+}
+
+retron::entity_category retron::entities::category(entt::entity entity) const
+{
+    return retron::category(this->type(entity));
 }
 
 bool retron::entities::delay_delete(entt::entity entity)
 {
     if (!this->deleted(entity))
     {
-        this->registry.emplace_or_replace<::pending_delete>(entity);
+        this->registry.emplace<::pending_delete>(entity);
         this->entity_deleting_signal.notify(entity);
         return true;
     }
@@ -224,7 +143,7 @@ bool retron::entities::delay_delete(entt::entity entity)
     return false;
 }
 
-bool retron::entities::deleted(entt::entity entity)
+bool retron::entities::deleted(entt::entity entity) const
 {
     return !this->registry.valid(entity) || this->registry.all_of<::pending_delete>(entity);
 }
@@ -240,46 +159,15 @@ void retron::entities::flush_delete()
 
 void retron::entities::delete_all()
 {
-    for (const entt::entity* cur = this->registry.data(), *end = cur + this->registry.size(); cur != end; cur++)
-    {
-        this->delay_delete(*cur);
-    }
+    this->registry.each([this](entt::entity entity)
+        {
+            this->delay_delete(entity);
+        });
 
     this->flush_delete();
 }
 
-const std::vector<std::pair<entt::entity, retron::entity_type>>& retron::entities::sorted_entities(std::vector<std::pair<entt::entity, retron::entity_type>>& pairs)
-{
-    if (this->sort_entities_)
-    {
-        this->sort_entities_ = false;
-
-        this->registry.sort<retron::entity_type>([](retron::entity_type type_a, retron::entity_type type_b)
-            {
-                // entt loops through a view backwards, so it sorts in reverse order
-                return type_a > type_b;
-            });
-    }
-
-    auto view = this->registry.view<retron::entity_type>();
-    pairs.resize(view.size());
-
-    size_t i = 0;
-    for (auto [entity, type] : view.each())
-    {
-        pairs[i++] = std::make_pair(entity, type);
-    }
-
-    return pairs;
-}
-
-retron::entity_type retron::entities::entity_type(entt::entity entity)
-{
-    const retron::entity_type* type = this->registry.try_get<retron::entity_type>(entity);
-    return type ? *type : retron::entity_type::none;
-}
-
-ff::signal_sink<entt::entity>& retron::entities::entity_created_sink()
+ff::signal_sink<entt::entity, retron::entity_type>& retron::entities::entity_created_sink()
 {
     return this->entity_created_signal;
 }

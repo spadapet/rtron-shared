@@ -7,11 +7,25 @@ namespace retron
         none,
         woman,
         man,
-        boy,
         girl,
+        boy,
         dog,
 
         count
+    };
+
+    struct player
+    {
+        player& self_or_coop();
+        const player& self_or_coop() const;
+
+        retron::player* coop;
+        size_t index;
+        size_t level;
+        size_t lives;
+        size_t points;
+        size_t next_life_points;
+        bool game_over;
     };
 
     struct level_rect
@@ -107,19 +121,5 @@ namespace retron
         std::unordered_map<std::string, retron::difficulty_spec> difficulties;
         std::unordered_map<std::string, retron::level_set_spec> level_sets;
         std::unordered_map<std::string, retron::level_spec> levels;
-    };
-
-    struct player
-    {
-        player& self_or_coop();
-        const player& self_or_coop() const;
-
-        retron::player* coop;
-        size_t index;
-        size_t level;
-        size_t lives;
-        size_t points;
-        size_t next_life_points;
-        bool game_over;
     };
 }

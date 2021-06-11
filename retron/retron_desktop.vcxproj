@@ -31,6 +31,7 @@
     <ClCompile Include="source\core\game_spec.cpp" />
     <ClCompile Include="source\core\globals.cpp" />
     <ClCompile Include="source\core\options.cpp" />
+    <ClCompile Include="source\core\particles.cpp" />
     <ClCompile Include="source\core\render_targets.cpp" />
     <ClCompile Include="source\game\game_over_state.cpp" />
     <ClCompile Include="source\game\game_state.cpp" />
@@ -40,7 +41,6 @@
     <ClCompile Include="source\level\collision.cpp" />
     <ClCompile Include="source\level\entities.cpp" />
     <ClCompile Include="source\level\level.cpp" />
-    <ClCompile Include="source\level\particles.cpp" />
     <ClCompile Include="source\level\position.cpp" />
     <ClCompile Include="source\main.cpp" />
     <ClCompile Include="source\states\app_state.cpp" />
@@ -61,7 +61,9 @@
     <ClInclude Include="source\core\game_service.h" />
     <ClInclude Include="source\core\game_spec.h" />
     <ClInclude Include="source\core\globals.h" />
+    <ClInclude Include="source\core\level_base.h" />
     <ClInclude Include="source\core\options.h" />
+    <ClInclude Include="source\core\particles.h" />
     <ClInclude Include="source\core\render_targets.h" />
     <ClInclude Include="source\game\game_over_state.h" />
     <ClInclude Include="source\game\game_state.h" />
@@ -71,7 +73,6 @@
     <ClInclude Include="source\level\collision.h" />
     <ClInclude Include="source\level\entities.h" />
     <ClInclude Include="source\level\level.h" />
-    <ClInclude Include="source\level\particles.h" />
     <ClInclude Include="source\level\position.h" />
     <ClInclude Include="source\states\app_state.h" />
     <ClInclude Include="source\states\debug_state.h" />

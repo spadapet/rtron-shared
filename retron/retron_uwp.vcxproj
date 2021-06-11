@@ -19,6 +19,7 @@
   <Import Project="..\vendor\ff_game_library\build\cpp.props" />
   <PropertyGroup>
     <AdditionalResJsonInputs>$(DevRoot)retron_designer\**\*.xaml;$(DevRoot)retron_designer\**\*.ttf;$(DevRoot)retron_designer\**\*.png</AdditionalResJsonInputs>
+    <PackageCertificateThumbprint>7ED54E5C319AA90F864033A2FE8B31994B05A678</PackageCertificateThumbprint>
   </PropertyGroup>
   <ItemDefinitionGroup>
     <ClCompile>
@@ -38,6 +39,7 @@
     <ClCompile Include="source\assets\player.res.cpp" />
     <ClCompile Include="source\assets\sprites.res.cpp" />
     <ClCompile Include="source\assets\xaml.res.cpp" />
+    <ClCompile Include="source\core\particles.cpp" />
     <ClCompile Include="source\game\game_over_state.cpp" />
     <ClCompile Include="source\game\game_state.cpp" />
     <ClCompile Include="source\game\high_score_state.cpp" />
@@ -46,7 +48,6 @@
     <ClCompile Include="source\level\collision.cpp" />
     <ClCompile Include="source\level\entities.cpp" />
     <ClCompile Include="source\level\level.cpp" />
-    <ClCompile Include="source\level\particles.cpp" />
     <ClCompile Include="source\level\position.cpp" />
     <ClCompile Include="source\states\app_state.cpp" />
     <ClCompile Include="source\states\debug_state.cpp" />
@@ -75,8 +76,9 @@
     <ClInclude Include="source\core\game_service.h" />
     <ClInclude Include="source\core\game_spec.h" />
     <ClInclude Include="source\core\globals.h" />
-    <ClInclude Include="source\core\level_service.h" />
+    <ClInclude Include="source\core\level_base.h" />
     <ClInclude Include="source\core\options.h" />
+    <ClInclude Include="source\core\particles.h" />
     <ClInclude Include="source\core\render_targets.h" />
     <ClInclude Include="source\game\game_over_state.h" />
     <ClInclude Include="source\game\game_state.h" />
@@ -86,7 +88,6 @@
     <ClInclude Include="source\level\collision.h" />
     <ClInclude Include="source\level\entities.h" />
     <ClInclude Include="source\level\level.h" />
-    <ClInclude Include="source\level\particles.h" />
     <ClInclude Include="source\level\position.h" />
     <ClInclude Include="source\states\app_state.h" />
     <ClInclude Include="source\states\debug_state.h" />

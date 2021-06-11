@@ -50,9 +50,6 @@
     <ClCompile Include="source\level\collision.cpp">
       <Filter>source\level</Filter>
     </ClCompile>
-    <ClCompile Include="source\level\particles.cpp">
-      <Filter>source\level</Filter>
-    </ClCompile>
     <ClCompile Include="source\level\level.cpp">
       <Filter>source\level</Filter>
     </ClCompile>
@@ -107,6 +104,9 @@
     <ClCompile Include="source\assets\bonus.res.cpp">
       <Filter>source\assets</Filter>
     </ClCompile>
+    <ClCompile Include="source\core\particles.cpp">
+      <Filter>source\core</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h" />
@@ -158,9 +158,6 @@
     <ClInclude Include="source\level\collision.h">
       <Filter>source\level</Filter>
     </ClInclude>
-    <ClInclude Include="source\level\particles.h">
-      <Filter>source\level</Filter>
-    </ClInclude>
     <ClInclude Include="source\level\level.h">
       <Filter>source\level</Filter>
     </ClInclude>
@@ -187,6 +184,12 @@
     </ClInclude>
     <ClInclude Include="source\game\score_state.h">
       <Filter>source\game</Filter>
+    </ClInclude>
+    <ClInclude Include="source\core\level_base.h">
+      <Filter>source\core</Filter>
+    </ClInclude>
+    <ClInclude Include="source\core\particles.h">
+      <Filter>source\core</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

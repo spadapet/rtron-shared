@@ -1,9 +1,10 @@
 #include "pch.h"
 #include "source/core/app_service.h"
 #include "source/core/game_service.h"
+#include "source/core/game_spec.h"
+#include "source/core/level_base.h"
 #include "source/core/options.h"
 #include "source/game/ready_state.h"
-#include "source/level/level.h"
 
 static const size_t READY_START_PLAYER = 20;
 static const size_t READY_END_PLAYER = 160;
@@ -12,7 +13,7 @@ static const size_t READY_START_LEVEL = 90;
 static const size_t READY_END_LEVEL = 160;
 static const size_t READY_END_ALL = ::READY_END_LEVEL;
 
-retron::ready_state::ready_state(const retron::game_service& game_service, std::shared_ptr<retron::level> level, std::shared_ptr<ff::state> under_state)
+retron::ready_state::ready_state(const retron::game_service& game_service, std::shared_ptr<retron::level_base> level, std::shared_ptr<ff::state> under_state)
     : game_service(game_service)
     , level(level)
     , under_state(under_state)

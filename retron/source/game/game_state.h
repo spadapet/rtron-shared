@@ -6,7 +6,7 @@
 
 namespace retron
 {
-    class level;
+    class level_base;
     class level_state;
 
     class game_state : public ff::state, public retron::game_service
@@ -39,7 +39,7 @@ namespace retron
             retron::player& player_or_coop() const;
 
             std::vector<retron::player*> players;
-            std::shared_ptr<retron::level> level;
+            std::shared_ptr<retron::level_base> level;
             std::shared_ptr<ff::state_wrapper> state;
         };
 

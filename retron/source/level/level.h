@@ -1,38 +1,31 @@
 #pragma once
 
 #include "source/core/game_spec.h"
+#include "source/core/level_base.h"
+#include "source/core/particles.h"
 #include "source/level/collision.h"
 #include "source/level/entities.h"
-#include "source/level/particles.h"
 #include "source/level/position.h"
 
 namespace retron
 {
     class game_service;
 
-    enum class level_phase
-    {
-        ready,
-        playing,
-        won,
-        dead,
-        game_over,
-    };
-
-    class level : public ff::state
+    class level : public retron::level_base, public ff::state
     {
     public:
         level(retron::game_service& game_service, const retron::level_spec& level_spec, const std::vector<const retron::player*>& players);
 
+        // ff::state
         virtual std::shared_ptr<ff::state> advance_time() override;
         virtual void render() override;
 
-        retron::level_phase phase() const;
-        void start(); // move from ready->playing
-        void restart(); // move from dead->ready
-        void stop(); // move from dead->game_over
-        const retron::level_spec& level_spec() const;
-        const std::vector<const retron::player*>& players() const;
+        // retron::level_base
+        virtual retron::level_phase phase() const override;
+        virtual void start() override;
+        virtual void restart() override;
+        virtual void stop() override;
+        virtual const std::vector<const retron::player*>& players() const override;
 
     private:
         void init_resources();
@@ -42,11 +35,11 @@ namespace retron
         ff::rect_fixed hit_box(entt::entity entity);
 
         entt::entity create_entity(retron::entity_type type, const ff::point_fixed& pos);
-        entt::entity create_bonus(retron::entity_type type, const ff::point_fixed& pos, retron::bonus_type bonus_type);
-        entt::entity create_electrode(retron::entity_type type, const ff::point_fixed& pos, size_t electrode_type);
+        entt::entity create_bonus(retron::entity_type type, const ff::point_fixed& pos);
+        entt::entity create_electrode(retron::entity_type type, const ff::point_fixed& pos);
         entt::entity create_grunt(retron::entity_type type, const ff::point_fixed& pos);
         entt::entity create_hulk(retron::entity_type type, const ff::point_fixed& pos);
-        entt::entity create_player(size_t index_in_level);
+        entt::entity create_player(const retron::player& player);
         entt::entity create_player_bullet(entt::entity player, ff::point_fixed shot_pos, ff::point_fixed shot_dir);
         entt::entity create_animation(std::shared_ptr<ff::animation_base> anim, ff::point_fixed pos, bool top);
         entt::entity create_animation(std::shared_ptr<ff::animation_player_base> player, ff::point_fixed pos, bool top);
@@ -72,17 +65,17 @@ namespace retron
         void handle_entity_collision(entt::entity target_entity, entt::entity source_entity);
         void handle_position_changed(entt::entity entity);
 
-        void destroy_player_bullet(entt::entity bullet_entity, entt::entity by_entity, retron::entity_box_type by_box_type);
-        void destroy_enemy(entt::entity entity, entt::entity by_entity, retron::entity_box_type by_type);
-        void destroy_obstacle(entt::entity obstacle_entity, entt::entity by_entity, retron::entity_box_type by_type);
-        void destroy_bonus(entt::entity bonus_entity, entt::entity by_entity, retron::entity_box_type by_type);
-        void push_enemy(entt::entity enemy_entity, entt::entity by_entity, retron::entity_box_type by_type);
+        void destroy_player_bullet(entt::entity bullet_entity, entt::entity by_entity);
+        void destroy_enemy(entt::entity entity, entt::entity by_entity);
+        void destroy_electrode(entt::entity obstacle_entity, entt::entity by_entity);
+        void destroy_bonus(entt::entity bonus_entity, entt::entity by_entity);
+        void push_hulk(entt::entity enemy_entity, entt::entity by_entity);
 
         void render_particles(ff::draw_base& draw);
         void render_entity(entt::entity entity, retron::entity_type type, ff::draw_base& draw);
         void render_player(entt::entity entity, ff::draw_base& draw);
-        void render_player_bullet(entt::entity entity, ff::draw_base& draw);
-        void render_bonus(entt::entity entity, retron::entity_type type, ff::draw_base& draw);
+        void render_bullet(entt::entity entity, ff::draw_base& draw);
+        void render_bonus(entt::entity entity, ff::draw_base& draw);
         void render_electrode(entt::entity entity, ff::draw_base& draw);
         void render_hulk(entt::entity entity, ff::draw_base& draw);
         void render_grunt(entt::entity entity, ff::draw_base& draw);
@@ -129,7 +122,6 @@ namespace retron
 
         std::unordered_map<std::string_view, retron::particles::effect_t> particle_effects;
         std::vector<std::pair<entt::entity, entt::entity>> collisions;
-        std::vector<std::pair<entt::entity, retron::entity_type>> sorted_entities;
         std::forward_list<ff::signal_connection> connections;
 
         std::array<ff::auto_resource<ff::animation_base>, 8> player_walk_anims;

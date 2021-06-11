@@ -4,7 +4,8 @@ namespace retron
 {
     class entities;
     class position;
-    enum class entity_box_type;
+    enum class entity_type;
+    enum class entity_category;
 
     enum class collision_box_type
     {
@@ -20,15 +21,14 @@ namespace retron
         collision(entt::registry& registry, retron::position& position, entities& entities);
 
         const std::vector<std::pair<entt::entity, entt::entity>>& detect_collisions(std::vector<std::pair<entt::entity, entt::entity>>& collisions, retron::collision_box_type collision_type);
-        void hit_test(const ff::rect_fixed& bounds, ff::push_base<entt::entity>& entities, entity_box_type box_type_filter, retron::collision_box_type collision_type, size_t max_hits = 0);
-        std::tuple<entt::entity, ff::point_fixed, ff::point_fixed> ray_test(const ff::point_fixed& start, const ff::point_fixed& end, entity_box_type box_type_filter, retron::collision_box_type collision_type);
+        void hit_test(const ff::rect_fixed& bounds, ff::push_base<entt::entity>& results, retron::entity_category filter, retron::collision_box_type collision_type, size_t max_hits = 0);
+        std::tuple<entt::entity, ff::point_fixed, ff::point_fixed> ray_test(const ff::point_fixed& start, const ff::point_fixed& end, retron::entity_category filter, retron::collision_box_type collision_type);
         std::tuple<bool, ff::point_fixed, ff::point_fixed> ray_test(entt::entity entity, const ff::point_fixed& start, const ff::point_fixed& end, retron::collision_box_type collision_type);
 
-        void box(entt::entity entity, const ff::rect_fixed& rect, entity_box_type type, retron::collision_box_type collision_type);
+        void box(entt::entity entity, const ff::rect_fixed& rect, retron::collision_box_type collision_type);
         void reset_box(entt::entity entity, retron::collision_box_type collision_type);
         ff::rect_fixed box_spec(entt::entity entity, retron::collision_box_type collision_type);
         ff::rect_fixed box(entt::entity entity, retron::collision_box_type collision_type);
-        entity_box_type box_type(entt::entity entity, retron::collision_box_type collision_type);
 
         void render_debug(ff::draw_base& draw);
 
@@ -67,7 +67,7 @@ namespace retron
         void position_changed(entt::entity entity);
         void scale_changed(entt::entity entity);
 
-        template<typename BoxType, typename DirtyType> ::b2Body* update_box(entt::entity entity, retron::entity_box_type type, retron::collision_box_type collision_type);
+        template<typename BoxType, typename DirtyType> ::b2Body* update_box(entt::entity entity, retron::collision_box_type collision_type);
         template<typename BoxType> void render_debug(ff::draw_base& draw, retron::collision_box_type collision_type, int thickness, int color, int color_hit);
         template<typename T> void box_removed(entt::registry& registry, entt::entity entity);
         template<retron::collision_box_type T> void box_spec_changed(entt::registry& registry, entt::entity entity);
