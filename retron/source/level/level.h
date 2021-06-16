@@ -32,7 +32,6 @@ namespace retron
         void init_entities();
 
         ff::rect_fixed bounds_box(entt::entity entity);
-        ff::rect_fixed hit_box(entt::entity entity);
 
         entt::entity create_entity(retron::entity_type type, const ff::point_fixed& pos);
         entt::entity create_bonus(retron::entity_type type, const ff::point_fixed& pos);

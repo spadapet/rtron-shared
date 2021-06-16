@@ -1,33 +1,12 @@
 #include "pch.h"
 #include "source/level/collision.h"
+#include "source/level/components.h"
 #include "source/level/entities.h"
 #include "source/level/position.h"
 
 static constexpr ff::fixed_int PIXEL_TO_WORLD_SCALE = 0.0625;
 static constexpr ff::fixed_int WORLD_TO_PIXEL_SCALE = 16;
 static constexpr ff::fixed_int LEVEL_BOX_AVOID_SKIN = 0.125;
-
-namespace
-{
-    struct box_spec_component
-    {
-        ff::rect_fixed rect;
-    };
-    struct hit_box_spec_component : public ::box_spec_component {};
-    struct bounds_box_spec_component : public ::box_spec_component {};
-
-    struct box_component
-    {
-        ::b2Body* body;
-    };
-    struct hit_box_component : public ::box_component {};
-    struct bounds_box_component : public ::box_component {};
-    struct grunt_avoid_box_component : public ::box_component {};
-
-    struct hit_dirty_component {};
-    struct bounds_dirty_component {};
-    struct grunt_avoid_dirty_component {};
-}
 
 static const std::array<retron::collision_box_type, static_cast<size_t>(retron::collision_box_type::count)> collision_box_types =
 {
@@ -119,19 +98,19 @@ retron::collision::collision(entt::registry& registry, retron::position& positio
         }
     }
 
-    this->connections.emplace_front(this->registry.on_destroy<::hit_box_component>().connect<&collision::box_removed<::hit_box_component>>(this));
-    this->connections.emplace_front(this->registry.on_construct<::hit_box_spec_component>().connect<&collision::box_spec_changed<retron::collision_box_type::hit_box>>(this));
-    this->connections.emplace_front(this->registry.on_update<::hit_box_spec_component>().connect<&collision::box_spec_changed<retron::collision_box_type::hit_box>>(this));
+    this->connections.emplace_front(this->registry.on_destroy<retron::comp::hit_box>().connect<&collision::box_removed<retron::comp::hit_box>>(this));
+    this->connections.emplace_front(this->registry.on_construct<retron::comp::hit_box_spec>().connect<&collision::box_spec_changed<retron::collision_box_type::hit_box>>(this));
+    this->connections.emplace_front(this->registry.on_update<retron::comp::hit_box_spec>().connect<&collision::box_spec_changed<retron::collision_box_type::hit_box>>(this));
 
-    this->connections.emplace_front(this->registry.on_destroy<::bounds_box_component>().connect<&collision::box_removed<::bounds_box_component>>(this));
-    this->connections.emplace_front(this->registry.on_construct<::bounds_box_spec_component>().connect<&collision::box_spec_changed<retron::collision_box_type::bounds_box>>(this));
-    this->connections.emplace_front(this->registry.on_update<::bounds_box_spec_component>().connect<&collision::box_spec_changed<retron::collision_box_type::bounds_box>>(this));
+    this->connections.emplace_front(this->registry.on_destroy<retron::comp::bounds_box>().connect<&collision::box_removed<retron::comp::bounds_box>>(this));
+    this->connections.emplace_front(this->registry.on_construct<retron::comp::bounds_box_spec>().connect<&collision::box_spec_changed<retron::collision_box_type::bounds_box>>(this));
+    this->connections.emplace_front(this->registry.on_update<retron::comp::bounds_box_spec>().connect<&collision::box_spec_changed<retron::collision_box_type::bounds_box>>(this));
 
-    // grunt_avoid_box relies on ::bounds_box_spec_component
-    this->connections.emplace_front(this->registry.on_destroy<::grunt_avoid_box_component>().connect<&collision::box_removed<::grunt_avoid_box_component>>(this));
-    this->connections.emplace_front(this->registry.on_destroy<::bounds_box_component>().connect<&collision::bounds_box_removed>(this));
-    this->connections.emplace_front(this->registry.on_construct<::bounds_box_spec_component>().connect<&collision::box_spec_changed<retron::collision_box_type::grunt_avoid_box>>(this));
-    this->connections.emplace_front(this->registry.on_update<::bounds_box_spec_component>().connect<&collision::box_spec_changed<retron::collision_box_type::grunt_avoid_box>>(this));
+    // grunt_avoid_box relies on retron::comp::bounds_box_spec
+    this->connections.emplace_front(this->registry.on_destroy<retron::comp::grunt_avoid_box>().connect<&collision::box_removed<retron::comp::grunt_avoid_box>>(this));
+    this->connections.emplace_front(this->registry.on_destroy<retron::comp::bounds_box>().connect<&collision::bounds_box_removed>(this));
+    this->connections.emplace_front(this->registry.on_construct<retron::comp::bounds_box_spec>().connect<&collision::box_spec_changed<retron::collision_box_type::grunt_avoid_box>>(this));
+    this->connections.emplace_front(this->registry.on_update<retron::comp::bounds_box_spec>().connect<&collision::box_spec_changed<retron::collision_box_type::grunt_avoid_box>>(this));
 
     this->ff_connections.emplace_front(entities.entity_created_sink().connect(std::bind(&collision::entity_created, this, std::placeholders::_1)));
     this->ff_connections.emplace_front(position.position_changed_sink().connect(std::bind(&collision::position_changed, this, std::placeholders::_1)));
@@ -327,11 +306,11 @@ void retron::collision::box(entt::entity entity, const ff::rect_fixed& rect, ret
     switch (collision_type)
     {
         case retron::collision_box_type::hit_box:
-            this->registry.emplace_or_replace<::hit_box_spec_component>(entity, rect);
+            this->registry.emplace_or_replace<retron::comp::hit_box_spec>(entity, rect);
             break;
 
         case retron::collision_box_type::bounds_box:
-            this->registry.emplace_or_replace<::bounds_box_spec_component>(entity, rect);
+            this->registry.emplace_or_replace<retron::comp::bounds_box_spec>(entity, rect);
             break;
 
         default:
@@ -345,11 +324,11 @@ void retron::collision::reset_box(entt::entity entity, retron::collision_box_typ
     switch (collision_type)
     {
         case retron::collision_box_type::hit_box:
-            this->registry.remove<::hit_box_spec_component>(entity);
+            this->registry.remove<retron::comp::hit_box_spec>(entity);
             break;
 
         case retron::collision_box_type::bounds_box:
-            this->registry.remove<::bounds_box_spec_component>(entity);
+            this->registry.remove<retron::comp::bounds_box_spec>(entity);
             break;
 
         default:
@@ -368,14 +347,14 @@ ff::rect_fixed retron::collision::box_spec(entt::entity entity, retron::collisio
     {
         case retron::collision_box_type::hit_box:
             {
-                ::box_spec_component* spec = this->registry.try_get<::hit_box_spec_component>(entity);
+                retron::comp::box_spec* spec = this->registry.try_get<retron::comp::hit_box_spec>(entity);
                 box = spec ? spec->rect : retron::get_hit_box_spec(this->entities_.type(entity));
             }
             break;
 
         case retron::collision_box_type::bounds_box:
             {
-                ::box_spec_component* spec = this->registry.try_get<::bounds_box_spec_component>(entity);
+                retron::comp::box_spec* spec = this->registry.try_get<retron::comp::bounds_box_spec>(entity);
                 box = spec ? spec->rect : retron::get_bounds_box_spec(this->entities_.type(entity));
             }
             break;
@@ -411,9 +390,9 @@ ff::rect_fixed retron::collision::box(entt::entity entity, retron::collision_box
 
 void retron::collision::render_debug(ff::draw_base& draw)
 {
-    this->render_debug<::grunt_avoid_box_component>(draw, retron::collision_box_type::grunt_avoid_box, 1, 245, 248);
-    this->render_debug<::bounds_box_component>(draw, retron::collision_box_type::bounds_box, 2, 245, 248);
-    this->render_debug<::hit_box_component>(draw, retron::collision_box_type::hit_box, 1, 252, 232);
+    this->render_debug<retron::comp::grunt_avoid_box>(draw, retron::collision_box_type::grunt_avoid_box, 1, 245, 248);
+    this->render_debug<retron::comp::bounds_box>(draw, retron::collision_box_type::bounds_box, 2, 245, 248);
+    this->render_debug<retron::comp::hit_box>(draw, retron::collision_box_type::hit_box, 1, 252, 232);
 }
 
 template<typename BoxType>
@@ -438,12 +417,12 @@ void retron::collision::reset_box_internal(entt::entity entity, retron::collisio
     {
         default:
         case retron::collision_box_type::hit_box:
-            this->registry.remove<::hit_box_component>(entity);
+            this->registry.remove<retron::comp::hit_box>(entity);
             break;
 
         case retron::collision_box_type::bounds_box:
-            this->registry.remove<::bounds_box_component>(entity);
-            this->registry.remove<::grunt_avoid_box_component>(entity);
+            this->registry.remove<retron::comp::bounds_box>(entity);
+            this->registry.remove<retron::comp::grunt_avoid_box>(entity);
             this->dirty_box(entity, retron::collision_box_type::grunt_avoid_box);
             break;
     }
@@ -460,17 +439,17 @@ void retron::collision::dirty_box(entt::entity entity, retron::collision_box_typ
         {
             default:
             case retron::collision_box_type::hit_box:
-                this->registry.emplace_or_replace<::hit_dirty_component>(entity);
+                this->registry.emplace_or_replace<retron::comp::flag::hit_dirty>(entity);
                 break;
 
             case retron::collision_box_type::bounds_box:
-                this->registry.emplace_or_replace<::bounds_dirty_component>(entity);
+                this->registry.emplace_or_replace<retron::comp::flag::bounds_dirty>(entity);
                 break;
 
             case retron::collision_box_type::grunt_avoid_box:
                 if (type == retron::entity_type::level_box)
                 {
-                    this->registry.emplace_or_replace<::grunt_avoid_dirty_component>(entity);
+                    this->registry.emplace_or_replace<retron::comp::flag::grunt_avoid_dirty>(entity);
                 }
                 break;
         }
@@ -488,7 +467,7 @@ template<typename BoxType, typename DirtyType>
         return nullptr;
     }
 
-    ::box_component& hb = this->registry.get_or_emplace<BoxType>(entity, BoxType{});
+    retron::comp::box& hb = this->registry.get_or_emplace<BoxType>(entity, BoxType{});
     if (!hb.body)
     {
         ff::point_fixed pos = this->position_.get(entity) * ::PIXEL_TO_WORLD_SCALE;
@@ -572,15 +551,15 @@ template<typename BoxType, typename DirtyType>
     {
         default:
         case retron::collision_box_type::hit_box:
-            return this->update_box<::hit_box_component, ::hit_dirty_component>(entity, collision_type);
+            return this->update_box<retron::comp::hit_box, retron::comp::flag::hit_dirty>(entity, collision_type);
 
         case retron::collision_box_type::bounds_box:
-            return this->update_box<::bounds_box_component, ::bounds_dirty_component>(entity, collision_type);
+            return this->update_box<retron::comp::bounds_box, retron::comp::flag::bounds_dirty>(entity, collision_type);
 
         case retron::collision_box_type::grunt_avoid_box:
             return (this->entities_.type(entity) == retron::entity_type::level_box)
-                ? this->update_box<::grunt_avoid_box_component, ::grunt_avoid_dirty_component>(entity, collision_type)
-                : this->update_box<::bounds_box_component, ::bounds_dirty_component>(entity, collision_type);
+                ? this->update_box<retron::comp::grunt_avoid_box, retron::comp::flag::grunt_avoid_dirty>(entity, collision_type)
+                : this->update_box<retron::comp::bounds_box, retron::comp::flag::bounds_dirty>(entity, collision_type);
     }
 }
 
@@ -589,21 +568,21 @@ void retron::collision::update_dirty_boxes(retron::collision_box_type collision_
     switch (collision_type)
     {
         case retron::collision_box_type::hit_box:
-            for (entt::entity entity : this->registry.view<::hit_dirty_component>())
+            for (entt::entity entity : this->registry.view<retron::comp::flag::hit_dirty>())
             {
                 this->update_box(entity, retron::collision_box_type::hit_box);
             }
             break;
 
         case retron::collision_box_type::bounds_box:
-            for (entt::entity entity : this->registry.view<::bounds_dirty_component>())
+            for (entt::entity entity : this->registry.view<retron::comp::flag::bounds_dirty>())
             {
                 this->update_box(entity, retron::collision_box_type::bounds_box);
             }
             break;
 
         case retron::collision_box_type::grunt_avoid_box:
-            for (entt::entity entity : this->registry.view<::grunt_avoid_dirty_component>())
+            for (entt::entity entity : this->registry.view<retron::comp::flag::grunt_avoid_dirty>())
             {
                 this->update_box(entity, retron::collision_box_type::grunt_avoid_box);
             }
@@ -640,7 +619,7 @@ std::tuple<bool, entt::entity, entt::entity> retron::collision::does_overlap(::b
 template<typename T>
 void retron::collision::box_removed(entt::registry& registry, entt::entity entity)
 {
-    ::box_component& hb = this->registry.get<T>(entity);
+    retron::comp::box& hb = this->registry.get<T>(entity);
     hb.body->GetWorld()->DestroyBody(hb.body);
     hb.body = nullptr;
 }
@@ -653,7 +632,7 @@ void retron::collision::box_spec_changed(entt::registry& registry, entt::entity 
 
 void retron::collision::bounds_box_removed(entt::registry& registry, entt::entity entity)
 {
-    this->registry.remove<::grunt_avoid_box_component>(entity);
+    this->registry.remove<retron::comp::grunt_avoid_box>(entity);
 }
 
 void retron::collision::entity_created(entt::entity entity)

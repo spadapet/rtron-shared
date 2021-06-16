@@ -1,60 +1,33 @@
 #include "pch.h"
+#include "source/level/components.h"
 #include "source/level/position.h"
-
-namespace
-{
-    struct position_component
-    {
-        ff::point_fixed position;
-    };
-
-    struct velocity_component
-    {
-        ff::point_fixed velocity;
-    };
-
-    struct direction_component
-    {
-        ff::point_fixed direction;
-    };
-
-    struct scale_component
-    {
-        ff::point_fixed scale;
-    };
-
-    struct rotation_component
-    {
-        ff::fixed_int rotation;
-    };
-}
 
 retron::position::position(entt::registry& registry)
     : registry(registry)
 {
-    this->connections.emplace_front(this->registry.on_construct<::position_component>().connect<&retron::position::position_changed>(this));
-    this->connections.emplace_front(this->registry.on_update<::position_component>().connect<&retron::position::position_changed>(this));
-    this->connections.emplace_front(this->registry.on_construct<::velocity_component>().connect<&retron::position::velocity_changed>(this));
-    this->connections.emplace_front(this->registry.on_update<::velocity_component>().connect<&retron::position::position_changed>(this));
-    this->connections.emplace_front(this->registry.on_construct<::direction_component>().connect<&retron::position::direction_changed>(this));
-    this->connections.emplace_front(this->registry.on_update<::direction_component>().connect<&retron::position::direction_changed>(this));
-    this->connections.emplace_front(this->registry.on_construct<::scale_component>().connect<&retron::position::scale_changed>(this));
-    this->connections.emplace_front(this->registry.on_update<::scale_component>().connect<&retron::position::scale_changed>(this));
-    this->connections.emplace_front(this->registry.on_construct<::rotation_component>().connect<&retron::position::rotation_changed>(this));
-    this->connections.emplace_front(this->registry.on_update<::rotation_component>().connect<&retron::position::rotation_changed>(this));
+    this->connections.emplace_front(this->registry.on_construct<retron::comp::position>().connect<&retron::position::position_changed>(this));
+    this->connections.emplace_front(this->registry.on_update<retron::comp::position>().connect<&retron::position::position_changed>(this));
+    this->connections.emplace_front(this->registry.on_construct<retron::comp::velocity>().connect<&retron::position::velocity_changed>(this));
+    this->connections.emplace_front(this->registry.on_update<retron::comp::velocity>().connect<&retron::position::position_changed>(this));
+    this->connections.emplace_front(this->registry.on_construct<retron::comp::direction>().connect<&retron::position::direction_changed>(this));
+    this->connections.emplace_front(this->registry.on_update<retron::comp::direction>().connect<&retron::position::direction_changed>(this));
+    this->connections.emplace_front(this->registry.on_construct<retron::comp::scale>().connect<&retron::position::scale_changed>(this));
+    this->connections.emplace_front(this->registry.on_update<retron::comp::scale>().connect<&retron::position::scale_changed>(this));
+    this->connections.emplace_front(this->registry.on_construct<retron::comp::rotation>().connect<&retron::position::rotation_changed>(this));
+    this->connections.emplace_front(this->registry.on_update<retron::comp::rotation>().connect<&retron::position::rotation_changed>(this));
 }
 
 void retron::position::set(entt::entity entity, const ff::point_fixed& value)
 {
     if (value != this->get(entity))
     {
-        this->registry.emplace_or_replace<::position_component>(entity, value);
+        this->registry.emplace_or_replace<retron::comp::position>(entity, value);
     }
 }
 
 ff::point_fixed retron::position::get(entt::entity entity)
 {
-    ::position_component* c = this->registry.try_get<::position_component>(entity);
+    retron::comp::position* c = this->registry.try_get<retron::comp::position>(entity);
     return c ? c->position : ff::point_fixed(0, 0);
 }
 
@@ -71,13 +44,13 @@ void retron::position::velocity(entt::entity entity, const ff::point_fixed& valu
 {
     if (value != this->velocity(entity))
     {
-        this->registry.emplace_or_replace<::velocity_component>(entity, value);
+        this->registry.emplace_or_replace<retron::comp::velocity>(entity, value);
     }
 }
 
 ff::point_fixed retron::position::velocity(entt::entity entity)
 {
-    ::velocity_component* c = this->registry.try_get<::velocity_component>(entity);
+    retron::comp::velocity* c = this->registry.try_get<retron::comp::velocity>(entity);
     return c ? c->velocity : ff::point_fixed(0, 0);
 }
 
@@ -98,13 +71,13 @@ void retron::position::direction(entt::entity entity, const ff::point_fixed& val
     ff::point_fixed value_canon = retron::position::canon_direction(value);
     if (value_canon && value_canon != this->direction(entity))
     {
-        this->registry.emplace_or_replace<::direction_component>(entity, value_canon);
+        this->registry.emplace_or_replace<retron::comp::direction>(entity, value_canon);
     }
 }
 
 const ff::point_fixed retron::position::direction(entt::entity entity)
 {
-    ::direction_component* c = this->registry.try_get<::direction_component>(entity);
+    retron::comp::direction* c = this->registry.try_get<retron::comp::direction>(entity);
     return c ? c->direction : ff::point_fixed(0, 1);
 }
 
@@ -119,13 +92,13 @@ void retron::position::scale(entt::entity entity, const ff::point_fixed& value)
 {
     if (value != this->scale(entity))
     {
-        this->registry.emplace_or_replace<::scale_component>(entity, value);
+        this->registry.emplace_or_replace<retron::comp::scale>(entity, value);
     }
 }
 
 ff::point_fixed retron::position::scale(entt::entity entity)
 {
-    ::scale_component* c = this->registry.try_get<::scale_component>(entity);
+    retron::comp::scale* c = this->registry.try_get<retron::comp::scale>(entity);
     return c ? c->scale : ff::point_fixed(1, 1);
 }
 
@@ -133,13 +106,13 @@ void retron::position::rotation(entt::entity entity, ff::fixed_int value)
 {
     if (value != this->rotation(entity))
     {
-        this->registry.emplace_or_replace<::rotation_component>(entity, value);
+        this->registry.emplace_or_replace<retron::comp::rotation>(entity, value);
     }
 }
 
 ff::fixed_int retron::position::rotation(entt::entity entity)
 {
-    ::rotation_component* c = this->registry.try_get<::rotation_component>(entity);
+    retron::comp::rotation* c = this->registry.try_get<retron::comp::rotation>(entity);
     return c ? c->rotation : 0;
 }
 
@@ -170,7 +143,7 @@ ff::signal_sink<entt::entity>& retron::position::rotation_changed_sink()
 
 void retron::position::render_debug(ff::draw_base& draw)
 {
-    for (auto [entity, pc] : this->registry.view<::position_component>().each())
+    for (auto [entity, pc] : this->registry.view<retron::comp::position>().each())
     {
         draw.draw_palette_filled_rectangle(ff::rect_fixed(pc.position + ff::point_fixed(-1, -1), pc.position + ff::point_fixed(1, 1)), 230);
     }

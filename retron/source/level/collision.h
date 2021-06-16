@@ -4,7 +4,6 @@ namespace retron
 {
     class entities;
     class position;
-    enum class entity_type;
     enum class entity_category;
 
     enum class collision_box_type

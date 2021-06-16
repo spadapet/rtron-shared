@@ -191,6 +191,9 @@
     <ClInclude Include="source\core\particles.h">
       <Filter>source\core</Filter>
     </ClInclude>
+    <ClInclude Include="source\level\components.h">
+      <Filter>source\level</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="assets">

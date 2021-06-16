@@ -71,6 +71,7 @@
     <ClInclude Include="source\game\ready_state.h" />
     <ClInclude Include="source\game\score_state.h" />
     <ClInclude Include="source\level\collision.h" />
+    <ClInclude Include="source\level\components.h" />
     <ClInclude Include="source\level\entities.h" />
     <ClInclude Include="source\level\level.h" />
     <ClInclude Include="source\level\position.h" />

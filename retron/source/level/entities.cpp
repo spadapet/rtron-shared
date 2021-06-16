@@ -1,12 +1,7 @@
 #include "pch.h"
 #include "source/core/game_spec.h"
+#include "source/level/components.h"
 #include "source/level/entities.h"
-
-namespace
-{
-    struct pending_delete
-    {};
-}
 
 ff::rect_fixed retron::get_hit_box_spec(retron::entity_type type)
 {
@@ -135,7 +130,7 @@ bool retron::entities::delay_delete(entt::entity entity)
 {
     if (!this->deleted(entity))
     {
-        this->registry.emplace<::pending_delete>(entity);
+        this->registry.emplace<retron::comp::flag::pending_delete>(entity);
         this->entity_deleting_signal.notify(entity);
         return true;
     }
@@ -145,12 +140,12 @@ bool retron::entities::delay_delete(entt::entity entity)
 
 bool retron::entities::deleted(entt::entity entity) const
 {
-    return !this->registry.valid(entity) || this->registry.all_of<::pending_delete>(entity);
+    return !this->registry.valid(entity) || this->registry.all_of<retron::comp::flag::pending_delete>(entity);
 }
 
 void retron::entities::flush_delete()
 {
-    for (entt::entity entity : this->registry.view<::pending_delete>())
+    for (entt::entity entity : this->registry.view<retron::comp::flag::pending_delete>())
     {
         this->entity_deleted_signal.notify(entity);
         this->registry.destroy(entity);
