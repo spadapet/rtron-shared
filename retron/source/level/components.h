@@ -21,6 +21,7 @@ namespace retron::comp::flag
 
     struct clear_to_win {};
     struct hulk_target {};
+    struct render_on_top {};
 }
 
 namespace retron::comp
@@ -71,6 +72,13 @@ namespace retron::comp
     struct grunt_avoid_box : public retron::comp::box {};
 
     // Level
+
+    struct rectangle
+    {
+        ff::rect_fixed rect;
+        ff::fixed_int thickness;
+        int color;
+    };
 
     struct player
     {

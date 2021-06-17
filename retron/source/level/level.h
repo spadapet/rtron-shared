@@ -5,6 +5,7 @@
 #include "source/core/particles.h"
 #include "source/level/collision.h"
 #include "source/level/entities.h"
+#include "source/level/level_render.h"
 #include "source/level/position.h"
 
 namespace retron
@@ -62,7 +63,6 @@ namespace retron
         void handle_collisions();
         void handle_bounds_collision(entt::entity target_entity, entt::entity level_entity);
         void handle_entity_collision(entt::entity target_entity, entt::entity source_entity);
-        void handle_position_changed(entt::entity entity);
 
         void destroy_player_bullet(entt::entity bullet_entity, entt::entity by_entity);
         void destroy_enemy(entt::entity entity, entt::entity by_entity);
@@ -71,15 +71,6 @@ namespace retron
         void push_hulk(entt::entity enemy_entity, entt::entity by_entity);
 
         void render_particles(ff::draw_base& draw);
-        void render_entity(entt::entity entity, retron::entity_type type, ff::draw_base& draw);
-        void render_player(entt::entity entity, ff::draw_base& draw);
-        void render_bullet(entt::entity entity, ff::draw_base& draw);
-        void render_bonus(entt::entity entity, ff::draw_base& draw);
-        void render_electrode(entt::entity entity, ff::draw_base& draw);
-        void render_hulk(entt::entity entity, ff::draw_base& draw);
-        void render_grunt(entt::entity entity, ff::draw_base& draw);
-        void render_animation(entt::entity entity, ff::draw_base& draw, ff::animation_base* anim, ff::fixed_int frame);
-        void render_animation(entt::entity entity, ff::draw_base& draw, ff::animation_player_base* player);
         void render_debug(ff::draw_base& draw);
 
         bool enemies_active() const;
@@ -118,24 +109,18 @@ namespace retron
         retron::position position;
         retron::collision collision;
         retron::particles particles;
+        retron::level_render level_render;
 
         std::unordered_map<std::string_view, retron::particles::effect_t> particle_effects;
         std::vector<std::pair<entt::entity, entt::entity>> collisions;
         std::forward_list<ff::signal_connection> connections;
 
-        std::array<ff::auto_resource<ff::animation_base>, 8> player_walk_anims;
-        std::array<ff::auto_resource<ff::animation_base>, 3> electrode_anims;
         std::array<ff::auto_resource<ff::animation_base>, 3> electrode_die_anims;
-        std::array<ff::auto_resource<ff::animation_base>, static_cast<size_t>(retron::bonus_type::count)> bonus_anims;
         std::array<ff::auto_resource<ff::animation_base>, static_cast<size_t>(retron::bonus_type::count)> bonus_die_anims;
-        ff::auto_resource<ff::animation_base> player_bullet_anim;
-        ff::auto_resource<ff::animation_base> grunt_walk_anim;
-        ff::auto_resource<ff::animation_base> hulk_walk_anim;
 
         internal_phase_t phase_;
         size_t phase_counter;
         size_t frame_count;
-        size_t position_changed_count;
         size_t bonus_collected;
         std::vector<size_t> next_hulk_group_turn;
     };

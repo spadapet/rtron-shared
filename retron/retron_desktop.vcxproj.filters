@@ -107,6 +107,9 @@
     <ClCompile Include="source\core\particles.cpp">
       <Filter>source\core</Filter>
     </ClCompile>
+    <ClCompile Include="source\level\level_render.cpp">
+      <Filter>source\level</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h" />
@@ -192,6 +195,9 @@
       <Filter>source\core</Filter>
     </ClInclude>
     <ClInclude Include="source\level\components.h">
+      <Filter>source\level</Filter>
+    </ClInclude>
+    <ClInclude Include="source\level\level_render.h">
       <Filter>source\level</Filter>
     </ClInclude>
   </ItemGroup>

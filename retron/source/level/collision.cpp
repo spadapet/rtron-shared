@@ -348,20 +348,20 @@ ff::rect_fixed retron::collision::box_spec(entt::entity entity, retron::collisio
         case retron::collision_box_type::hit_box:
             {
                 retron::comp::box_spec* spec = this->registry.try_get<retron::comp::hit_box_spec>(entity);
-                box = spec ? spec->rect : retron::get_hit_box_spec(this->entities_.type(entity));
+                box = spec ? spec->rect : retron::entity_util::hit_box_spec(this->entities_.type(entity));
             }
             break;
 
         case retron::collision_box_type::bounds_box:
             {
                 retron::comp::box_spec* spec = this->registry.try_get<retron::comp::bounds_box_spec>(entity);
-                box = spec ? spec->rect : retron::get_bounds_box_spec(this->entities_.type(entity));
+                box = spec ? spec->rect : retron::entity_util::bounds_box_spec(this->entities_.type(entity));
             }
             break;
 
         case retron::collision_box_type::grunt_avoid_box:
             {
-                ff::rect_fixed grunt_spec = retron::get_bounds_box_spec(retron::entity_type::enemy_grunt);
+                ff::rect_fixed grunt_spec = retron::entity_util::bounds_box_spec(retron::entity_type::enemy_grunt);
                 box = this->box_spec(entity, retron::collision_box_type::bounds_box);
                 return box.inflate(grunt_spec.right, grunt_spec.bottom, -grunt_spec.left, -grunt_spec.top);
             }
@@ -668,7 +668,7 @@ bool retron::collision::hit_filter::ShouldCollide(::b2Fixture* fixtureA, ::b2Fix
     return
         !owner->entities_.deleted(entity_a) &&
         !owner->entities_.deleted(entity_b) &&
-        retron::can_hit_box_collide(owner->entities_.type(entity_a), owner->entities_.type(entity_b));
+        retron::entity_util::can_hit_box_collide(owner->entities_.type(entity_a), owner->entities_.type(entity_b));
 }
 
 retron::collision::bounds_filter::bounds_filter(retron::collision* collision)
@@ -683,5 +683,5 @@ bool retron::collision::bounds_filter::ShouldCollide(::b2Fixture* fixtureA, ::b2
     return
         !owner->entities_.deleted(entity_a) &&
         !owner->entities_.deleted(entity_b) &&
-        retron::can_bounds_box_collide(owner->entities_.type(entity_a), owner->entities_.type(entity_b));
+        retron::entity_util::can_bounds_box_collide(owner->entities_.type(entity_a), owner->entities_.type(entity_b));
 }

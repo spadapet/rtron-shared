@@ -3,9 +3,9 @@
 #include "source/level/components.h"
 #include "source/level/entities.h"
 
-ff::rect_fixed retron::get_hit_box_spec(retron::entity_type type)
+ff::rect_fixed retron::entity_util::hit_box_spec(retron::entity_type type)
 {
-    switch (retron::category(type))
+    switch (retron::entity_util::category(type))
     {
         case retron::entity_category::bullet:
             return { -8, -1, 0, 1 };
@@ -40,9 +40,9 @@ ff::rect_fixed retron::get_hit_box_spec(retron::entity_type type)
     return {};
 }
 
-ff::rect_fixed retron::get_bounds_box_spec(retron::entity_type type)
+ff::rect_fixed retron::entity_util::bounds_box_spec(retron::entity_type type)
 {
-    switch (retron::category(type))
+    switch (retron::entity_util::category(type))
     {
         case retron::entity_category::player:
             return { -4, -14, 5, 0 };
@@ -68,17 +68,17 @@ ff::rect_fixed retron::get_bounds_box_spec(retron::entity_type type)
             return { -9, -18, 10, 0 };
     }
 
-    return retron::get_hit_box_spec(type);
+    return retron::entity_util::hit_box_spec(type);
 }
 
-bool retron::can_hit_box_collide(retron::entity_type type_a, retron::entity_type type_b)
+bool retron::entity_util::can_hit_box_collide(retron::entity_type type_a, retron::entity_type type_b)
 {
     if (type_a > type_b)
     {
         std::swap(type_a, type_b);
     }
 
-    switch (retron::category(type_a))
+    switch (retron::entity_util::category(type_a))
     {
         case retron::entity_category::player:
             return ff::flags::has_any(type_b, retron::entity_type::category_player_collision);
@@ -97,10 +97,76 @@ bool retron::can_hit_box_collide(retron::entity_type type_a, retron::entity_type
     }
 }
 
-bool retron::can_bounds_box_collide(retron::entity_type type_a, retron::entity_type type_b)
+bool retron::entity_util::can_bounds_box_collide(retron::entity_type type_a, retron::entity_type type_b)
 {
     // One of the two needs to be a level box
     return ff::flags::has(ff::flags::toggle(type_a, type_b), retron::entity_type::category_level);
+}
+
+size_t retron::entity_util::index(retron::entity_type type)
+{
+    switch (type)
+    {
+        default:
+            return 0;
+
+        case retron::entity_type::bullet_player_1:
+        case retron::entity_type::player_1:
+        case retron::entity_type::electrode_1:
+            return 1;
+
+        case retron::entity_type::electrode_2:
+            return 2;
+
+        case retron::entity_type::electrode_3:
+            return 3;
+
+        case retron::entity_type::bonus_woman: return static_cast<size_t>(retron::bonus_type::woman);
+        case retron::entity_type::bonus_man: return static_cast<size_t>(retron::bonus_type::man);
+        case retron::entity_type::bonus_girl: return static_cast<size_t>(retron::bonus_type::girl);
+        case retron::entity_type::bonus_boy: return static_cast<size_t>(retron::bonus_type::boy);
+        case retron::entity_type::bonus_dog: return static_cast<size_t>(retron::bonus_type::dog);
+    }
+}
+
+retron::entity_type retron::entity_util::bonus(retron::bonus_type type)
+{
+    switch (type)
+    {
+        case retron::bonus_type::woman: return retron::entity_type::bonus_woman;
+        case retron::bonus_type::man: return retron::entity_type::bonus_man;
+        case retron::bonus_type::girl: return retron::entity_type::bonus_girl;
+        case retron::bonus_type::boy: return retron::entity_type::bonus_boy;
+        case retron::bonus_type::dog: return retron::entity_type::bonus_dog;
+        default: assert(false); return retron::entity_type::none;
+    }
+}
+
+retron::entity_type retron::entity_util::player(size_t index)
+{
+    switch (index)
+    {
+        case 0: return retron::entity_type::player_0;
+        case 1: return retron::entity_type::player_1;
+        default: assert(false); return retron::entity_type::none;
+    }
+}
+
+retron::entity_type retron::entity_util::electrode(size_t index)
+{
+    switch (index)
+    {
+        case 0: return retron::entity_type::electrode_0;
+        case 1: return retron::entity_type::electrode_1;
+        case 2: return retron::entity_type::electrode_2;
+        case 3: return retron::entity_type::electrode_3;
+        default: assert(false); return retron::entity_type::none;
+    }
+}
+
+retron::entity_type retron::entity_util::bullet_for_player(retron::entity_type type)
+{
+    return retron::entity_util::index(type) ? retron::entity_type::bullet_player_1 : retron::entity_type::bullet_player_0;
 }
 
 retron::entities::entities(entt::registry& registry)
@@ -123,7 +189,7 @@ retron::entity_type retron::entities::type(entt::entity entity) const
 
 retron::entity_category retron::entities::category(entt::entity entity) const
 {
-    return retron::category(this->type(entity));
+    return retron::entity_util::category(this->type(entity));
 }
 
 bool retron::entities::delay_delete(entt::entity entity)
