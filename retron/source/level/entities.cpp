@@ -171,7 +171,10 @@ retron::entity_type retron::entity_util::bullet_for_player(retron::entity_type t
 
 retron::entities::entities(entt::registry& registry)
     : registry(registry)
-{}
+{
+    this->connections.emplace_front(this->registry.on_construct<retron::comp::flag::pending_delete>().connect<&retron::entities::handle_deleting>(this));
+    this->connections.emplace_front(this->registry.on_destroy<retron::comp::flag::pending_delete>().connect<&retron::entities::handle_deleted>(this));
+}
 
 entt::entity retron::entities::create(retron::entity_type type)
 {
@@ -197,7 +200,6 @@ bool retron::entities::delay_delete(entt::entity entity)
     if (!this->deleted(entity))
     {
         this->registry.emplace<retron::comp::flag::pending_delete>(entity);
-        this->entity_deleting_signal.notify(entity);
         return true;
     }
 
@@ -213,7 +215,6 @@ void retron::entities::flush_delete()
 {
     for (entt::entity entity : this->registry.view<retron::comp::flag::pending_delete>())
     {
-        this->entity_deleted_signal.notify(entity);
         this->registry.destroy(entity);
     }
 }
@@ -222,7 +223,7 @@ void retron::entities::delete_all()
 {
     this->registry.each([this](entt::entity entity)
         {
-            this->delay_delete(entity);
+            this->registry.emplace_or_replace<retron::comp::flag::pending_delete>(entity);
         });
 
     this->flush_delete();
@@ -241,4 +242,14 @@ ff::signal_sink<entt::entity>& retron::entities::entity_deleting_sink()
 ff::signal_sink<entt::entity>& retron::entities::entity_deleted_sink()
 {
     return this->entity_deleted_signal;
+}
+
+void retron::entities::handle_deleting(entt::registry& registry, entt::entity entity)
+{
+    this->entity_deleting_signal.notify(entity);
+}
+
+void retron::entities::handle_deleted(entt::registry& registry, entt::entity entity)
+{
+    this->entity_deleted_signal.notify(entity);
 }

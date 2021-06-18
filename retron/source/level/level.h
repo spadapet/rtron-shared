@@ -5,6 +5,7 @@
 #include "source/core/particles.h"
 #include "source/level/collision.h"
 #include "source/level/entities.h"
+#include "source/level/level_logic.h"
 #include "source/level/level_render.h"
 #include "source/level/position.h"
 
@@ -65,7 +66,6 @@ namespace retron
         void advance_phase();
 
         void advance_player(entt::entity entity, retron::comp::player& comp, const retron::comp::position& pos, const retron::comp::velocity& vel);
-        void advance_bullet(entt::entity entity, const retron::comp::position& pos, const retron::comp::velocity& vel);
         void advance_grunt(entt::entity entity, retron::comp::grunt& comp, const retron::comp::position& pos);
         void advance_hulk(entt::entity entity, retron::comp::hulk& comp, const retron::comp::position& pos, const retron::comp::velocity& vel);
         void advance_bonus(entt::entity entity, retron::comp::bonus& comp, const retron::comp::position& pos, const retron::comp::velocity& vel);
@@ -120,6 +120,7 @@ namespace retron
         retron::position position;
         retron::collision collision;
         retron::particles particles;
+        retron::level_logic level_logic;
         retron::level_render level_render;
 
         std::unordered_map<std::string_view, retron::particles::effect_t> particle_effects;

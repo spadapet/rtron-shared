@@ -100,7 +100,11 @@ namespace retron
         ff::signal_sink<entt::entity>& entity_deleted_sink();
 
     private:
+        void handle_deleting(entt::registry& registry, entt::entity entity);
+        void handle_deleted(entt::registry& registry, entt::entity entity);
+
         entt::registry& registry;
+        std::forward_list<entt::scoped_connection> connections;
         ff::signal<entt::entity, retron::entity_type> entity_created_signal;
         ff::signal<entt::entity> entity_deleting_signal;
         ff::signal<entt::entity> entity_deleted_signal;

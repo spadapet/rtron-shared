@@ -1,15 +1,16 @@
 #pragma once
 
 #include "source/core/game_spec.h"
+#include "source/core/level_base.h"
 
 namespace retron
 {
-    class level_render
+    class level_render : public level_render_base
     {
     public:
         level_render();
 
-        void render(ff::draw_base& draw, const entt::registry& registry, const retron::difficulty_spec& difficulty_spec, size_t frame_count);
+        virtual void render(ff::draw_base& draw, const entt::registry& registry, const retron::difficulty_spec& difficulty_spec, size_t frame_count) override;
 
     private:
         void init_resources();

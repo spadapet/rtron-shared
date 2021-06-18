@@ -7,40 +7,6 @@
 
 static const size_t MAX_DELAY_PARTICLES = 128;
 
-namespace anim_events
-{
-    static const size_t NEW_PARTICLES = ff::stable_hash_func("new_particles"sv);
-    static const size_t DELETE_ANIMATION = ff::stable_hash_func("delete_animation"sv);
-};
-
-static ff::point_fixed get_press_vector(const ff::input_event_provider& input_events, bool for_shoot)
-{
-    ff::fixed_int joystick_min = retron::app_service::get().game_spec().joystick_min;
-
-    ff::rect_fixed dir_press(
-        input_events.analog_value(for_shoot ? retron::input_events::ID_SHOOT_LEFT : retron::input_events::ID_LEFT),
-        input_events.analog_value(for_shoot ? retron::input_events::ID_SHOOT_UP : retron::input_events::ID_UP),
-        input_events.analog_value(for_shoot ? retron::input_events::ID_SHOOT_RIGHT : retron::input_events::ID_RIGHT),
-        input_events.analog_value(for_shoot ? retron::input_events::ID_SHOOT_DOWN : retron::input_events::ID_DOWN));
-
-    dir_press.left = dir_press.left * ff::fixed_int(dir_press.left >= joystick_min);
-    dir_press.top = dir_press.top * ff::fixed_int(dir_press.top >= joystick_min);
-    dir_press.right = dir_press.right * ff::fixed_int(dir_press.right >= joystick_min);
-    dir_press.bottom = dir_press.bottom * ff::fixed_int(dir_press.bottom >= joystick_min);
-
-    ff::point_fixed dir(dir_press.right - dir_press.left, dir_press.bottom - dir_press.top);
-    if (dir)
-    {
-        int slice = retron::helpers::dir_to_degrees(dir) * 2 / 45;
-
-        return ff::point_fixed(
-            (slice >= 6 && slice <= 11) ? -1 : ((slice <= 3 || slice >= 14) ? 1 : 0),
-            (slice >= 2 && slice <= 7) ? -1 : ((slice >= 10 && slice <= 15) ? 1 : 0));
-    }
-
-    return ff::point_fixed(0, 0);
-}
-
 static std::pair<std::string_view, std::string_view> start_particle_names_0_90(retron::entity_type type)
 {
     switch (type)
