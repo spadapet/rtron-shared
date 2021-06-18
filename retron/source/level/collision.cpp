@@ -112,11 +112,16 @@ retron::collision::collision(entt::registry& registry, retron::position& positio
     this->connections.emplace_front(this->registry.on_construct<retron::comp::bounds_box_spec>().connect<&collision::box_spec_changed<retron::collision_box_type::grunt_avoid_box>>(this));
     this->connections.emplace_front(this->registry.on_update<retron::comp::bounds_box_spec>().connect<&collision::box_spec_changed<retron::collision_box_type::grunt_avoid_box>>(this));
 
+    this->connections.emplace_front(this->registry.on_construct<retron::comp::position>().connect<&retron::collision::position_changed>(this));
+    this->connections.emplace_front(this->registry.on_update<retron::comp::position>().connect<&retron::collision::position_changed>(this));
+    this->connections.emplace_front(this->registry.on_construct<retron::comp::direction>().connect<&retron::collision::scale_changed>(this));
+    this->connections.emplace_front(this->registry.on_update<retron::comp::direction>().connect<&retron::collision::scale_changed>(this));
+    this->connections.emplace_front(this->registry.on_construct<retron::comp::scale>().connect<&retron::collision::scale_changed>(this));
+    this->connections.emplace_front(this->registry.on_update<retron::comp::scale>().connect<&retron::collision::scale_changed>(this));
+    this->connections.emplace_front(this->registry.on_construct<retron::comp::rotation>().connect<&retron::collision::position_changed>(this));
+    this->connections.emplace_front(this->registry.on_update<retron::comp::rotation>().connect<&retron::collision::position_changed>(this));
+
     this->ff_connections.emplace_front(entities.entity_created_sink().connect(std::bind(&collision::entity_created, this, std::placeholders::_1)));
-    this->ff_connections.emplace_front(position.position_changed_sink().connect(std::bind(&collision::position_changed, this, std::placeholders::_1)));
-    this->ff_connections.emplace_front(position.rotation_changed_sink().connect(std::bind(&collision::position_changed, this, std::placeholders::_1)));
-    this->ff_connections.emplace_front(position.direction_changed_sink().connect(std::bind(&collision::scale_changed, this, std::placeholders::_1)));
-    this->ff_connections.emplace_front(position.scale_changed_sink().connect(std::bind(&collision::scale_changed, this, std::placeholders::_1)));
 }
 
 const std::vector<std::pair<entt::entity, entt::entity>>& retron::collision::detect_collisions(
@@ -637,10 +642,10 @@ void retron::collision::bounds_box_removed(entt::registry& registry, entt::entit
 
 void retron::collision::entity_created(entt::entity entity)
 {
-    this->position_changed(entity);
+    this->position_changed(this->registry, entity);
 }
 
-void retron::collision::position_changed(entt::entity entity)
+void retron::collision::position_changed(entt::registry& registry, entt::entity entity)
 {
     for (retron::collision_box_type type : ::collision_box_types)
     {
@@ -648,7 +653,7 @@ void retron::collision::position_changed(entt::entity entity)
     }
 }
 
-void retron::collision::scale_changed(entt::entity entity)
+void retron::collision::scale_changed(entt::registry& registry, entt::entity entity)
 {
     for (retron::collision_box_type type : ::collision_box_types)
     {

@@ -13,17 +13,17 @@ retron::level_render::level_render()
 
 void retron::level_render::render(ff::draw_base& draw, const entt::registry& registry, const retron::difficulty_spec& difficulty_spec, size_t frame_count)
 {
+    for (auto [entity, comp] : registry.view<const retron::comp::rectangle>().each())
+    {
+        draw.draw_palette_outline_rectangle(comp.rect, comp.color, comp.thickness);
+    }
+
     for (auto [entity, comp, pos] : registry.view<const retron::comp::animation, const retron::comp::position>(entt::exclude_t<retron::comp::flag::render_on_top>()).each())
     {
         const retron::comp::scale* scale = registry.try_get<const retron::comp::scale>(entity);
         const retron::comp::rotation* rot = registry.try_get<const retron::comp::rotation>(entity);
 
         comp.anim->draw_animation(draw, ff::pixel_transform(pos.position, scale ? scale->scale : ff::point_fixed{ 1, 1 }, rot ? rot->rotation : 0_f));
-    }
-
-    for (auto [entity, comp] : registry.view<const retron::comp::rectangle>().each())
-    {
-        draw.draw_palette_outline_rectangle(comp.rect, comp.color, comp.thickness);
     }
 
     for (auto [entity, pos, type] : registry.view<const retron::comp::electrode, const retron::comp::position, const retron::entity_type>().each())

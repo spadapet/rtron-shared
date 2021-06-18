@@ -8,6 +8,18 @@
 #include "source/level/level_render.h"
 #include "source/level/position.h"
 
+namespace retron::comp
+{
+    struct position;
+    struct velocity;
+
+    struct player;
+    struct grunt;
+    struct hulk;
+    struct bonus;
+    struct animation;
+}
+
 namespace retron
 {
     class game_service;
@@ -48,16 +60,18 @@ namespace retron
         void create_start_particles(entt::entity entity);
         void create_objects(size_t& count, retron::entity_type type, const ff::rect_fixed& bounds, const std::function<entt::entity(retron::entity_type, const ff::point_fixed&)>& create_func);
 
-        void advance_entity(entt::entity entity, retron::entity_type type);
-        void advance_player(entt::entity entity);
-        void advance_player_bullet(entt::entity entity);
-        void advance_grunt(entt::entity entity);
-        void advance_hulk(entt::entity entity);
-        void advance_bonus(entt::entity entity);
-        void advance_animation(entt::entity entity);
+        void advance_entities();
         void advance_entity_followers();
         void advance_phase();
 
+        void advance_player(entt::entity entity, retron::comp::player& comp, const retron::comp::position& pos, const retron::comp::velocity& vel);
+        void advance_bullet(entt::entity entity, const retron::comp::position& pos, const retron::comp::velocity& vel);
+        void advance_grunt(entt::entity entity, retron::comp::grunt& comp, const retron::comp::position& pos);
+        void advance_hulk(entt::entity entity, retron::comp::hulk& comp, const retron::comp::position& pos, const retron::comp::velocity& vel);
+        void advance_bonus(entt::entity entity, retron::comp::bonus& comp, const retron::comp::position& pos, const retron::comp::velocity& vel);
+        void advance_animation(entt::entity entity, retron::comp::animation& comp, const retron::comp::position& pos);
+
+        void handle_particle_effect_done(int effect_id);
         void handle_entity_created(entt::entity entity);
         void handle_entity_deleted(entt::entity entity);
         void handle_collisions();
@@ -73,16 +87,13 @@ namespace retron
         void render_particles(ff::draw_base& draw);
         void render_debug(ff::draw_base& draw);
 
-        bool enemies_active() const;
         bool player_active() const;
         entt::entity player_target(size_t enemy_index) const;
         void player_add_points(entt::entity player_or_bullet, entt::entity destroyed_entity);
 
         size_t pick_grunt_move_frame();
-        ff::point_fixed pick_move_destination(entt::entity entity, entt::entity destEntity, retron::collision_box_type collision_type);
+        ff::point_fixed pick_move_destination(entt::entity entity, entt::entity dest_entity, retron::collision_box_type collision_type);
         entt::entity pick_hulk_target(entt::entity entity);
-
-        void enum_entities(const std::function<void(entt::entity, retron::entity_type)>& func);
 
         enum class internal_phase_t
         {

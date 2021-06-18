@@ -69,6 +69,7 @@ retron::level::level(retron::game_service& game_service, const retron::level_spe
     , bonus_collected(0)
 {
     this->connections.emplace_front(retron::app_service::get().reload_resources_sink().connect(std::bind(&retron::level::init_resources, this)));
+    this->connections.emplace_front(this->particles.effect_done_sink().connect(std::bind(&retron::level::handle_particle_effect_done, this, std::placeholders::_1)));
     this->connections.emplace_front(this->entities.entity_created_sink().connect(std::bind(&retron::level::handle_entity_created, this, std::placeholders::_1)));
     this->connections.emplace_front(this->entities.entity_deleted_sink().connect(std::bind(&retron::level::handle_entity_deleted, this, std::placeholders::_1)));
 
@@ -81,7 +82,7 @@ std::shared_ptr<ff::state> retron::level::advance_time()
     if (this->phase() == retron::level_phase::playing)
     {
         ff::end_scope_action particle_scope = this->particles.advance_async();
-        this->enum_entities(std::bind(&retron::level::advance_entity, this, std::placeholders::_1, std::placeholders::_2));
+        this->advance_entities();
         this->handle_collisions();
     }
 
@@ -254,6 +255,7 @@ entt::entity retron::level::create_bonus(retron::entity_type type, const ff::poi
 {
     entt::entity entity = this->create_entity(type, pos);
     this->registry.emplace<retron::comp::bonus>(entity, 0u);
+    this->registry.emplace<retron::comp::velocity>(entity, ff::point_fixed{});
     this->registry.emplace<retron::comp::flag::hulk_target>(entity);
 
     return entity;
@@ -278,6 +280,7 @@ entt::entity retron::level::create_hulk(retron::entity_type type, const ff::poin
 {
     entt::entity entity = this->create_entity(type, pos);
     this->registry.emplace<retron::comp::hulk>(entity, this->registry.size<retron::comp::hulk>(), this->next_hulk_group_turn.size() - 1, entt::null, ff::point_fixed{}, false);
+    this->registry.emplace<retron::comp::velocity>(entity, ff::point_fixed{});
     return entity;
 }
 
@@ -496,236 +499,56 @@ void retron::level::create_objects(size_t& count, retron::entity_type type, cons
     }
 }
 
-void retron::level::advance_entity(entt::entity entity, entity_type type)
+void retron::level::advance_entities()
 {
-    switch (retron::entity_util::category(type))
+    for (auto [entity, comp, pos] : registry.view<retron::comp::animation, const retron::comp::position>().each())
     {
-        case retron::entity_category::player:
-            this->advance_player(entity);
-            break;
-
-        case retron::entity_category::bullet:
-            this->advance_player_bullet(entity);
-            break;
-
-        case retron::entity_category::enemy:
-            switch (type)
-            {
-                case retron::entity_type::enemy_grunt:
-                    this->advance_grunt(entity);
-                    break;
-
-                case retron::entity_type::enemy_hulk:
-                    this->advance_hulk(entity);
-                    break;
-            }
-            break;
-
-        case retron::entity_category::bonus:
-            this->advance_bonus(entity);
-            break;
-
-        case retron::entity_category::animation:
-            this->advance_animation(entity);
-            break;
+        this->advance_animation(entity, comp, pos);
     }
-}
 
-void retron::level::advance_player(entt::entity entity)
-{
-    if (this->phase_ == internal_phase_t::playing || this->phase_ == internal_phase_t::show_players)
+    if (this->phase_ == internal_phase_t::playing && this->player_active())
     {
-        retron::comp::player& player_data = this->registry.get<retron::comp::player>(entity);
-        player_data.state_counter++;
-
-        switch (player_data.state)
+        for (auto [entity, comp, pos] : registry.view<retron::comp::grunt, const retron::comp::position>().each())
         {
-            case retron::comp::player::player_state::ghost:
-                if (player_data.state_counter >= this->difficulty_spec_.player_ghost_counter)
-                {
-                    player_data.state = retron::comp::player::player_state::alive;
-                }
-                [[fallthrough]];
-
-            case retron::comp::player::player_state::alive:
-                {
-                    ff::point_fixed move_vector = ::get_press_vector(player_data.input_events, false);
-                    ff::point_fixed shot_vector = ::get_press_vector(player_data.input_events, true);
-
-                    this->position.velocity(entity, move_vector * this->difficulty_spec_.player_move);
-                    this->position.set(entity, this->position.get(entity) + this->position.velocity(entity));
-                    this->position.direction(entity, ff::point_fixed(
-                        -ff::fixed_int(move_vector.x < 0_f) + ff::fixed_int(move_vector.x > 0_f),
-                        -ff::fixed_int(move_vector.y < 0_f) + ff::fixed_int(move_vector.y > 0_f)));
-
-                    if (player_data.allow_shot_frame <= this->frame_count && shot_vector)
-                    {
-                        player_data.state = retron::comp::player::player_state::alive; // stop being an invincible ghost after shooting
-                        player_data.allow_shot_frame = this->frame_count + this->difficulty_spec_.player_shot_counter;
-                        this->create_player_bullet(entity, this->bounds_box(entity).center(), retron::position::canon_direction(shot_vector));
-                    }
-                }
-                break;
-
-            case retron::comp::player::player_state::dead:
-                if (player_data.state_counter >= this->difficulty_spec_.player_dead_counter && this->game_service.coop_take_life(player_data.player.get()))
-                {
-                    this->entities.delay_delete(entity);
-                    this->create_player(player_data.player.get());
-                }
-                break;
-        }
-    }
-}
-
-void retron::level::advance_player_bullet(entt::entity entity)
-{
-    if (this->player_active())
-    {
-        ff::point_fixed pos = this->position.get(entity);
-        ff::point_fixed vel = this->position.velocity(entity);
-        this->position.set(entity, pos + vel);
-    }
-}
-
-void retron::level::advance_grunt(entt::entity entity)
-{
-    if (this->enemies_active())
-    {
-        retron::comp::grunt& data = this->registry.get<retron::comp::grunt>(entity);
-        if (!data.move_frame)
-        {
-            data.move_frame = this->pick_grunt_move_frame();
-        }
-        else if (data.move_frame <= this->frame_count)
-        {
-            data.move_frame = this->pick_grunt_move_frame();
-
-            entt::entity dest_entity = this->player_target(data.index);
-            if (dest_entity != entt::null)
-            {
-                data.dest_pos = this->pick_move_destination(entity, dest_entity, retron::collision_box_type::grunt_avoid_box);
-            }
-
-            ff::point_fixed grunt_pos = this->position.get(entity);
-            ff::point_fixed delta = data.dest_pos - grunt_pos;
-            ff::point_fixed vel(
-                std::copysign(this->difficulty_spec_.grunt_move.x, delta.x ? delta.x : (ff::math::random_bool() ? 1 : -1)),
-                std::copysign(this->difficulty_spec_.grunt_move.y, delta.y ? delta.y : (ff::math::random_bool() ? 1 : -1)));
-
-            this->position.set(entity, grunt_pos + vel);
-        }
-    }
-}
-
-void retron::level::advance_hulk(entt::entity entity)
-{
-    if (this->enemies_active())
-    {
-        retron::comp::hulk& data = this->registry.get<retron::comp::hulk>(entity);
-
-        if (this->frame_count >= this->next_hulk_group_turn[data.group] ||
-            !this->position.velocity(entity) ||
-            !this->registry.valid(data.target_entity) ||
-            data.force_turn)
-        {
-            if (!this->registry.valid(data.target_entity))
-            {
-                data.target_entity = this->pick_hulk_target(entity);
-            }
-
-            if (this->registry.valid(data.target_entity))
-            {
-                const retron::difficulty_spec& diff = this->difficulty_spec_;
-                ff::point_fixed vel = this->position.velocity(entity);
-
-                if (!vel || data.force_turn || ff::math::random_range(0u, diff.hulk_no_move_chance))
-                {
-                    ff::point_fixed pos = this->position.get(entity);
-                    ff::point_fixed target = this->position.get(data.target_entity) + ff::point_fixed(
-                        ff::math::random_range(-diff.hulk_fudge.x, diff.hulk_fudge.x),
-                        ff::math::random_range(-diff.hulk_fudge.y, diff.hulk_fudge.y));
-
-                    if (vel.x || (!vel && ff::math::random_bool()))
-                    {
-                        vel.x = 0;
-                        vel.y = diff.hulk_move.y * ((pos.y < target.y) ? 1 : -1);
-                    }
-                    else
-                    {
-                        vel.x = diff.hulk_move.x * ((pos.x < target.x) ? 1 : -1);
-                        vel.y = 0;
-                    }
-
-                    this->position.velocity(entity, vel);
-                }
-            }
-
-            data.force_turn = false;
+            this->advance_grunt(entity, comp, pos);
         }
 
-        ff::point_fixed vel = !(this->frame_count % 8) ? this->position.velocity(entity) : ff::point_fixed{};
-        this->position.set(entity, this->position.get(entity) + vel + data.force_push);
-        data.force_push = {};
+        for (auto [entity, comp, pos, vel] : registry.view<retron::comp::hulk, const retron::comp::position, const retron::comp::velocity>().each())
+        {
+            this->advance_hulk(entity, comp, pos, vel);
+        }
     }
-}
 
-void retron::level::advance_bonus(entt::entity entity)
-{
     if (this->phase_ < internal_phase_t::show_players || this->player_active())
     {
-        retron::comp::bonus& data = this->registry.get<retron::comp::bonus>(entity);
-        if (data.turn_frame <= this->frame_count || !this->position.velocity(entity))
+        for (auto [entity, comp, pos, vel] : registry.view<retron::comp::bonus, const retron::comp::position, const retron::comp::velocity>().each())
         {
-            this->position.velocity(entity, retron::helpers::index_to_dir(ff::math::random_range(0, 7)) * this->difficulty_spec_.bonus_move);
-            data.turn_frame = this->frame_count + ff::math::random_range(this->difficulty_spec_.bonus_min_ticks, this->difficulty_spec_.bonus_max_ticks) * this->difficulty_spec_.bonus_tick_frames;
-        }
-
-        if (!((this->frame_count - data.turn_frame) % this->difficulty_spec_.bonus_tick_frames))
-        {
-            this->position.set(entity, this->position.get(entity) + this->position.velocity(entity));
+            this->advance_bonus(entity, comp, pos, vel);
         }
     }
-}
 
-void retron::level::advance_animation(entt::entity entity)
-{
-    retron::comp::animation& data = this->registry.get<retron::comp::animation>(entity);
-    std::forward_list<ff::animation_event> events;
-    data.anim->advance_animation(&ff::push_front_collection(events));
-
-    for (const ff::animation_event& event : events)
+    if (this->player_active())
     {
-        if (event.event_id == anim_events::NEW_PARTICLES && event.params)
+        for (auto [entity, pos, vel] : registry.view<retron::comp::bullet, const retron::comp::position, const retron::comp::velocity>().each())
         {
-            std::string name = event.params->get<std::string>("name");
-            auto i = this->particle_effects.find(name);
-            assert(i != this->particle_effects.end());
-
-            if (i != this->particle_effects.end())
-            {
-                i->second.add(this->particles, this->position.get(entity));
-            }
+            this->position.set(entity, pos.position + vel.velocity);
         }
-        else if (event.event_id == anim_events::DELETE_ANIMATION)
+    }
+
+    if (this->phase_ == internal_phase_t::playing || this->phase_ == internal_phase_t::show_players)
+    {
+        for (auto [entity, comp, pos, vel] : registry.view<retron::comp::player, const retron::comp::position, const retron::comp::velocity>().each())
         {
-            this->entities.delay_delete(entity);
+            this->advance_player(entity, comp, pos, vel);
         }
     }
 }
 
 void retron::level::advance_entity_followers()
 {
-    for (auto [entity, data] : this->registry.view<retron::comp::showing_particle_effect>().each())
+    for (auto [entity, comp] : this->registry.view<retron::comp::showing_particle_effect>().each())
     {
-        if (this->particles.effect_active(data.effect_id))
-        {
-            this->particles.effect_position(data.effect_id, this->bounds_box(entity).center());
-        }
-        else
-        {
-            this->registry.remove<retron::comp::showing_particle_effect>(entity);
-        }
+        this->particles.effect_position(comp.effect_id, this->bounds_box(entity).center());
     }
 }
 
@@ -783,6 +606,164 @@ void retron::level::advance_phase()
         if (winning)
         {
             this->internal_phase(internal_phase_t::winning);
+        }
+    }
+}
+
+void retron::level::advance_player(entt::entity entity, retron::comp::player& comp, const retron::comp::position& pos, const retron::comp::velocity& vel)
+{
+    comp.state_counter++;
+
+    switch (comp.state)
+    {
+        case retron::comp::player::player_state::ghost:
+            if (comp.state_counter >= this->difficulty_spec_.player_ghost_counter)
+            {
+                comp.state = retron::comp::player::player_state::alive;
+            }
+            [[fallthrough]];
+
+        case retron::comp::player::player_state::alive:
+            {
+                ff::point_fixed move_vector = ::get_press_vector(comp.input_events, false);
+                ff::point_fixed shot_vector = ::get_press_vector(comp.input_events, true);
+
+                this->position.velocity(entity, move_vector * this->difficulty_spec_.player_move);
+                this->position.set(entity, pos.position + vel.velocity);
+                this->position.direction(entity, ff::point_fixed(
+                    -ff::fixed_int(move_vector.x < 0_f) + ff::fixed_int(move_vector.x > 0_f),
+                    -ff::fixed_int(move_vector.y < 0_f) + ff::fixed_int(move_vector.y > 0_f)));
+
+                if (comp.allow_shot_frame <= this->frame_count && shot_vector)
+                {
+                    comp.state = retron::comp::player::player_state::alive; // stop being an invincible ghost after shooting
+                    comp.allow_shot_frame = this->frame_count + this->difficulty_spec_.player_shot_counter;
+                    this->create_player_bullet(entity, this->bounds_box(entity).center(), retron::position::canon_direction(shot_vector));
+                }
+            }
+            break;
+
+        case retron::comp::player::player_state::dead:
+            if (comp.state_counter >= this->difficulty_spec_.player_dead_counter && this->game_service.coop_take_life(comp.player.get()))
+            {
+                this->entities.delay_delete(entity);
+                this->create_player(comp.player.get());
+            }
+            break;
+    }
+}
+
+void retron::level::advance_grunt(entt::entity entity, retron::comp::grunt& comp, const retron::comp::position& pos)
+{
+    if (!comp.move_frame)
+    {
+        comp.move_frame = this->pick_grunt_move_frame();
+    }
+    else if (comp.move_frame <= this->frame_count)
+    {
+        comp.move_frame = this->pick_grunt_move_frame();
+
+        entt::entity dest_entity = this->player_target(comp.index);
+        if (dest_entity != entt::null)
+        {
+            comp.dest_pos = this->pick_move_destination(entity, dest_entity, retron::collision_box_type::grunt_avoid_box);
+        }
+
+        ff::point_fixed delta = comp.dest_pos - pos.position;
+        ff::point_fixed vel(
+            std::copysign(this->difficulty_spec_.grunt_move.x, delta.x ? delta.x : (ff::math::random_bool() ? 1 : -1)),
+            std::copysign(this->difficulty_spec_.grunt_move.y, delta.y ? delta.y : (ff::math::random_bool() ? 1 : -1)));
+
+        this->position.set(entity, pos.position + vel);
+    }
+}
+
+void retron::level::advance_hulk(entt::entity entity, retron::comp::hulk& comp, const retron::comp::position& pos, const retron::comp::velocity& vel)
+{
+    if (comp.force_turn || !vel.velocity || this->frame_count >= this->next_hulk_group_turn[comp.group] || !this->registry.valid(comp.target_entity))
+    {
+        if (!this->registry.valid(comp.target_entity))
+        {
+            comp.target_entity = this->pick_hulk_target(entity);
+        }
+
+        if (this->registry.valid(comp.target_entity))
+        {
+            const retron::difficulty_spec& diff = this->difficulty_spec_;
+
+            if (!vel.velocity || comp.force_turn || ff::math::random_range(0u, diff.hulk_no_move_chance))
+            {
+                ff::point_fixed target = this->position.get(comp.target_entity) + ff::point_fixed(
+                    ff::math::random_range(-diff.hulk_fudge.x, diff.hulk_fudge.x),
+                    ff::math::random_range(-diff.hulk_fudge.y, diff.hulk_fudge.y));
+
+                if (vel.velocity.x || (!vel.velocity && ff::math::random_bool()))
+                {
+                    this->position.velocity(entity, ff::point_fixed(0, diff.hulk_move.y * ((pos.position.y < target.y) ? 1 : -1)));
+                }
+                else
+                {
+                    this->position.velocity(entity, ff::point_fixed(diff.hulk_move.x * ((pos.position.x < target.x) ? 1 : -1), 0));
+                }
+            }
+        }
+
+        comp.force_turn = false;
+    }
+
+    if (comp.force_push || !(this->frame_count % 8))
+    {
+        this->position.set(entity, pos.position + vel.velocity + comp.force_push);
+        comp.force_push = {};
+    }
+}
+
+void retron::level::advance_bonus(entt::entity entity, retron::comp::bonus& comp, const retron::comp::position& pos, const retron::comp::velocity& vel)
+{
+    if (comp.turn_frame <= this->frame_count || !vel.velocity)
+    {
+        this->position.velocity(entity, retron::helpers::index_to_dir(ff::math::random_range(0, 7)) * this->difficulty_spec_.bonus_move);
+        comp.turn_frame = this->frame_count + ff::math::random_range(this->difficulty_spec_.bonus_min_ticks, this->difficulty_spec_.bonus_max_ticks) * this->difficulty_spec_.bonus_tick_frames;
+    }
+
+    if (!((this->frame_count - comp.turn_frame) % this->difficulty_spec_.bonus_tick_frames))
+    {
+        this->position.set(entity, pos.position + vel.velocity);
+    }
+}
+
+void retron::level::advance_animation(entt::entity entity, retron::comp::animation& comp, const retron::comp::position& pos)
+{
+    std::forward_list<ff::animation_event> events;
+    comp.anim->advance_animation(&ff::push_front_collection(events));
+
+    for (const ff::animation_event& event : events)
+    {
+        if (event.event_id == anim_events::NEW_PARTICLES && event.params)
+        {
+            std::string name = event.params->get<std::string>("name");
+            auto i = this->particle_effects.find(name);
+            assert(i != this->particle_effects.end());
+
+            if (i != this->particle_effects.end())
+            {
+                i->second.add(this->particles, pos.position);
+            }
+        }
+        else if (event.event_id == anim_events::DELETE_ANIMATION)
+        {
+            this->entities.delay_delete(entity);
+        }
+    }
+}
+
+void retron::level::handle_particle_effect_done(int effect_id)
+{
+    for (auto [entity, comp] : this->registry.view<retron::comp::showing_particle_effect>().each())
+    {
+        if (comp.effect_id == effect_id)
+        {
+            this->registry.remove<retron::comp::showing_particle_effect>(entity);
         }
     }
 }
@@ -987,7 +968,7 @@ void retron::level::destroy_player_bullet(entt::entity bullet_entity, entt::enti
         if (by_category != retron::entity_category::enemy)
         {
             ff::point_fixed vel = this->position.velocity(bullet_entity);
-            ff::fixed_int angle = this->position.reverse_velocity_as_angle(bullet_entity);
+            ff::fixed_int angle = ff::math::radians_to_degrees(std::atan2(-vel));
             ff::point_fixed pos = this->position.get(bullet_entity);
             ff::point_fixed pos2(pos.x + (vel.x ? std::copysign(1_f, vel.x) : 0), pos.y + (vel.y ? std::copysign(1_f, vel.y) : 0));
 
@@ -1076,7 +1057,6 @@ void retron::level::destroy_bonus(entt::entity bonus_entity, entt::entity by_ent
     if (this->entities.delay_delete(bonus_entity))
     {
         retron::entity_type type = this->entities.type(bonus_entity);
-        const retron::comp::bonus* data = this->registry.try_get<retron::comp::bonus>(bonus_entity);
         std::shared_ptr<ff::animation_base> anim = this->bonus_die_anims[retron::entity_util::index(type)].object();
         this->create_animation(anim, this->position.get(bonus_entity), true);
     }
@@ -1167,11 +1147,6 @@ void retron::level::render_debug(ff::draw_base& draw)
     {
         this->position.render_debug(draw);
     }
-}
-
-bool retron::level::enemies_active() const
-{
-    return this->phase_ == internal_phase_t::playing && this->player_active();
 }
 
 bool retron::level::player_active() const
@@ -1325,14 +1300,6 @@ entt::entity retron::level::pick_hulk_target(entt::entity entity)
     }
 
     return target_entity;
-}
-
-void retron::level::enum_entities(const std::function<void(entt::entity, retron::entity_type)>& func)
-{
-    for (auto [entity, type] : this->registry.view<retron::entity_type>().each())
-    {
-        func(entity, type);
-    }
 }
 
 void retron::level::internal_phase(internal_phase_t new_phase)

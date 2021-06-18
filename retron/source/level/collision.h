@@ -63,8 +63,8 @@ namespace retron
 
         void bounds_box_removed(entt::registry& registry, entt::entity entity);
         void entity_created(entt::entity entity);
-        void position_changed(entt::entity entity);
-        void scale_changed(entt::entity entity);
+        void position_changed(entt::registry& registry, entt::entity entity);
+        void scale_changed(entt::registry& registry, entt::entity entity);
 
         template<typename BoxType, typename DirtyType> ::b2Body* update_box(entt::entity entity, retron::collision_box_type collision_type);
         template<typename BoxType> void render_debug(ff::draw_base& draw, retron::collision_box_type collision_type, int thickness, int color, int color_hit);

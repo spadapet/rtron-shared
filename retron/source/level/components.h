@@ -108,7 +108,7 @@ namespace retron::comp
     {
         size_t index;
         size_t move_frame;
-        ff::point_fixed dest_pos; // TODO: Delete, compute during debug render instead
+        ff::point_fixed dest_pos; // TODO: Change to target entity?
     };
 
     struct hulk
