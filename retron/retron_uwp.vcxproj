@@ -48,6 +48,7 @@
     <ClCompile Include="source\level\collision.cpp" />
     <ClCompile Include="source\level\entities.cpp" />
     <ClCompile Include="source\level\level.cpp" />
+    <ClCompile Include="source\level\level_collision_logic.cpp" />
     <ClCompile Include="source\level\level_logic.cpp" />
     <ClCompile Include="source\level\level_render.cpp" />
     <ClCompile Include="source\level\position.cpp" />
@@ -91,6 +92,7 @@
     <ClInclude Include="source\level\components.h" />
     <ClInclude Include="source\level\entities.h" />
     <ClInclude Include="source\level\level.h" />
+    <ClInclude Include="source\level\level_collision_logic.h" />
     <ClInclude Include="source\level\level_logic.h" />
     <ClInclude Include="source\level\level_render.h" />
     <ClInclude Include="source\level\position.h" />

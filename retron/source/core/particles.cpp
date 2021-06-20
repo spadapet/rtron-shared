@@ -269,7 +269,7 @@ retron::particles::spec_t::spec_t(const ff::dict& dict)
     }
 }
 
-size_t retron::particles::spec_t::add(particles& particles, ff::point_fixed pos, int effect_id, const retron::particles::effect_options& options) const
+size_t retron::particles::spec_t::add(particles& particles, ff::point_fixed pos, int effect_id, const retron::particle_effect_options& options) const
 {
     size_t max_life = 0;
 
@@ -365,18 +365,18 @@ retron::particles::effect_t::effect_t(const ff::value* value)
     }
 }
 
-std::tuple<int, size_t> retron::particles::effect_t::add(particles& particles, ff::point_fixed pos, const retron::particles::effect_options* options) const
+std::tuple<int, size_t> retron::particles::effect_t::add(particles& particles, ff::point_fixed pos, const retron::particle_effect_options* options) const
 {
     return this->add(particles, &pos, 1, options);
 }
 
-std::tuple<int, size_t> retron::particles::effect_t::add(particles& particles, const ff::point_fixed* pos, size_t pos_count, const retron::particles::effect_options* options) const
+std::tuple<int, size_t> retron::particles::effect_t::add(particles& particles, const ff::point_fixed* pos, size_t pos_count, const retron::particle_effect_options* options) const
 {
     static std::atomic_int s_effect_id;
     int effect_id = s_effect_id.fetch_add(1) + 1;
     size_t max_life = 0;
 
-    static retron::particles::effect_options default_options;
+    static retron::particle_effect_options default_options;
     options = options ? options : &default_options;
 
     for (const spec_t& spec : this->specs)

@@ -18,10 +18,10 @@ namespace retron
 {
     class collision;
 
-    class level_logic : public level_logic_base
+    class level_logic : public retron::level_logic_base
     {
     public:
-        level_logic(level_logic_host& host, retron::collision& collision);
+        level_logic(retron::level_logic_host& host, retron::collision& collision);
 
         virtual void advance_time(retron::entity_category categories) override;
         virtual void reset() override;

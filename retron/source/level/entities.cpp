@@ -2,6 +2,7 @@
 #include "source/core/game_spec.h"
 #include "source/level/components.h"
 #include "source/level/entities.h"
+#include "source/level/position.h"
 
 ff::rect_fixed retron::entity_util::hit_box_spec(retron::entity_type type)
 {
@@ -169,19 +170,25 @@ retron::entity_type retron::entity_util::bullet_for_player(retron::entity_type t
     return retron::entity_util::index(type) ? retron::entity_type::bullet_player_1 : retron::entity_type::bullet_player_0;
 }
 
+std::pair<std::string_view, std::string_view> retron::entity_util::start_particle_names_0_90(retron::entity_type type)
+{
+    switch (type)
+    {
+        case retron::entity_type::enemy_grunt:
+            return std::make_pair("grunt_start_0"sv, "grunt_start_90"sv);
+
+        case retron::entity_type::enemy_hulk:
+            return std::make_pair("hulk_start_0"sv, "hulk_start_90"sv);
+    }
+
+    return {};
+}
+
 retron::entities::entities(entt::registry& registry)
     : registry(registry)
 {
     this->connections.emplace_front(this->registry.on_construct<retron::comp::flag::pending_delete>().connect<&retron::entities::handle_deleting>(this));
     this->connections.emplace_front(this->registry.on_destroy<retron::comp::flag::pending_delete>().connect<&retron::entities::handle_deleted>(this));
-}
-
-entt::entity retron::entities::create(retron::entity_type type)
-{
-    entt::entity entity = this->registry.create();
-    this->registry.emplace<retron::entity_type>(entity, type);
-    this->entity_created_signal.notify(entity, type);
-    return entity;
 }
 
 retron::entity_type retron::entities::type(entt::entity entity) const
@@ -193,6 +200,91 @@ retron::entity_type retron::entities::type(entt::entity entity) const
 retron::entity_category retron::entities::category(entt::entity entity) const
 {
     return retron::entity_util::category(this->type(entity));
+}
+
+entt::entity retron::entities::create(retron::entity_type type)
+{
+    entt::entity entity = this->registry.create();
+    this->registry.emplace<retron::entity_type>(entity, type);
+    this->entity_created_signal.notify(entity, type);
+    return entity;
+}
+
+entt::entity retron::entities::create(retron::entity_type type, const ff::point_fixed& pos)
+{
+    entt::entity entity = this->registry.create();
+    this->registry.emplace<retron::entity_type>(entity, type);
+    this->registry.emplace<retron::comp::position>(entity, pos);
+    this->entity_created_signal.notify(entity, type);
+    return entity;
+}
+
+entt::entity retron::entities::create_animation(std::shared_ptr<ff::animation_base> anim, ff::point_fixed pos, bool top)
+{
+    return anim ? this->create_animation(std::make_shared<ff::animation_player>(anim), pos, top) : entt::null;
+}
+
+entt::entity retron::entities::create_animation(std::shared_ptr<ff::animation_player_base> anim_player, ff::point_fixed pos, bool top)
+{
+    if (anim_player)
+    {
+        entt::entity entity = this->create(top ? retron::entity_type::animation_top : retron::entity_type::animation_bottom, pos);
+        this->registry.emplace<retron::comp::animation>(entity, std::move(anim_player));
+
+        if (top)
+        {
+            this->registry.emplace<retron::comp::flag::render_on_top>(entity);
+        }
+
+        return entity;
+    }
+
+    return entt::null;
+}
+
+entt::entity retron::entities::create_bonus(retron::entity_type type, const ff::point_fixed& pos)
+{
+    entt::entity entity = this->create(type, pos);
+    this->registry.emplace<retron::comp::bonus>(entity, 0u);
+    this->registry.emplace<retron::comp::velocity>(entity, ff::point_fixed{});
+    this->registry.emplace<retron::comp::flag::hulk_target>(entity);
+
+    return entity;
+}
+
+entt::entity retron::entities::create_electrode(retron::entity_type type, const ff::point_fixed& pos)
+{
+    entt::entity entity = this->create(type, pos);
+    this->registry.emplace<retron::comp::electrode>(entity);
+
+    return entity;
+}
+
+entt::entity retron::entities::create_grunt(retron::entity_type type, const ff::point_fixed& pos)
+{
+    entt::entity entity = this->create(type, pos);
+    this->registry.emplace<retron::comp::grunt>(entity, this->registry.size<retron::comp::grunt>(), 0u, pos);
+    return entity;
+}
+
+entt::entity retron::entities::create_hulk(retron::entity_type type, const ff::point_fixed& pos, size_t group)
+{
+    entt::entity entity = this->create(type, pos);
+    this->registry.emplace<retron::comp::hulk>(entity, this->registry.size<retron::comp::hulk>(), group, entt::null, ff::point_fixed{}, false);
+    this->registry.emplace<retron::comp::velocity>(entity, ff::point_fixed{});
+    return entity;
+}
+
+entt::entity retron::entities::create_bullet(entt::entity player, ff::point_fixed pos, ff::point_fixed vel)
+{
+    retron::entity_type type = retron::entity_util::bullet_for_player(this->type(player));
+    entt::entity entity = this->create(type, pos);
+
+    this->registry.emplace<retron::comp::bullet>(entity);
+    this->registry.emplace<retron::comp::rotation>(entity, retron::helpers::dir_to_degrees(retron::position::canon_direction(vel)));
+    this->registry.emplace<retron::comp::velocity>(entity, vel);
+
+    return entity;
 }
 
 bool retron::entities::delay_delete(entt::entity entity)
@@ -215,6 +307,7 @@ void retron::entities::flush_delete()
 {
     for (entt::entity entity : this->registry.view<retron::comp::flag::pending_delete>())
     {
+        this->entity_deleted_signal.notify(entity);
         this->registry.destroy(entity);
     }
 }
@@ -251,5 +344,5 @@ void retron::entities::handle_deleting(entt::registry& registry, entt::entity en
 
 void retron::entities::handle_deleted(entt::registry& registry, entt::entity entity)
 {
-    this->entity_deleted_signal.notify(entity);
+    // this->entity_deleted_signal.notify(entity);
 }

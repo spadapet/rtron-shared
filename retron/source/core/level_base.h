@@ -5,6 +5,7 @@ namespace retron
     class collision;
     enum class entity_category;
     struct difficulty_spec;
+    struct particle_effect_options;
 
     enum class level_phase
     {
@@ -36,6 +37,15 @@ namespace retron
         virtual void reset() = 0;
     };
 
+    class level_collision_logic_base
+    {
+    public:
+        virtual ~level_collision_logic_base() = default;
+
+        virtual void handle_collisions() = 0;
+        virtual void reset() = 0;
+    };
+
     class level_logic_host
     {
     public:
@@ -44,9 +54,10 @@ namespace retron
         virtual entt::registry& host_registry() = 0;
         virtual const retron::difficulty_spec& host_difficulty_spec() const = 0;
         virtual size_t host_frame_count() const = 0;
-        virtual void host_create_particles(std::string_view name, const ff::point_fixed& pos) = 0;
+        virtual void host_create_particles(std::string_view name, const ff::point_fixed& pos, const retron::particle_effect_options* options = nullptr) = 0;
         virtual void host_create_bullet(entt::entity player_entity, ff::point_fixed shot_vector) = 0;
         virtual void host_handle_dead_player(entt::entity entity, const retron::player& player) = 0;
+        virtual void host_add_points(const retron::player& player, size_t points) = 0;
     };
 
     class level_render_base

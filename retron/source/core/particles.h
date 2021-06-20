@@ -2,6 +2,17 @@
 
 namespace retron
 {
+    struct particle_effect_options
+    {
+        std::pair<ff::fixed_int, ff::fixed_int> angle = std::make_pair(0, 360);
+        ff::point_fixed scale = ff::point_fixed(1, 1);
+        ff::fixed_int rotate = 0;
+        ff::fixed_int spin = 0;
+        int delay = 0;
+        uint8_t type = 0;
+        bool reverse = false;
+    };
+
     class particles
     {
     public:
@@ -13,17 +24,6 @@ namespace retron
         bool effect_active(int effect_id) const;
         void effect_position(int effect_id, ff::point_fixed pos);
         ff::signal_sink<int>& effect_done_sink();
-
-        struct effect_options
-        {
-            std::pair<ff::fixed_int, ff::fixed_int> angle = std::make_pair(0, 360);
-            ff::point_fixed scale = ff::point_fixed(1, 1);
-            ff::fixed_int rotate = 0;
-            ff::fixed_int spin = 0;
-            int delay = 0;
-            uint8_t type = 0;
-            bool reverse = false;
-        };
 
     private:
         class spec_t
@@ -37,7 +37,7 @@ namespace retron
             spec_t& operator=(retron::particles::spec_t&&) = default;
             spec_t& operator=(const retron::particles::spec_t&) = default;
 
-            size_t add(particles& particles, ff::point_fixed pos, int effect_id, const retron::particles::effect_options& options) const;
+            size_t add(particles& particles, ff::point_fixed pos, int effect_id, const retron::particle_effect_options& options) const;
 
         private:
             std::pair<int, int> count;
@@ -139,8 +139,8 @@ namespace retron
             retron::particles::effect_t& operator=(retron::particles::effect_t&&) = default;
             retron::particles::effect_t& operator=(const retron::particles::effect_t&) = default;
 
-            std::tuple<int, size_t> add(retron::particles& particles, ff::point_fixed pos, const retron::particles::effect_options* options = nullptr) const;
-            std::tuple<int, size_t> add(retron::particles& particles, const ff::point_fixed* pos, size_t pos_count, const retron::particles::effect_options* options = nullptr) const;
+            std::tuple<int, size_t> add(retron::particles& particles, ff::point_fixed pos, const retron::particle_effect_options* options = nullptr) const;
+            std::tuple<int, size_t> add(retron::particles& particles, const ff::point_fixed* pos, size_t pos_count, const retron::particle_effect_options* options = nullptr) const;
 
         private:
             std::vector<spec_t> specs;

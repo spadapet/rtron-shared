@@ -5,7 +5,7 @@
 
 namespace retron
 {
-    class level_render : public level_render_base
+    class level_render : public retron::level_render_base
     {
     public:
         level_render(retron::level_render_host& host);
