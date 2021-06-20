@@ -8,13 +8,14 @@ namespace retron
     class level_render : public level_render_base
     {
     public:
-        level_render();
+        level_render(retron::level_render_host& host);
 
-        virtual void render(ff::draw_base& draw, const entt::registry& registry, const retron::difficulty_spec& difficulty_spec, size_t frame_count) override;
+        virtual void render(ff::draw_base& draw) override;
 
     private:
         void init_resources();
 
+        retron::level_render_host& host;
         std::forward_list<ff::signal_connection> connections;
 
         std::array<ff::auto_resource<ff::animation_base>, 8> player_walk_anims;

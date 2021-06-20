@@ -79,4 +79,5 @@ namespace retron::helpers
     ff::fixed_int dir_to_degrees(ff::point_fixed dir);
     size_t dir_to_index(ff::point_fixed dir); // degrees = index * 45
     ff::point_fixed index_to_dir(size_t index); // degrees = index * 45
+    ff::point_fixed get_press_vector(const ff::input_event_provider& input_events, bool for_shoot);
 }

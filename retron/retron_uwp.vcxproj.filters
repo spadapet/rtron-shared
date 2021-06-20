@@ -107,6 +107,9 @@
     <ClCompile Include="source\level\level_render.cpp">
       <Filter>source\level</Filter>
     </ClCompile>
+    <ClCompile Include="source\level\level_logic.cpp">
+      <Filter>source\level</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h" />
@@ -195,6 +198,9 @@
       <Filter>source\level</Filter>
     </ClInclude>
     <ClInclude Include="source\level\level_render.h">
+      <Filter>source\level</Filter>
+    </ClInclude>
+    <ClInclude Include="source\level\level_logic.h">
       <Filter>source\level</Filter>
     </ClInclude>
   </ItemGroup>
@@ -356,6 +362,7 @@
     <None Include="retron_TemporaryKey.pfx">
       <Filter>uwp</Filter>
     </None>
+    <None Include="$(NoesisDll)" />
     <None Include="$(NoesisDll)" />
     <None Include="$(NoesisDll)" />
     <None Include="$(NoesisDll)" />

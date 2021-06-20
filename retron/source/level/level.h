@@ -25,7 +25,11 @@ namespace retron
 {
     class game_service;
 
-    class level : public retron::level_base, public ff::state
+    class level
+        : public retron::level_base
+        , public retron::level_logic_host
+        , public retron::level_render_host
+        , public ff::state
     {
     public:
         level(retron::game_service& game_service, const retron::level_spec& level_spec, const std::vector<const retron::player*>& players);
@@ -41,6 +45,15 @@ namespace retron
         virtual void stop() override;
         virtual const std::vector<const retron::player*>& players() const override;
 
+        // retron::level_logic_host, retron::level_render_host
+        virtual entt::registry& host_registry() override;
+        virtual const entt::registry& host_registry() const override;
+        virtual const retron::difficulty_spec& host_difficulty_spec() const override;
+        virtual size_t host_frame_count() const override;
+        virtual void host_create_particles(std::string_view name, const ff::point_fixed& pos) override;
+        virtual void host_create_bullet(entt::entity player_entity, ff::point_fixed shot_vector) override;
+        virtual void host_handle_dead_player(entt::entity entity, const retron::player& player) override;
+
     private:
         void init_resources();
         void init_entities();
@@ -51,7 +64,7 @@ namespace retron
         entt::entity create_bonus(retron::entity_type type, const ff::point_fixed& pos);
         entt::entity create_electrode(retron::entity_type type, const ff::point_fixed& pos);
         entt::entity create_grunt(retron::entity_type type, const ff::point_fixed& pos);
-        entt::entity create_hulk(retron::entity_type type, const ff::point_fixed& pos);
+        entt::entity create_hulk(retron::entity_type type, const ff::point_fixed& pos, size_t group);
         entt::entity create_player(const retron::player& player);
         entt::entity create_player_bullet(entt::entity player, ff::point_fixed shot_pos, ff::point_fixed shot_dir);
         entt::entity create_animation(std::shared_ptr<ff::animation_base> anim, ff::point_fixed pos, bool top);
@@ -64,12 +77,6 @@ namespace retron
         void advance_entities();
         void advance_entity_followers();
         void advance_phase();
-
-        void advance_player(entt::entity entity, retron::comp::player& comp, const retron::comp::position& pos, const retron::comp::velocity& vel);
-        void advance_grunt(entt::entity entity, retron::comp::grunt& comp, const retron::comp::position& pos);
-        void advance_hulk(entt::entity entity, retron::comp::hulk& comp, const retron::comp::position& pos, const retron::comp::velocity& vel);
-        void advance_bonus(entt::entity entity, retron::comp::bonus& comp, const retron::comp::position& pos, const retron::comp::velocity& vel);
-        void advance_animation(entt::entity entity, retron::comp::animation& comp, const retron::comp::position& pos);
 
         void handle_particle_effect_done(int effect_id);
         void handle_entity_created(entt::entity entity);
@@ -134,6 +141,5 @@ namespace retron
         size_t phase_counter;
         size_t frame_count;
         size_t bonus_collected;
-        std::vector<size_t> next_hulk_group_turn;
     };
 }

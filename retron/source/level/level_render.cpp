@@ -4,15 +4,20 @@
 #include "source/level/entities.h"
 #include "source/level/level_render.h"
 
-retron::level_render::level_render()
+retron::level_render::level_render(retron::level_render_host& host)
+    : host(host)
 {
     this->connections.emplace_front(retron::app_service::get().reload_resources_sink().connect(std::bind(&retron::level_render::init_resources, this)));
 
     this->init_resources();
 }
 
-void retron::level_render::render(ff::draw_base& draw, const entt::registry& registry, const retron::difficulty_spec& difficulty_spec, size_t frame_count)
+void retron::level_render::render(ff::draw_base& draw)
 {
+    const entt::registry& registry = this->host.host_registry();
+    const retron::difficulty_spec& diff = this->host.host_difficulty_spec();
+    size_t frame_count = this->host.host_frame_count();
+
     for (auto [entity, comp] : registry.view<const retron::comp::rectangle>().each())
     {
         draw.draw_palette_outline_rectangle(comp.rect, comp.color, comp.thickness);
@@ -54,7 +59,7 @@ void retron::level_render::render(ff::draw_base& draw, const entt::registry& reg
     for (auto [entity, comp, pos, dir, vel] : registry.view<const retron::comp::player, const retron::comp::position, const retron::comp::direction, const retron::comp::velocity>(entt::exclude_t<retron::comp::showing_particle_effect>()).each())
     {
         ff::animation_base* anim = this->player_walk_anims[retron::helpers::dir_to_index(dir.direction)].object().get();
-        ff::fixed_int frame = vel.velocity ? ff::fixed_int(frame_count) / difficulty_spec.player_move_frame_divisor : 0_f;
+        ff::fixed_int frame = vel.velocity ? ff::fixed_int(frame_count) / diff.player_move_frame_divisor : 0_f;
         ff::palette_base& palette = retron::app_service::get().player_palette(comp.player.get().index);
         draw.push_palette_remap(palette.index_remap(), palette.index_remap_hash());
 
@@ -70,14 +75,14 @@ void retron::level_render::render(ff::draw_base& draw, const entt::registry& reg
             case retron::comp::player::player_state::dead:
                 frame = 0;
 
-                if (comp.state_counter >= difficulty_spec.player_dead_counter)
+                if (comp.state_counter >= diff.player_dead_counter)
                 {
                     anim = nullptr;
                 }
                 break;
 
             case retron::comp::player::player_state::ghost:
-                if (comp.state_counter >= difficulty_spec.player_ghost_warning_counter)
+                if (comp.state_counter >= diff.player_ghost_warning_counter)
                 {
                     if (comp.state_counter % 16 < 8)
                     {
