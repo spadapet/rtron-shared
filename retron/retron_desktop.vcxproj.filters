@@ -44,9 +44,6 @@
     <ClCompile Include="source\level\entities.cpp">
       <Filter>source\level</Filter>
     </ClCompile>
-    <ClCompile Include="source\level\position.cpp">
-      <Filter>source\level</Filter>
-    </ClCompile>
     <ClCompile Include="source\level\collision.cpp">
       <Filter>source\level</Filter>
     </ClCompile>
@@ -162,9 +159,6 @@
       <Filter>source\states</Filter>
     </ClInclude>
     <ClInclude Include="source\level\entities.h">
-      <Filter>source\level</Filter>
-    </ClInclude>
-    <ClInclude Include="source\level\position.h">
       <Filter>source\level</Filter>
     </ClInclude>
     <ClInclude Include="source\level\collision.h">

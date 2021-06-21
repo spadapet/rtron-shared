@@ -45,7 +45,6 @@
     <ClCompile Include="source\level\level_collision_logic.cpp" />
     <ClCompile Include="source\level\level_logic.cpp" />
     <ClCompile Include="source\level\level_render.cpp" />
-    <ClCompile Include="source\level\position.cpp" />
     <ClCompile Include="source\main.cpp" />
     <ClCompile Include="source\states\app_state.cpp" />
     <ClCompile Include="source\states\debug_state.cpp" />
@@ -83,7 +82,6 @@
     <ClInclude Include="source\level\level_collision_logic.h" />
     <ClInclude Include="source\level\level_logic.h" />
     <ClInclude Include="source\level\level_render.h" />
-    <ClInclude Include="source\level\position.h" />
     <ClInclude Include="source\states\app_state.h" />
     <ClInclude Include="source\states\debug_state.h" />
     <ClInclude Include="source\states\particle_lab_state.h" />

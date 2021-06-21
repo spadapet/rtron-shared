@@ -15,10 +15,9 @@ retron::level::level(retron::game_service& game_service, const retron::level_spe
     , level_spec_(level_spec)
     , players_(players)
     , entities(this->registry)
-    , position(this->registry)
-    , collision(this->registry, this->position, this->entities)
+    , collision(this->registry)
     , level_logic(*this, this->collision)
-    , level_collision_logic(*this, this->entities, this->position, this->collision)
+    , level_collision_logic(*this, this->entities, this->collision)
     , level_render(*this)
     , phase_(internal_phase_t::init)
     , phase_counter(0)
@@ -584,16 +583,16 @@ void retron::level::render_debug(ff::draw_base& draw)
 
     if (ff::flags::has(render_debug, retron::render_debug_t::ai_lines))
     {
-        for (auto [entity, data] : this->registry.view<retron::comp::grunt>().each())
+        for (auto [entity, comp, pos] : this->registry.view<const retron::comp::grunt, const retron::comp::position>().each())
         {
-            draw.draw_line(this->position.get(entity), data.dest_pos, ff::palette_index_to_color(245), 1);
+            draw.draw_line(pos.position, comp.dest_pos, ff::palette_index_to_color(245), 1);
         }
 
-        for (auto [entity, data] : this->registry.view<retron::comp::hulk>().each())
+        for (auto [entity, comp, pos] : this->registry.view<const retron::comp::hulk, const retron::comp::position>().each())
         {
-            if (this->registry.valid(data.target_entity))
+            if (this->registry.valid(comp.target_entity))
             {
-                draw.draw_line(this->position.get(entity), this->position.get(data.target_entity), ff::palette_index_to_color(245), 1);
+                draw.draw_line(pos.position, this->registry.get<const retron::comp::position>(comp.target_entity).position, ff::palette_index_to_color(245), 1);
             }
         }
     }
@@ -605,7 +604,7 @@ void retron::level::render_debug(ff::draw_base& draw)
 
     if (ff::flags::has(render_debug, retron::render_debug_t::position))
     {
-        this->position.render_debug(draw);
+        this->entities.render_debug(draw);
     }
 }
 

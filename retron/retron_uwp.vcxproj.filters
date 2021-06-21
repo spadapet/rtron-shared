@@ -101,9 +101,6 @@
     <ClCompile Include="source\level\level.cpp">
       <Filter>source\level</Filter>
     </ClCompile>
-    <ClCompile Include="source\level\position.cpp">
-      <Filter>source\level</Filter>
-    </ClCompile>
     <ClCompile Include="source\level\level_render.cpp">
       <Filter>source\level</Filter>
     </ClCompile>
@@ -195,9 +192,6 @@
       <Filter>source\level</Filter>
     </ClInclude>
     <ClInclude Include="source\level\level.h">
-      <Filter>source\level</Filter>
-    </ClInclude>
-    <ClInclude Include="source\level\position.h">
       <Filter>source\level</Filter>
     </ClInclude>
     <ClInclude Include="source\level\components.h">

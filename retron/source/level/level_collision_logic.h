@@ -6,13 +6,12 @@
 namespace retron
 {
     class entities;
-    class position;
     class collision;
 
     class level_collision_logic : public retron::level_collision_logic_base
     {
     public:
-        level_collision_logic(retron::level_logic_host& host, retron::entities& entities, retron::position& position, retron::collision& collision);
+        level_collision_logic(retron::level_logic_host& host, retron::entities& entities, retron::collision& collision);
 
         virtual void handle_collisions() override;
         virtual void reset() override;
@@ -33,7 +32,6 @@ namespace retron
 
         retron::level_logic_host& host;
         retron::entities& entities;
-        retron::position& position;
         retron::collision& collision;
         std::forward_list<ff::signal_connection> connections;
 

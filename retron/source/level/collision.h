@@ -2,9 +2,8 @@
 
 namespace retron
 {
-    class entities;
-    class position;
     enum class entity_category;
+    enum class entity_type;
 
     enum class collision_box_type
     {
@@ -17,7 +16,7 @@ namespace retron
     class collision
     {
     public:
-        collision(entt::registry& registry, retron::position& position, entities& entities);
+        collision(entt::registry& registry);
 
         const std::vector<std::pair<entt::entity, entt::entity>>& detect_collisions(std::vector<std::pair<entt::entity, entt::entity>>& collisions, retron::collision_box_type collision_type);
         void hit_test(const ff::rect_fixed& bounds, ff::push_base<entt::entity>& results, retron::entity_category filter, retron::collision_box_type collision_type, size_t max_hits = 0);
@@ -54,6 +53,9 @@ namespace retron
             retron::collision* owner;
         };
 
+        retron::entity_type type(entt::entity entity) const;
+        retron::entity_category category(entt::entity entity) const;
+
         void reset_box_internal(entt::entity entity, retron::collision_box_type collision_type);
         void dirty_box(entt::entity entity, retron::collision_box_type collision_type);
         ::b2Body* update_box(entt::entity entity, retron::collision_box_type collision_type);
@@ -72,8 +74,6 @@ namespace retron
         template<retron::collision_box_type T> void box_spec_changed(entt::registry& registry, entt::entity entity);
 
         // Entities
-        retron::position& position_;
-        retron::entities& entities_;
         entt::registry& registry;
         std::forward_list<entt::scoped_connection> connections;
 

@@ -135,3 +135,66 @@ void retron::entities::delete_all()
 
     this->flush_delete();
 }
+
+void retron::entities::position(entt::entity entity, const ff::point_fixed& value)
+{
+    this->registry.emplace_or_replace<retron::comp::position>(entity, value);
+}
+
+ff::point_fixed retron::entities::position(entt::entity entity)
+{
+    retron::comp::position* c = this->registry.try_get<retron::comp::position>(entity);
+    return c ? c->position : ff::point_fixed(0, 0);
+}
+
+void retron::entities::velocity(entt::entity entity, const ff::point_fixed& value)
+{
+    this->registry.emplace_or_replace<retron::comp::velocity>(entity, value);
+}
+
+ff::point_fixed retron::entities::velocity(entt::entity entity)
+{
+    retron::comp::velocity* c = this->registry.try_get<retron::comp::velocity>(entity);
+    return c ? c->velocity : ff::point_fixed(0, 0);
+}
+
+void retron::entities::direction(entt::entity entity, const ff::point_fixed& value)
+{
+    this->registry.emplace_or_replace<retron::comp::direction>(entity, retron::helpers::canon_dir(value));
+}
+
+const ff::point_fixed retron::entities::direction(entt::entity entity)
+{
+    retron::comp::direction* c = this->registry.try_get<retron::comp::direction>(entity);
+    return c ? c->direction : ff::point_fixed(0, 1);
+}
+
+void retron::entities::scale(entt::entity entity, const ff::point_fixed& value)
+{
+    this->registry.emplace_or_replace<retron::comp::scale>(entity, value);
+}
+
+ff::point_fixed retron::entities::scale(entt::entity entity)
+{
+    retron::comp::scale* c = this->registry.try_get<retron::comp::scale>(entity);
+    return c ? c->scale : ff::point_fixed(1, 1);
+}
+
+void retron::entities::rotation(entt::entity entity, ff::fixed_int value)
+{
+    this->registry.emplace_or_replace<retron::comp::rotation>(entity, value);
+}
+
+ff::fixed_int retron::entities::rotation(entt::entity entity)
+{
+    retron::comp::rotation* c = this->registry.try_get<retron::comp::rotation>(entity);
+    return c ? c->rotation : 0;
+}
+
+void retron::entities::render_debug(ff::draw_base& draw)
+{
+    for (auto [entity, pc] : this->registry.view<retron::comp::position>().each())
+    {
+        draw.draw_palette_filled_rectangle(ff::rect_fixed(pc.position + ff::point_fixed(-1, -1), pc.position + ff::point_fixed(1, 1)), 230);
+    }
+}

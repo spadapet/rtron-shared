@@ -4,7 +4,6 @@
 #include "source/level/entity_type.h"
 #include "source/level/entity_util.h"
 #include "source/level/entities.h"
-#include "source/level/position.h"
 
 static constexpr ff::fixed_int PIXEL_TO_WORLD_SCALE = 0.0625;
 static constexpr ff::fixed_int WORLD_TO_PIXEL_SCALE = 16;
@@ -76,10 +75,8 @@ static bool might_overlap(const ::b2Contact* contact)
     return false;
 }
 
-retron::collision::collision(entt::registry& registry, retron::position& position, retron::entities& entities)
-    : position_(position)
-    , entities_(entities)
-    , registry(registry)
+retron::collision::collision(entt::registry& registry)
+    : registry(registry)
     , hit_filter_(this)
     , bounds_filter_(this)
     , worlds{ ::b2World({ 0, 0 }), ::b2World({ 0, 0 }), ::b2World({ 0, 0 }) }
@@ -87,18 +84,10 @@ retron::collision::collision(entt::registry& registry, retron::position& positio
     for (::b2World& world : this->worlds)
     {
         world.SetAllowSleeping(false);
-
-        switch (static_cast<retron::collision_box_type>(&world - this->worlds.data()))
-        {
-            case retron::collision_box_type::bounds_box:
-                world.SetContactFilter(&this->bounds_filter_);
-                break;
-
-            case retron::collision_box_type::hit_box:
-                world.SetContactFilter(&this->hit_filter_);
-                break;
-        }
     }
+
+    this->worlds[static_cast<size_t>(retron::collision_box_type::bounds_box)].SetContactFilter(&this->bounds_filter_);
+    this->worlds[static_cast<size_t>(retron::collision_box_type::hit_box)].SetContactFilter(&this->hit_filter_);
 
     this->connections.emplace_front(this->registry.on_construct<retron::entity_type>().connect<&retron::collision::entity_created>(this));
 
@@ -160,8 +149,8 @@ void retron::collision::hit_test(
     class callback_t : public ::b2QueryCallback
     {
     public:
-        callback_t(retron::entities& entities, ff::push_base<entt::entity>& results, retron::entity_category filter, size_t max_hits)
-            : entities(entities)
+        callback_t(retron::collision& owner, ff::push_base<entt::entity>& results, retron::entity_category filter, size_t max_hits)
+            : owner(owner)
             , results(results)
             , filter(filter)
             , hit_count(0)
@@ -171,7 +160,7 @@ void retron::collision::hit_test(
         virtual bool ReportFixture(::b2Fixture* fixture) override
         {
             entt::entity entity = ::entity_from_user_data(fixture->GetUserData());
-            if (this->filter == retron::entity_category::none || ff::flags::has_any(this->entities.category(entity), this->filter))
+            if (this->filter == retron::entity_category::none || ff::flags::has_any(this->owner.category(entity), this->filter))
             {
                 this->hit_count++;
                 this->results.push(entity);
@@ -181,12 +170,12 @@ void retron::collision::hit_test(
         }
 
     private:
-        const retron::entities& entities;
+        retron::collision& owner;
         ff::push_base<entt::entity>& results;
         retron::entity_category filter;
         size_t hit_count;
         size_t max_hits;
-    } callback(this->entities_, results, filter, max_hits);
+    } callback(*this, results, filter, max_hits);
 
     ff::rect_fixed world_bounds = bounds * ::PIXEL_TO_WORLD_SCALE;
     ::b2World& world = this->worlds[static_cast<size_t>(collision_type)];
@@ -212,8 +201,8 @@ std::tuple<entt::entity, ff::point_fixed, ff::point_fixed> retron::collision::ra
     class callback_t : public ::b2RayCastCallback
     {
     public:
-        callback_t(retron::entities& entities, const ff::point_fixed& origin_point, retron::entity_category filter, retron::collision_box_type collision_type)
-            : entities(entities)
+        callback_t(retron::collision& owner, const ff::point_fixed& origin_point, retron::entity_category filter, retron::collision_box_type collision_type)
+            : owner(owner)
             , filter(filter)
             , collision_type(collision_type)
             , entity(entt::null)
@@ -238,7 +227,7 @@ std::tuple<entt::entity, ff::point_fixed, ff::point_fixed> retron::collision::ra
             }
 
             entt::entity entity = ::entity_from_user_data(fixture->GetUserData());
-            retron::entity_category type = this->entities.category(entity);
+            retron::entity_category type = this->owner.category(entity);
             if (this->filter != retron::entity_category::none && !ff::flags::has_any(type, this->filter))
             {
                 return -1;
@@ -257,7 +246,7 @@ std::tuple<entt::entity, ff::point_fixed, ff::point_fixed> retron::collision::ra
             return fraction;
         }
 
-        const retron::entities& entities;
+        retron::collision& owner;
         retron::entity_category filter;
         retron::collision_box_type collision_type;
         entt::entity entity;
@@ -265,7 +254,7 @@ std::tuple<entt::entity, ff::point_fixed, ff::point_fixed> retron::collision::ra
         ff::point_fixed point;
         ff::point_fixed normal;
         float fraction;
-    } callback(this->entities_, start, filter, collision_type);
+    } callback(*this, start, filter, collision_type);
 
     ::b2World& world = this->worlds[static_cast<size_t>(collision_type)];
     world.RayCast(&callback, { world_start.x, world_start.y }, { world_end.x, world_end.y });
@@ -355,14 +344,14 @@ ff::rect_fixed retron::collision::box_spec(entt::entity entity, retron::collisio
         case retron::collision_box_type::hit_box:
             {
                 retron::comp::box_spec* spec = this->registry.try_get<retron::comp::hit_box_spec>(entity);
-                box = spec ? spec->rect : retron::entity_util::hit_box_spec(this->entities_.type(entity));
+                box = spec ? spec->rect : retron::entity_util::hit_box_spec(this->type(entity));
             }
             break;
 
         case retron::collision_box_type::bounds_box:
             {
                 retron::comp::box_spec* spec = this->registry.try_get<retron::comp::bounds_box_spec>(entity);
-                box = spec ? spec->rect : retron::entity_util::bounds_box_spec(this->entities_.type(entity));
+                box = spec ? spec->rect : retron::entity_util::bounds_box_spec(this->type(entity));
             }
             break;
 
@@ -379,7 +368,8 @@ ff::rect_fixed retron::collision::box_spec(entt::entity entity, retron::collisio
             return {};
     }
 
-    return box * this->position_.scale(entity);
+    const retron::comp::scale* scale = this->registry.try_get<const retron::comp::scale>(entity);
+    return scale ? box * scale->scale : box;
 }
 
 ff::rect_fixed retron::collision::box(entt::entity entity, retron::collision_box_type collision_type)
@@ -391,8 +381,8 @@ ff::rect_fixed retron::collision::box(entt::entity entity, retron::collision_box
         return this->needs_level_box_avoid_skin(entity, collision_type) ? box.inflate(::LEVEL_BOX_AVOID_SKIN, ::LEVEL_BOX_AVOID_SKIN) : box;
     }
 
-    ff::point_fixed pos = this->position_.get(entity);
-    return ff::rect_fixed(pos, pos);
+    const retron::comp::position* pos = this->registry.try_get<const retron::comp::position>(entity);
+    return pos ? ff::rect_fixed(pos->position, pos->position) : ff::rect_fixed{};
 }
 
 void retron::collision::render_debug(ff::draw_base& draw)
@@ -418,6 +408,17 @@ void retron::collision::render_debug(ff::draw_base& draw, retron::collision_box_
     }
 }
 
+retron::entity_type retron::collision::type(entt::entity entity) const
+{
+    const retron::entity_type* type = this->registry.try_get<const retron::entity_type>(entity);
+    return type ? *type : retron::entity_type::none;
+}
+
+retron::entity_category retron::collision::category(entt::entity entity) const
+{
+    return retron::entity_util::category(this->type(entity));
+}
+
 void retron::collision::reset_box_internal(entt::entity entity, retron::collision_box_type collision_type)
 {
     switch (collision_type)
@@ -439,7 +440,7 @@ void retron::collision::reset_box_internal(entt::entity entity, retron::collisio
 
 void retron::collision::dirty_box(entt::entity entity, retron::collision_box_type collision_type)
 {
-    const retron::entity_type type = this->entities_.type(entity);
+    const retron::entity_type type = this->type(entity);
     if (type != retron::entity_type::none)
     {
         switch (collision_type)
@@ -474,26 +475,27 @@ template<typename BoxType, typename DirtyType>
         return nullptr;
     }
 
+    const retron::comp::position* pos_comp = this->registry.try_get<const retron::comp::position>(entity);
+    const retron::comp::rotation* rot_comp = this->registry.try_get<const retron::comp::rotation>(entity);
+    ff::point_fixed pos = pos_comp ? pos_comp->position * ::PIXEL_TO_WORLD_SCALE : ff::point_fixed{};
+    float angle = rot_comp ? -ff::math::degrees_to_radians(static_cast<float>(rot_comp->rotation)) : 0;
+
     retron::comp::box& hb = this->registry.get_or_emplace<BoxType>(entity, BoxType{});
     if (!hb.body)
     {
-        ff::point_fixed pos = this->position_.get(entity) * ::PIXEL_TO_WORLD_SCALE;
-
         ::b2BodyDef body_def{};
         body_def.userData = ::user_data_from_entity<::b2BodyUserData>(entity);
         body_def.position.Set(pos.x, pos.y);
-        body_def.angle = -ff::math::degrees_to_radians(static_cast<float>(this->position_.rotation(entity)));
+        body_def.angle = angle;
         body_def.allowSleep = false;
         body_def.fixedRotation = true;
-        body_def.type = ::get_body_type(this->entities_.type(entity));
+        body_def.type = ::get_body_type(this->type(entity));
 
         ::b2World& world = this->worlds[static_cast<size_t>(collision_type)];
         hb.body = world.CreateBody(&body_def);
     }
     else if (this->registry.all_of<DirtyType>(entity))
     {
-        ff::point_fixed pos = this->position_.get(entity) * ::PIXEL_TO_WORLD_SCALE;
-        float angle = -ff::math::degrees_to_radians(static_cast<float>(this->position_.rotation(entity)));
         hb.body->SetTransform(::b2Vec2(pos.x, pos.y), angle);
     }
 
@@ -515,7 +517,7 @@ template<typename BoxType, typename DirtyType>
         fixture_def.userData = ::user_data_from_entity<::b2FixtureUserData>(entity);
         fixture_def.isSensor = true;
 
-        if (this->entities_.type(entity) == retron::entity_type::level_bounds)
+        if (this->type(entity) == retron::entity_type::level_bounds)
         {
             // Clockwise
             std::array<::b2Vec2, 4> points =
@@ -564,7 +566,7 @@ template<typename BoxType, typename DirtyType>
             return this->update_box<retron::comp::bounds_box, retron::comp::flag::bounds_dirty>(entity, collision_type);
 
         case retron::collision_box_type::grunt_avoid_box:
-            return (this->entities_.type(entity) == retron::entity_type::level_box)
+            return (this->type(entity) == retron::entity_type::level_box)
                 ? this->update_box<retron::comp::grunt_avoid_box, retron::comp::flag::grunt_avoid_dirty>(entity, collision_type)
                 : this->update_box<retron::comp::bounds_box, retron::comp::flag::bounds_dirty>(entity, collision_type);
     }
@@ -603,7 +605,7 @@ void retron::collision::update_dirty_boxes(retron::collision_box_type collision_
 
 bool retron::collision::needs_level_box_avoid_skin(entt::entity entity, retron::collision_box_type collision_type)
 {
-    return collision_type == retron::collision_box_type::grunt_avoid_box && this->entities_.type(entity) == retron::entity_type::level_box;
+    return collision_type == retron::collision_box_type::grunt_avoid_box && this->type(entity) == retron::entity_type::level_box;
 }
 
 std::tuple<bool, entt::entity, entt::entity> retron::collision::does_overlap(::b2Contact* contact, retron::collision_box_type collision_type)
@@ -615,7 +617,7 @@ std::tuple<bool, entt::entity, entt::entity> retron::collision::does_overlap(::b
 
         if (this->box(entity_a, collision_type).intersects(this->box(entity_b, collision_type)))
         {
-            bool a_before_b = this->entities_.type(entity_a) <= this->entities_.type(entity_b);
+            bool a_before_b = this->type(entity_a) <= this->type(entity_b);
             return std::make_tuple(true, a_before_b ? entity_a : entity_b, a_before_b ? entity_b : entity_a);
         }
     }
@@ -673,9 +675,9 @@ bool retron::collision::hit_filter::ShouldCollide(::b2Fixture* fixtureA, ::b2Fix
     entt::entity entity_b = ::entity_from_user_data(fixtureB->GetUserData());
 
     return
-        !owner->entities_.deleted(entity_a) &&
-        !owner->entities_.deleted(entity_b) &&
-        retron::entity_util::can_hit_box_collide(owner->entities_.type(entity_a), owner->entities_.type(entity_b));
+        !owner->registry.all_of<retron::comp::flag::pending_delete>(entity_a) &&
+        !owner->registry.all_of<retron::comp::flag::pending_delete>(entity_b) &&
+        retron::entity_util::can_hit_box_collide(owner->type(entity_a), owner->type(entity_b));
 }
 
 retron::collision::bounds_filter::bounds_filter(retron::collision* collision)
@@ -688,7 +690,7 @@ bool retron::collision::bounds_filter::ShouldCollide(::b2Fixture* fixtureA, ::b2
     entt::entity entity_b = ::entity_from_user_data(fixtureB->GetUserData());
 
     return
-        !owner->entities_.deleted(entity_a) &&
-        !owner->entities_.deleted(entity_b) &&
-        retron::entity_util::can_bounds_box_collide(owner->entities_.type(entity_a), owner->entities_.type(entity_b));
+        !owner->registry.all_of<retron::comp::flag::pending_delete>(entity_a) &&
+        !owner->registry.all_of<retron::comp::flag::pending_delete>(entity_b) &&
+        retron::entity_util::can_bounds_box_collide(owner->type(entity_a), owner->type(entity_b));
 }

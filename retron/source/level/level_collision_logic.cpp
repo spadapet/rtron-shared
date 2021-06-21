@@ -7,12 +7,10 @@
 #include "source/level/entity_type.h"
 #include "source/level/entity_util.h"
 #include "source/level/level_collision_logic.h"
-#include "source/level/position.h"
 
-retron::level_collision_logic::level_collision_logic(retron::level_logic_host& host, retron::entities& entities, retron::position& position, retron::collision& collision)
+retron::level_collision_logic::level_collision_logic(retron::level_logic_host& host, retron::entities& entities, retron::collision& collision)
     : host(host)
     , entities(entities)
-    , position(position)
     , collision(collision)
     , bonus_collected(0)
 {
@@ -74,7 +72,7 @@ void retron::level_collision_logic::handle_bounds_collision(entt::entity target_
         : old_rect.move_outside(this->bounds_box(level_entity));
 
     ff::point_fixed offset = new_rect.top_left() - old_rect.top_left();
-    this->position.set(target_entity, this->position.get(target_entity) + offset);
+    this->entities.position(target_entity, this->entities.position(target_entity) + offset);
 
     switch (this->entities.category(target_entity))
     {
@@ -214,9 +212,9 @@ void retron::level_collision_logic::destroy_bullet(entt::entity bullet_entity, e
         retron::entity_category by_category = this->entities.category(by_entity);
         if (by_category != retron::entity_category::enemy)
         {
-            ff::point_fixed vel = this->position.velocity(bullet_entity);
+            ff::point_fixed vel = this->entities.velocity(bullet_entity);
             ff::fixed_int angle = ff::math::radians_to_degrees(std::atan2(-vel));
-            ff::point_fixed pos = this->position.get(bullet_entity);
+            ff::point_fixed pos = this->entities.position(bullet_entity);
             ff::point_fixed pos2(pos.x + (vel.x ? std::copysign(1_f, vel.x) : 0), pos.y + (vel.y ? std::copysign(1_f, vel.y) : 0));
 
             retron::particle_effect_options options;
@@ -254,7 +252,7 @@ void retron::level_collision_logic::destroy_enemy(entt::entity entity, entt::ent
             ff::point_fixed center = this->bounds_box(entity).center();
             bool by_bullet = this->entities.category(by_entity) == retron::entity_category::bullet;
 
-            switch (retron::helpers::dir_to_index(this->position.velocity(by_bullet ? by_entity : entity)))
+            switch (retron::helpers::dir_to_index(this->entities.velocity(by_bullet ? by_entity : entity)))
             {
                 case 0:
                 case 4:
@@ -294,7 +292,7 @@ void retron::level_collision_logic::destroy_electrode(entt::entity electrode_ent
         retron::entity_type electrode_type = this->entities.type(electrode_entity);
         std::shared_ptr<ff::animation_base> anim = this->electrode_die_anims[retron::entity_util::index(electrode_type)].object();
 
-        this->entities.create_animation(anim, this->position.get(electrode_entity), false);
+        this->entities.create_animation(anim, this->entities.position(electrode_entity), false);
     }
 }
 
@@ -304,7 +302,7 @@ void retron::level_collision_logic::destroy_bonus(entt::entity bonus_entity, ent
     {
         retron::entity_type type = this->entities.type(bonus_entity);
         std::shared_ptr<ff::animation_base> anim = this->bonus_die_anims[retron::entity_util::index(type)].object();
-        this->entities.create_animation(anim, this->position.get(bonus_entity), true);
+        this->entities.create_animation(anim, this->entities.position(bonus_entity), true);
     }
 }
 
@@ -313,7 +311,7 @@ void retron::level_collision_logic::push_hulk(entt::entity enemy_entity, entt::e
     entt::registry& registry = this->host.host_registry();
     const retron::difficulty_spec& diff = this->host.host_difficulty_spec();
 
-    ff::point_fixed by_vel = this->position.velocity(by_entity);
+    ff::point_fixed by_vel = this->entities.velocity(by_entity);
     registry.get<retron::comp::hulk>(enemy_entity).force_push = ff::point_fixed(
         diff.hulk_push.x * (by_vel.x == 0_f ? 0_f : (by_vel.x < 0_f ? -1_f : 1_f)),
         diff.hulk_push.y * (by_vel.y == 0_f ? 0_f : (by_vel.y < 0_f ? -1_f : 1_f)));

@@ -8,7 +8,6 @@
 #include "source/level/level_logic.h"
 #include "source/level/level_collision_logic.h"
 #include "source/level/level_render.h"
-#include "source/level/position.h"
 
 namespace retron::comp
 {
@@ -103,7 +102,6 @@ namespace retron
 
         entt::registry registry;
         retron::entities entities;
-        retron::position position;
         retron::collision collision;
         retron::particles particles;
         retron::level_logic level_logic;

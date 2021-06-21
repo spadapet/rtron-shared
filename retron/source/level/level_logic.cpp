@@ -6,7 +6,6 @@
 #include "source/level/entity_type.h"
 #include "source/level/entities.h"
 #include "source/level/level_logic.h"
-#include "source/level/position.h"
 
 namespace anim_events
 {

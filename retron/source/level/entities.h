@@ -28,6 +28,25 @@ namespace retron
         void flush_delete();
         void delete_all();
 
+        // Common component accessors
+
+        void position(entt::entity entity, const ff::point_fixed& value);
+        ff::point_fixed position(entt::entity entity);
+
+        void velocity(entt::entity entity, const ff::point_fixed& value);
+        ff::point_fixed velocity(entt::entity entity);
+
+        void direction(entt::entity entity, const ff::point_fixed& value);
+        const ff::point_fixed direction(entt::entity entity);
+
+        void scale(entt::entity entity, const ff::point_fixed& value);
+        ff::point_fixed scale(entt::entity entity);
+
+        void rotation(entt::entity entity, ff::fixed_int value);
+        ff::fixed_int rotation(entt::entity entity);
+
+        void render_debug(ff::draw_base& draw);
+
     private:
         entt::registry& registry;
     };
