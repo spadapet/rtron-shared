@@ -95,6 +95,13 @@ ff::point_fixed retron::helpers::index_to_dir(size_t index)
     return dirs[index % dirs.size()];
 }
 
+ff::point_fixed retron::helpers::canon_dir(const ff::point_fixed& value)
+{
+    return ff::point_fixed(
+        std::copysign(1_f, value.x) * ff::fixed_int(value.x != 0_f),
+        std::copysign(1_f, value.y) * ff::fixed_int(value.y != 0_f));
+}
+
 ff::point_fixed retron::helpers::get_press_vector(const ff::input_event_provider& input_events, bool for_shoot)
 {
     ff::fixed_int joystick_min = retron::app_service::get().game_spec().joystick_min;

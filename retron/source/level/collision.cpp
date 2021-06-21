@@ -1,6 +1,8 @@
 #include "pch.h"
 #include "source/level/collision.h"
 #include "source/level/components.h"
+#include "source/level/entity_type.h"
+#include "source/level/entity_util.h"
 #include "source/level/entities.h"
 #include "source/level/position.h"
 
@@ -98,6 +100,8 @@ retron::collision::collision(entt::registry& registry, retron::position& positio
         }
     }
 
+    this->connections.emplace_front(this->registry.on_construct<retron::entity_type>().connect<&retron::collision::entity_created>(this));
+
     this->connections.emplace_front(this->registry.on_destroy<retron::comp::hit_box>().connect<&collision::box_removed<retron::comp::hit_box>>(this));
     this->connections.emplace_front(this->registry.on_construct<retron::comp::hit_box_spec>().connect<&collision::box_spec_changed<retron::collision_box_type::hit_box>>(this));
     this->connections.emplace_front(this->registry.on_update<retron::comp::hit_box_spec>().connect<&collision::box_spec_changed<retron::collision_box_type::hit_box>>(this));
@@ -120,8 +124,6 @@ retron::collision::collision(entt::registry& registry, retron::position& positio
     this->connections.emplace_front(this->registry.on_update<retron::comp::scale>().connect<&retron::collision::scale_changed>(this));
     this->connections.emplace_front(this->registry.on_construct<retron::comp::rotation>().connect<&retron::collision::position_changed>(this));
     this->connections.emplace_front(this->registry.on_update<retron::comp::rotation>().connect<&retron::collision::position_changed>(this));
-
-    this->ff_connections.emplace_front(entities.entity_created_sink().connect(std::bind(&collision::entity_created, this, std::placeholders::_1)));
 }
 
 const std::vector<std::pair<entt::entity, entt::entity>>& retron::collision::detect_collisions(
@@ -640,7 +642,7 @@ void retron::collision::bounds_box_removed(entt::registry& registry, entt::entit
     this->registry.remove<retron::comp::grunt_avoid_box>(entity);
 }
 
-void retron::collision::entity_created(entt::entity entity)
+void retron::collision::entity_created(entt::registry& registry, entt::entity entity)
 {
     this->position_changed(this->registry, entity);
 }

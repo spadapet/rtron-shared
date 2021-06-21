@@ -73,8 +73,8 @@ namespace retron
         void advance_phase();
 
         void handle_particle_effect_done(int effect_id);
-        void handle_entity_created(entt::entity entity);
-        void handle_entity_deleted(entt::entity entity);
+        void handle_entity_created(entt::registry& registry, entt::entity entity);
+        void handle_tracked_entity_deleted(entt::registry& registry, entt::entity entity);
 
         void render_particles(ff::draw_base& draw);
         void render_debug(ff::draw_base& draw);
@@ -111,7 +111,8 @@ namespace retron
         retron::level_render level_render;
 
         std::unordered_map<std::string_view, retron::particles::effect_t> particle_effects;
-        std::forward_list<ff::signal_connection> connections;
+        std::forward_list<entt::scoped_connection> connections;
+        std::forward_list<ff::signal_connection> ff_connections;
 
         internal_phase_t phase_;
         size_t phase_counter;

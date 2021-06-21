@@ -62,7 +62,7 @@ namespace retron
         std::tuple<bool, entt::entity, entt::entity> does_overlap(::b2Contact* contact, retron::collision_box_type collision_type);
 
         void bounds_box_removed(entt::registry& registry, entt::entity entity);
-        void entity_created(entt::entity entity);
+        void entity_created(entt::registry& registry, entt::entity entity);
         void position_changed(entt::registry& registry, entt::entity entity);
         void scale_changed(entt::registry& registry, entt::entity entity);
 
@@ -76,7 +76,6 @@ namespace retron
         retron::entities& entities_;
         entt::registry& registry;
         std::forward_list<entt::scoped_connection> connections;
-        std::forward_list<ff::signal_connection> ff_connections;
 
         // Box2d
         retron::collision::hit_filter hit_filter_;

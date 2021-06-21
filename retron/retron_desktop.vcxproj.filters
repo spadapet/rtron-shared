@@ -116,6 +116,9 @@
     <ClCompile Include="source\level\level_collision_logic.cpp">
       <Filter>source\level</Filter>
     </ClCompile>
+    <ClCompile Include="source\level\entity_util.cpp">
+      <Filter>source\level</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h" />
@@ -210,6 +213,12 @@
       <Filter>source\level</Filter>
     </ClInclude>
     <ClInclude Include="source\level\level_collision_logic.h">
+      <Filter>source\level</Filter>
+    </ClInclude>
+    <ClInclude Include="source\level\entity_type.h">
+      <Filter>source\level</Filter>
+    </ClInclude>
+    <ClInclude Include="source\level\entity_util.h">
       <Filter>source\level</Filter>
     </ClInclude>
   </ItemGroup>

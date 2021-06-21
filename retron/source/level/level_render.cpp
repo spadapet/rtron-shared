@@ -2,6 +2,8 @@
 #include "source/core/app_service.h"
 #include "source/level/components.h"
 #include "source/level/entities.h"
+#include "source/level/entity_type.h"
+#include "source/level/entity_util.h"
 #include "source/level/level_render.h"
 
 retron::level_render::level_render(retron::level_render_host& host)

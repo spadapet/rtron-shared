@@ -30,7 +30,7 @@ ff::point_fixed retron::position::velocity(entt::entity entity)
 
 void retron::position::direction(entt::entity entity, const ff::point_fixed& value)
 {
-    ff::point_fixed value_canon = retron::position::canon_direction(value);
+    ff::point_fixed value_canon = retron::helpers::canon_dir(value);
     this->registry.emplace_or_replace<retron::comp::direction>(entity, value_canon);
 }
 
@@ -38,13 +38,6 @@ const ff::point_fixed retron::position::direction(entt::entity entity)
 {
     retron::comp::direction* c = this->registry.try_get<retron::comp::direction>(entity);
     return c ? c->direction : ff::point_fixed(0, 1);
-}
-
-ff::point_fixed retron::position::canon_direction(const ff::point_fixed& value)
-{
-    return ff::point_fixed(
-        std::copysign(1_f, value.x) * ff::fixed_int(value.x != 0_f),
-        std::copysign(1_f, value.y) * ff::fixed_int(value.y != 0_f));
 }
 
 void retron::position::scale(entt::entity entity, const ff::point_fixed& value)

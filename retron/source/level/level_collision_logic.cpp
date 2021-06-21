@@ -4,6 +4,8 @@
 #include "source/level/collision.h"
 #include "source/level/components.h"
 #include "source/level/entities.h"
+#include "source/level/entity_type.h"
+#include "source/level/entity_util.h"
 #include "source/level/level_collision_logic.h"
 #include "source/level/position.h"
 

@@ -40,6 +40,7 @@
     <ClCompile Include="source\game\score_state.cpp" />
     <ClCompile Include="source\level\collision.cpp" />
     <ClCompile Include="source\level\entities.cpp" />
+    <ClCompile Include="source\level\entity_util.cpp" />
     <ClCompile Include="source\level\level.cpp" />
     <ClCompile Include="source\level\level_collision_logic.cpp" />
     <ClCompile Include="source\level\level_logic.cpp" />
@@ -76,6 +77,8 @@
     <ClInclude Include="source\level\collision.h" />
     <ClInclude Include="source\level\components.h" />
     <ClInclude Include="source\level\entities.h" />
+    <ClInclude Include="source\level\entity_type.h" />
+    <ClInclude Include="source\level\entity_util.h" />
     <ClInclude Include="source\level\level.h" />
     <ClInclude Include="source\level\level_collision_logic.h" />
     <ClInclude Include="source\level\level_logic.h" />

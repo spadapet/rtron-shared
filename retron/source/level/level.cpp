@@ -3,6 +3,8 @@
 #include "source/core/game_service.h"
 #include "source/core/render_targets.h"
 #include "source/level/components.h"
+#include "source/level/entity_type.h"
+#include "source/level/entity_util.h"
 #include "source/level/level.h"
 
 static const size_t MAX_DELAY_PARTICLES = 128;
@@ -22,10 +24,11 @@ retron::level::level(retron::game_service& game_service, const retron::level_spe
     , phase_counter(0)
     , frame_count(0)
 {
-    this->connections.emplace_front(retron::app_service::get().reload_resources_sink().connect(std::bind(&retron::level::init_resources, this)));
-    this->connections.emplace_front(this->particles.effect_done_sink().connect(std::bind(&retron::level::handle_particle_effect_done, this, std::placeholders::_1)));
-    this->connections.emplace_front(this->entities.entity_created_sink().connect(std::bind(&retron::level::handle_entity_created, this, std::placeholders::_1)));
-    this->connections.emplace_front(this->entities.entity_deleted_sink().connect(std::bind(&retron::level::handle_entity_deleted, this, std::placeholders::_1)));
+    this->connections.emplace_front(this->registry.on_construct<retron::entity_type>().connect<&retron::level::handle_entity_created>(this));
+    this->connections.emplace_front(this->registry.on_destroy<retron::comp::tracked_object>().connect<&retron::level::handle_tracked_entity_deleted>(this));
+
+    this->ff_connections.emplace_front(retron::app_service::get().reload_resources_sink().connect(std::bind(&retron::level::init_resources, this)));
+    this->ff_connections.emplace_front(this->particles.effect_done_sink().connect(std::bind(&retron::level::handle_particle_effect_done, this, std::placeholders::_1)));
 
     this->init_resources();
     this->internal_phase(internal_phase_t::ready);
@@ -157,7 +160,7 @@ void retron::level::host_create_particles(std::string_view name, const ff::point
 void retron::level::host_create_bullet(entt::entity player_entity, ff::point_fixed shot_vector)
 {
     retron::entity_type type = retron::entity_util::bullet_for_player(this->entities.type(player_entity));
-    ff::point_fixed shot_dir = retron::position::canon_direction(shot_vector);
+    ff::point_fixed shot_dir = retron::helpers::canon_dir(shot_vector);
     ff::point_fixed pos = this->bounds_box(player_entity).center() + shot_dir * this->difficulty_spec_.player_shot_start_offset;
     ff::point_fixed vel = shot_dir * this->difficulty_spec_.player_shot_move;
 
@@ -504,30 +507,25 @@ void retron::level::handle_particle_effect_done(int effect_id)
     }
 }
 
-void retron::level::handle_entity_created(entt::entity entity)
+void retron::level::handle_entity_created(entt::registry& registry, entt::entity entity)
 {
-    retron::entity_type type = this->entities.type(entity);
-
-    if (retron::entity_util::category(type) == retron::entity_category::enemy && type != retron::entity_type::enemy_hulk)
+    if (this->entities.category(entity) == retron::entity_category::enemy && this->entities.type(entity) != retron::entity_type::enemy_hulk)
     {
         this->registry.emplace<retron::comp::flag::clear_to_win>(entity);
     }
 }
 
-void retron::level::handle_entity_deleted(entt::entity entity)
+void retron::level::handle_tracked_entity_deleted(entt::registry& registry, entt::entity entity)
 {
     if (this->phase_ != internal_phase_t::ready)
     {
-        retron::comp::tracked_object* data = this->registry.try_get<retron::comp::tracked_object>(entity);
-        if (data)
-        {
-            size_t& count = data->init_object_count.get();
-            assert(count);
+        retron::comp::tracked_object& data = this->registry.get<retron::comp::tracked_object>(entity);
+        size_t& count = data.init_object_count.get();
+        assert(count);
 
-            if (count)
-            {
-                count--;
-            }
+        if (count)
+        {
+            count--;
         }
     }
 }
