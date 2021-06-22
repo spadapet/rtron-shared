@@ -65,6 +65,7 @@ namespace retron
 
         void bounds_box_removed(entt::registry& registry, entt::entity entity);
         void entity_created(entt::registry& registry, entt::entity entity);
+        void rectangle_changed(entt::registry& registry, entt::entity entity);
         void position_changed(entt::registry& registry, entt::entity entity);
         void scale_changed(entt::registry& registry, entt::entity entity);
 

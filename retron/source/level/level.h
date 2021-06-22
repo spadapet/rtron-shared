@@ -59,16 +59,12 @@ namespace retron
         void init_resources();
         void init_entities();
 
-        ff::rect_fixed bounds_box(entt::entity entity);
-
         entt::entity create_player(const retron::player& player);
-        entt::entity create_bounds(const ff::rect_fixed& rect);
-        entt::entity create_box(const ff::rect_fixed& rect);
         void create_start_particles(entt::entity entity);
         void create_objects(size_t& count, retron::entity_type type, const ff::rect_fixed& bounds, const std::function<entt::entity(retron::entity_type, const ff::point_fixed&)>& create_func);
 
         void advance_entities();
-        void advance_entity_followers();
+        void advance_particle_positions();
         void advance_phase();
 
         void handle_particle_effect_done(int effect_id);

@@ -44,7 +44,7 @@ std::shared_ptr<ff::state> retron::level::advance_time()
     }
 
     this->entities.flush_delete();
-    this->advance_entity_followers();
+    this->advance_particle_positions();
     this->advance_phase();
 
     return nullptr;
@@ -160,7 +160,7 @@ void retron::level::host_create_bullet(entt::entity player_entity, ff::point_fix
 {
     retron::entity_type type = retron::entity_util::bullet_for_player(this->entities.type(player_entity));
     ff::point_fixed shot_dir = retron::helpers::canon_dir(shot_vector);
-    ff::point_fixed pos = this->bounds_box(player_entity).center() + shot_dir * this->difficulty_spec_.player_shot_start_offset;
+    ff::point_fixed pos = this->collision.box(player_entity, retron::collision_box_type::bounds_box).center() + shot_dir * this->difficulty_spec_.player_shot_start_offset;
     ff::point_fixed vel = shot_dir * this->difficulty_spec_.player_shot_move;
 
     this->entities.create_bullet(player_entity, pos, vel);
@@ -203,11 +203,11 @@ void retron::level::init_entities()
             switch (level_rect.type)
             {
                 case retron::level_rect::type::bounds:
-                    this->create_bounds(level_rect.rect.deflate(constants::LEVEL_BORDER_THICKNESS, constants::LEVEL_BORDER_THICKNESS));
+                    this->entities.create_bounds(level_rect.rect.deflate(constants::LEVEL_BORDER_THICKNESS, constants::LEVEL_BORDER_THICKNESS));
                     break;
 
                 case retron::level_rect::type::box:
-                    this->create_box(level_rect.rect);
+                    this->entities.create_box(level_rect.rect);
                     break;
             }
         }
@@ -218,7 +218,7 @@ void retron::level::init_entities()
         {
             if (level_rect.type == retron::level_rect::type::safe)
             {
-                this->entities.delay_delete(this->create_box(level_rect.rect));
+                this->entities.delay_delete(this->entities.create_box(level_rect.rect));
             }
         }
 
@@ -243,11 +243,6 @@ void retron::level::init_entities()
     }
 
     this->entities.flush_delete();
-}
-
-ff::rect_fixed retron::level::bounds_box(entt::entity entity)
-{
-    return this->collision.box(entity, retron::collision_box_type::bounds_box);
 }
 
 namespace
@@ -357,24 +352,6 @@ entt::entity retron::level::create_player(const retron::player& player)
     return entity;
 }
 
-entt::entity retron::level::create_bounds(const ff::rect_fixed& rect)
-{
-    entt::entity entity = this->entities.create(retron::entity_type::level_bounds);
-    this->collision.box(entity, rect, retron::collision_box_type::bounds_box);
-    this->registry.emplace<retron::comp::rectangle>(entity, rect, -constants::LEVEL_BORDER_THICKNESS, colors::LEVEL_BORDER);
-
-    return entity;
-}
-
-entt::entity retron::level::create_box(const ff::rect_fixed& rect)
-{
-    entt::entity entity = this->entities.create(retron::entity_type::level_box);
-    this->collision.box(entity, rect, retron::collision_box_type::bounds_box);
-    this->registry.emplace<retron::comp::rectangle>(entity, rect, constants::LEVEL_BORDER_THICKNESS, colors::LEVEL_BORDER);
-
-    return entity;
-}
-
 void retron::level::create_start_particles(entt::entity entity)
 {
     auto names = retron::entity_util::start_particle_names_0_90(this->entities.type(entity));
@@ -385,7 +362,7 @@ void retron::level::create_start_particles(entt::entity entity)
         options.delay = static_cast<int>(this->registry.size<retron::comp::showing_particle_effect>() % ::MAX_DELAY_PARTICLES);
 
         bool vertical = ff::math::random_range(1, 10) > 2 ? true : false;
-        ff::point_fixed center = this->bounds_box(entity).center();
+        ff::point_fixed center = this->collision.box(entity, retron::collision_box_type::bounds_box).center();
         auto [effect_id, max_life] = this->particle_effects[(vertical && names.second.size()) ? names.second : names.first].add(this->particles, center, &options);
         this->registry.emplace<retron::comp::showing_particle_effect>(entity, effect_id);
     }
@@ -438,11 +415,11 @@ void retron::level::advance_entities()
     this->level_logic.advance_time(categories);
 }
 
-void retron::level::advance_entity_followers()
+void retron::level::advance_particle_positions()
 {
-    for (auto [entity, comp] : this->registry.view<retron::comp::showing_particle_effect>().each())
+    for (auto [entity, comp] : this->registry.view<const retron::comp::showing_particle_effect>().each())
     {
-        this->particles.effect_position(comp.effect_id, this->bounds_box(entity).center());
+        this->particles.effect_position(comp.effect_id, this->collision.box(entity, retron::collision_box_type::bounds_box).center());
     }
 }
 
@@ -497,7 +474,7 @@ void retron::level::advance_phase()
 
 void retron::level::handle_particle_effect_done(int effect_id)
 {
-    for (auto [entity, comp] : this->registry.view<retron::comp::showing_particle_effect>().each())
+    for (auto [entity, comp] : this->registry.view<const retron::comp::showing_particle_effect>().each())
     {
         if (comp.effect_id == effect_id)
         {
@@ -604,7 +581,10 @@ void retron::level::render_debug(ff::draw_base& draw)
 
     if (ff::flags::has(render_debug, retron::render_debug_t::position))
     {
-        this->entities.render_debug(draw);
+        for (auto [entity, pos] : this->registry.view<const retron::comp::position>().each())
+        {
+            draw.draw_palette_filled_rectangle(ff::rect_fixed(pos.position + ff::point_fixed(-1, -1), pos.position + ff::point_fixed(1, 1)), 230);
+        }
     }
 }
 

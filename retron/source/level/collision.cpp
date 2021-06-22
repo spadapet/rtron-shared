@@ -90,6 +90,8 @@ retron::collision::collision(entt::registry& registry)
     this->worlds[static_cast<size_t>(retron::collision_box_type::hit_box)].SetContactFilter(&this->hit_filter_);
 
     this->connections.emplace_front(this->registry.on_construct<retron::entity_type>().connect<&retron::collision::entity_created>(this));
+    this->connections.emplace_front(this->registry.on_construct<retron::comp::rectangle>().connect<&retron::collision::rectangle_changed>(this));
+    this->connections.emplace_front(this->registry.on_update<retron::comp::rectangle>().connect<&retron::collision::rectangle_changed>(this));
 
     this->connections.emplace_front(this->registry.on_destroy<retron::comp::hit_box>().connect<&collision::box_removed<retron::comp::hit_box>>(this));
     this->connections.emplace_front(this->registry.on_construct<retron::comp::hit_box_spec>().connect<&collision::box_spec_changed<retron::collision_box_type::hit_box>>(this));
@@ -647,6 +649,15 @@ void retron::collision::bounds_box_removed(entt::registry& registry, entt::entit
 void retron::collision::entity_created(entt::registry& registry, entt::entity entity)
 {
     this->position_changed(this->registry, entity);
+}
+
+void retron::collision::rectangle_changed(entt::registry& registry, entt::entity entity)
+{
+    if (this->category(entity) == retron::entity_category::level)
+    {
+        const retron::comp::rectangle& comp = this->registry.get<const retron::comp::rectangle>(entity);
+        this->box(entity, comp.rect, retron::collision_box_type::bounds_box);
+    }
 }
 
 void retron::collision::position_changed(entt::registry& registry, entt::entity entity)

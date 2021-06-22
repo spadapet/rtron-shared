@@ -22,6 +22,8 @@ namespace retron
         entt::entity create_grunt(retron::entity_type type, const ff::point_fixed& pos);
         entt::entity create_hulk(retron::entity_type type, const ff::point_fixed& pos, size_t group);
         entt::entity create_bullet(entt::entity player, ff::point_fixed pos, ff::point_fixed vel);
+        entt::entity create_bounds(const ff::rect_fixed& rect);
+        entt::entity create_box(const ff::rect_fixed& rect);
 
         bool delay_delete(entt::entity entity);
         bool deleted(entt::entity entity) const;
@@ -44,8 +46,6 @@ namespace retron
 
         void rotation(entt::entity entity, ff::fixed_int value);
         ff::fixed_int rotation(entt::entity entity);
-
-        void render_debug(ff::draw_base& draw);
 
     private:
         entt::registry& registry;

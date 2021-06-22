@@ -102,6 +102,22 @@ entt::entity retron::entities::create_bullet(entt::entity player, ff::point_fixe
     return entity;
 }
 
+entt::entity retron::entities::create_bounds(const ff::rect_fixed& rect)
+{
+    entt::entity entity = this->create(retron::entity_type::level_bounds);
+    this->registry.emplace<retron::comp::rectangle>(entity, rect, -constants::LEVEL_BORDER_THICKNESS, colors::LEVEL_BORDER);
+
+    return entity;
+}
+
+entt::entity retron::entities::create_box(const ff::rect_fixed& rect)
+{
+    entt::entity entity = this->create(retron::entity_type::level_box);
+    this->registry.emplace<retron::comp::rectangle>(entity, rect, constants::LEVEL_BORDER_THICKNESS, colors::LEVEL_BORDER);
+
+    return entity;
+}
+
 bool retron::entities::delay_delete(entt::entity entity)
 {
     if (!this->deleted(entity))
@@ -189,12 +205,4 @@ ff::fixed_int retron::entities::rotation(entt::entity entity)
 {
     retron::comp::rotation* c = this->registry.try_get<retron::comp::rotation>(entity);
     return c ? c->rotation : 0;
-}
-
-void retron::entities::render_debug(ff::draw_base& draw)
-{
-    for (auto [entity, pc] : this->registry.view<retron::comp::position>().each())
-    {
-        draw.draw_palette_filled_rectangle(ff::rect_fixed(pc.position + ff::point_fixed(-1, -1), pc.position + ff::point_fixed(1, 1)), 230);
-    }
 }
