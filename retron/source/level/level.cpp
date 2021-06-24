@@ -338,16 +338,13 @@ entt::entity retron::level::create_player(const retron::player& player)
     entt::entity entity = this->entities.create(retron::entity_util::player(player.index), pos);
     const ff::input_event_provider& input_events = this->game_service.input_events(player);
     retron::comp::player::player_state player_state = (this->phase_ == internal_phase_t::show_players) ? retron::comp::player::player_state::alive : retron::comp::player::player_state::ghost;
+
     this->registry.emplace<retron::comp::direction>(entity, ff::point_fixed{ 0, 1 });
     this->registry.emplace<retron::comp::velocity>(entity, ff::point_fixed{ 0, 0 });
     this->registry.emplace<retron::comp::player>(entity, player, input_events, player_state, 0u, 0u);
     this->registry.emplace<retron::comp::flag::hulk_target>(entity);
 
-    retron::particle_effect_options options;
-    options.type = static_cast<uint8_t>(player.index);
-
-    auto [effect_id, max_life] = this->particle_effects["player_start"].add(this->particles, pos, &options);
-    this->registry.emplace<retron::comp::showing_particle_effect>(entity, effect_id);
+    this->create_start_particles(entity);
 
     return entity;
 }
@@ -359,7 +356,14 @@ void retron::level::create_start_particles(entt::entity entity)
     if (names.first.size())
     {
         retron::particle_effect_options options;
-        options.delay = static_cast<int>(this->registry.size<retron::comp::showing_particle_effect>() % ::MAX_DELAY_PARTICLES);
+        if (this->entities.category(entity) == retron::entity_category::player)
+        {
+            options.type = static_cast<uint8_t>(retron::entity_util::index(this->entities.type(entity)));
+        }
+        else
+        {
+            options.delay = static_cast<int>(this->registry.size<retron::comp::showing_particle_effect>() % ::MAX_DELAY_PARTICLES);
+        }
 
         bool vertical = ff::math::random_range(1, 10) > 2 ? true : false;
         ff::point_fixed center = this->collision.box(entity, retron::collision_box_type::bounds_box).center();

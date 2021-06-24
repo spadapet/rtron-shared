@@ -173,6 +173,10 @@ std::pair<std::string_view, std::string_view> retron::entity_util::start_particl
 {
     switch (type)
     {
+        case retron::entity_type::player_0:
+        case retron::entity_type::player_1:
+            return std::make_pair("player_start"sv, "player_start"sv);
+
         case retron::entity_type::enemy_grunt:
             return std::make_pair("grunt_start_0"sv, "grunt_start_90"sv);
 
