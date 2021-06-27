@@ -11,6 +11,10 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "build", "build", "{E1ABBA80
 		README.md = README.md
 	EndProjectSection
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "retron", "retron\retron_uwp.vcxproj", "{857BF46A-94E0-4C02-A857-DF0AD4A75870}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "retron_designer", "retron_designer\retron_designer.csproj", "{9D9345C4-576B-43F4-84C3-1F2FC4EB6483}"
+EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "vendor", "vendor", "{194EC83F-2073-4391-A43F-634168BCB1AB}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "vendor.box2d", "vendor\box2d_uwp.vcxproj", "{254AAF2E-8FFD-43B2-B00B-8E351D2C1012}"
@@ -38,10 +42,6 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ff.resource", "vendor\ff_game_library\projects\ff\resource\resource_uwp.vcxproj", "{AA32970A-8178-4979-8C52-EA30EEBB77C9}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ff.ui", "vendor\ff_game_library\projects\ff\ui\ui_uwp.vcxproj", "{279176CB-1DB1-40EA-AA60-1A0469E8A6D8}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "retron_designer", "retron_designer\retron_designer.csproj", "{9D9345C4-576B-43F4-84C3-1F2FC4EB6483}"
-EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "retron", "retron\retron_uwp.vcxproj", "{857BF46A-94E0-4C02-A857-DF0AD4A75870}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ff_game_library", "ff_game_library", "{48956BBB-8E60-4A8E-A861-3253BCE28ABB}"
 EndProject
