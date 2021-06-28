@@ -104,7 +104,6 @@ namespace retron
         retron::level_collision_logic level_collision_logic;
         retron::level_render level_render;
 
-        std::unordered_map<std::string_view, retron::particles::effect_t> particle_effects;
         std::forward_list<entt::scoped_connection> connections;
         std::forward_list<ff::signal_connection> ff_connections;
 

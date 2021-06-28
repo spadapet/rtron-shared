@@ -2,6 +2,8 @@
 
 namespace retron
 {
+    class particles;
+
     struct particle_effect_options
     {
         std::pair<ff::fixed_int, ff::fixed_int> angle = std::make_pair(0, 360);
@@ -11,6 +13,15 @@ namespace retron
         int delay = 0;
         uint8_t type = 0;
         bool reverse = false;
+    };
+
+    class particle_effect_base
+    {
+    public:
+        virtual ~particle_effect_base() = default;
+
+        virtual std::tuple<int, size_t> add(retron::particles& particles, ff::point_fixed pos, const retron::particle_effect_options* options = nullptr) const = 0;
+        virtual std::tuple<int, size_t> add(retron::particles& particles, const ff::point_fixed* pos, size_t pos_count, const retron::particle_effect_options* options = nullptr) const = 0;
     };
 
     class particles
@@ -128,7 +139,7 @@ namespace retron
         ff::signal<int> effect_done_signal;
 
     public:
-        class effect_t
+        class effect_t : public retron::particle_effect_base
         {
         public:
             effect_t() = default;
@@ -139,8 +150,8 @@ namespace retron
             retron::particles::effect_t& operator=(retron::particles::effect_t&&) = default;
             retron::particles::effect_t& operator=(const retron::particles::effect_t&) = default;
 
-            std::tuple<int, size_t> add(retron::particles& particles, ff::point_fixed pos, const retron::particle_effect_options* options = nullptr) const;
-            std::tuple<int, size_t> add(retron::particles& particles, const ff::point_fixed* pos, size_t pos_count, const retron::particle_effect_options* options = nullptr) const;
+            virtual std::tuple<int, size_t> add(retron::particles& particles, ff::point_fixed pos, const retron::particle_effect_options* options = nullptr) const override;
+            virtual std::tuple<int, size_t> add(retron::particles& particles, const ff::point_fixed* pos, size_t pos_count, const retron::particle_effect_options* options = nullptr) const override;
 
         private:
             std::vector<spec_t> specs;

@@ -26,10 +26,8 @@ retron::level::level(retron::game_service& game_service, const retron::level_spe
     this->connections.emplace_front(this->registry.on_construct<retron::entity_type>().connect<&retron::level::handle_entity_created>(this));
     this->connections.emplace_front(this->registry.on_destroy<retron::comp::tracked_object>().connect<&retron::level::handle_tracked_entity_deleted>(this));
 
-    this->ff_connections.emplace_front(retron::app_service::get().reload_resources_sink().connect(std::bind(&retron::level::init_resources, this)));
     this->ff_connections.emplace_front(this->particles.effect_done_sink().connect(std::bind(&retron::level::handle_particle_effect_done, this, std::placeholders::_1)));
 
-    this->init_resources();
     this->internal_phase(internal_phase_t::ready);
 }
 
@@ -147,12 +145,12 @@ size_t retron::level::host_frame_count() const
 
 void retron::level::host_create_particles(std::string_view name, const ff::point_fixed& pos, const retron::particle_effect_options* options)
 {
-    auto i = this->particle_effects.find(name);
-    assert(i != this->particle_effects.end());
+    const retron::particle_effect_base* effect = retron::app_service::get().level_particle_effect(name);
+    assert(effect);
 
-    if (i != this->particle_effects.end())
+    if (effect)
     {
-        i->second.add(this->particles, pos, options);
+        effect->add(this->particles, pos, options);
     }
 }
 
@@ -178,15 +176,6 @@ void retron::level::host_handle_dead_player(entt::entity entity, const retron::p
 void retron::level::host_add_points(const retron::player& player, size_t points)
 {
     this->game_service.player_add_points(player, points);
-}
-
-void retron::level::init_resources()
-{
-    ff::dict level_particles_dict = ff::auto_resource_value("level_particles").value()->get<ff::dict>();
-    for (std::string_view name : level_particles_dict.child_names())
-    {
-        this->particle_effects.try_emplace(name, retron::particles::effect_t(level_particles_dict.get(name)));
-    }
 }
 
 void retron::level::init_entities()
@@ -223,6 +212,7 @@ void retron::level::init_entities()
         }
 
         size_t hulk_group = 0;
+        ff::timer timer;
 
         for (retron::level_objects_spec& object_spec : this->level_spec_.objects)
         {
@@ -233,6 +223,12 @@ void retron::level::init_entities()
 
             hulk_group += (object_spec.hulk > 0);
         }
+
+#ifdef _DEBUG
+        std::ostringstream str;
+        str << "retron::level::create_objects time: " << std::fixed << std::setprecision(2) << timer.tick() * 1000.0 << "ms";
+        ff::log::write_debug(str);
+#endif
     }
     else if (this->phase_ == internal_phase_t::show_players)
     {
@@ -367,7 +363,8 @@ void retron::level::create_start_particles(entt::entity entity)
 
         bool vertical = ff::math::random_range(1, 10) > 2 ? true : false;
         ff::point_fixed center = this->collision.box(entity, retron::collision_box_type::bounds_box).center();
-        auto [effect_id, max_life] = this->particle_effects[(vertical && names.second.size()) ? names.second : names.first].add(this->particles, center, &options);
+        std::string_view name = (vertical && names.second.size()) ? names.second : names.first;
+        auto [effect_id, max_life] = retron::app_service::get().level_particle_effect(name)->add(this->particles, center, &options);
         this->registry.emplace<retron::comp::showing_particle_effect>(entity, effect_id);
     }
 }

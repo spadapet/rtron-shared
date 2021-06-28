@@ -212,6 +212,23 @@ retron::audio& retron::app_state::audio()
     return *this->audio_;
 }
 
+const retron::particle_effect_base* retron::app_state::level_particle_effect(std::string_view name)
+{
+    if (this->level_particle_effects.empty() && this->level_particle_value.valid())
+    {
+        ff::dict level_particles_dict = this->level_particle_value.value()->get<ff::dict>();
+        for (std::string_view name : level_particles_dict.child_names())
+        {
+            this->level_particle_effects.try_emplace(name, retron::particles::effect_t(level_particles_dict.get(name)));
+        }
+
+        this->level_particle_value = ff::auto_resource_value();
+    }
+
+    auto i = this->level_particle_effects.find(name);
+    return (i != this->level_particle_effects.cend()) ? &i->second : nullptr;
+}
+
 const retron::system_options& retron::app_state::system_options() const
 {
     return this->system_options_;
@@ -275,11 +292,6 @@ void retron::app_state::pop_render_targets(ff::dx11_target_base& final_target)
 ff::signal_sink<>& retron::app_state::reload_resources_sink()
 {
     return this->reload_resources_signal;
-}
-
-bool retron::app_state::rebuilding_resources() const
-{
-    return this->rebuilding_resources_;
 }
 
 retron::render_debug_t retron::app_state::render_debug() const
@@ -392,6 +404,8 @@ void retron::app_state::init_resources()
     this->debug_input_mapping = "game_debug_controls";
     this->debug_input_events = std::make_unique<ff::input_event_provider>(*this->debug_input_mapping.object(), std::move(debug_input_devices));
     this->palette_data = "palette_main";
+    this->level_particle_value = ff::auto_resource_value("level_particles");
+    this->level_particle_effects.clear();
 
     for (size_t i = 0; i < this->player_palettes.size(); i++)
     {

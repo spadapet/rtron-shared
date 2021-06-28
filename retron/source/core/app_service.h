@@ -3,6 +3,7 @@
 namespace retron
 {
     class audio;
+    class particle_effect_base;
     class render_targets;
     struct game_options;
     struct system_options;
@@ -38,6 +39,7 @@ namespace retron
 
         // Globals
         virtual retron::audio& audio() = 0;
+        virtual const retron::particle_effect_base* level_particle_effect(std::string_view name) = 0;
 
         // Options
         virtual const retron::system_options& system_options() const = 0;
@@ -56,7 +58,6 @@ namespace retron
 
         // Debug
         virtual ff::signal_sink<>& reload_resources_sink() = 0;
-        virtual bool rebuilding_resources() const = 0;
         virtual retron::render_debug_t render_debug() const = 0;
         virtual void render_debug(retron::render_debug_t flags) = 0;
         virtual retron::debug_cheats_t debug_cheats() const = 0;
