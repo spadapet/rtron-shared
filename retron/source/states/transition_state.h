@@ -16,11 +16,11 @@ namespace retron
         retron::render_targets temp_targets;
 		std::shared_ptr<ff::state> old_state;
 		std::shared_ptr<ff::state> new_state;
-		ff::auto_resource<ff::dx11_texture> image;
-		std::shared_ptr<ff::dx11_texture> texture;
-		std::shared_ptr<ff::dx11_texture> texture2;
-		std::shared_ptr<ff::dx11_target_base> target;
-		std::shared_ptr<ff::dx11_target_base> target2;
+		ff::auto_resource<ff::texture> image;
+		std::shared_ptr<ff::texture> texture;
+		std::shared_ptr<ff::texture> texture2;
+		std::shared_ptr<ff::target_base> target;
+		std::shared_ptr<ff::target_base> target2;
 		ff::fixed_int counter;
 		ff::fixed_int speed;
 		ff::fixed_int offset_stop;

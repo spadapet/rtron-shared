@@ -22,8 +22,8 @@ retron::app_service& retron::app_service::get()
 ff::draw_ptr retron::app_service::begin_palette_draw()
 {
     retron::render_targets& targets = *retron::app_service::get().render_targets();
-    ff::dx11_target_base& target = *targets.target(retron::render_target_types::palette_1);
-    ff::dx11_depth& depth = *targets.depth(retron::render_target_types::palette_1);
+    ff::target_base& target = *targets.target(retron::render_target_types::palette_1);
+    ff::depth& depth = *targets.depth(retron::render_target_types::palette_1);
 
     return retron::app_service::get().draw_device().begin_draw(target, &depth, retron::constants::RENDER_RECT, retron::constants::RENDER_RECT);
 }
@@ -39,8 +39,8 @@ retron::app_state::app_state()
     , pending_hide_debug_state(false)
     , render_debug_(retron::render_debug_t::none)
     , debug_cheats_(retron::debug_cheats_t::none)
-    , texture_1080(std::make_shared<ff::dx11_texture>(retron::constants::RENDER_SIZE_HIGH.cast<int>(), DXGI_FORMAT_R8G8B8A8_UNORM))
-    , target_1080(std::make_shared<ff::dx11_target_texture>(this->texture_1080))
+    , texture_1080(std::make_shared<ff::texture>(retron::constants::RENDER_SIZE_HIGH.cast<int>(), DXGI_FORMAT_R8G8B8A8_UNORM))
+    , target_1080(std::make_shared<ff::target_texture>(this->texture_1080))
 {
     assert(!::app_service);
     ::app_service = this;
@@ -162,7 +162,7 @@ void retron::app_state::advance_input()
     ff::state::advance_input();
 }
 
-void retron::app_state::render(ff::dx11_target_base& target, ff::dx11_depth& depth)
+void retron::app_state::render(ff::target_base& target, ff::depth& depth)
 {
     ff::graphics::dx11_device_state().clear_target(this->target_1080->view(), ff::color::none());
 
@@ -179,7 +179,7 @@ void retron::app_state::render(ff::dx11_target_base& target, ff::dx11_depth& dep
     }
 }
 
-void retron::app_state::frame_rendered(ff::state::advance_t type, ff::dx11_target_base& target, ff::dx11_depth& depth)
+void retron::app_state::frame_rendered(ff::state::advance_t type, ff::target_base& target, ff::depth& depth)
 {
     this->debug_step_one_frame = false;
 
@@ -282,7 +282,7 @@ void retron::app_state::push_render_targets(retron::render_targets& targets)
     return this->render_targets_stack.push_back(&targets);
 }
 
-void retron::app_state::pop_render_targets(ff::dx11_target_base& final_target)
+void retron::app_state::pop_render_targets(ff::target_base& final_target)
 {
     assert(this->render_targets_stack.size() > 1);
     this->render_targets_stack.back()->render(final_target);

@@ -14,10 +14,10 @@ retron::transition_state::transition_state(std::shared_ptr<ff::state> old_state,
 
     ff::point_int size = constants::RENDER_SIZE.cast<int>();
 
-    this->texture = std::make_shared<ff::dx11_texture>(size, DXGI_FORMAT_R8G8B8A8_UNORM);
-    this->texture2 = std::make_shared<ff::dx11_texture>(size, DXGI_FORMAT_R8G8B8A8_UNORM);
-    this->target = std::make_shared<ff::dx11_target_texture>(this->texture);
-    this->target2 = std::make_shared<ff::dx11_target_texture>(this->texture2);
+    this->texture = std::make_shared<ff::texture>(size, DXGI_FORMAT_R8G8B8A8_UNORM);
+    this->texture2 = std::make_shared<ff::texture>(size, DXGI_FORMAT_R8G8B8A8_UNORM);
+    this->target = std::make_shared<ff::target_texture>(this->texture);
+    this->target2 = std::make_shared<ff::target_texture>(this->texture2);
 }
 
 std::shared_ptr<ff::state> retron::transition_state::advance_time()

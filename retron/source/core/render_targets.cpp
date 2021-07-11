@@ -4,40 +4,40 @@
 
 static const ff::point_int LOW_SIZE(retron::constants::RENDER_WIDTH, retron::constants::RENDER_HEIGHT);
 static const ff::point_int HIGH_SIZE = ::LOW_SIZE * retron::constants::RENDER_SCALE;
-static std::weak_ptr<ff::dx11_depth> weak_depth;
-static std::weak_ptr<ff::dx11_texture> weak_texture_1080;
-static std::weak_ptr<ff::dx11_target_base> weak_target_1080;
+static std::weak_ptr<ff::depth> weak_depth;
+static std::weak_ptr<ff::texture> weak_texture_1080;
+static std::weak_ptr<ff::target_base> weak_target_1080;
 
-static std::shared_ptr<ff::dx11_depth> get_depth()
+static std::shared_ptr<ff::depth> get_depth()
 {
-    std::shared_ptr<ff::dx11_depth> depth = ::weak_depth.lock();
+    std::shared_ptr<ff::depth> depth = ::weak_depth.lock();
     if (!depth)
     {
-        depth = std::make_shared<ff::dx11_depth>(::LOW_SIZE);
+        depth = std::make_shared<ff::depth>(::LOW_SIZE);
         ::weak_depth = depth;
     }
 
     return depth;
 }
 
-static std::shared_ptr<ff::dx11_texture> get_texture_1080()
+static std::shared_ptr<ff::texture> get_texture_1080()
 {
-    std::shared_ptr<ff::dx11_texture> texture = ::weak_texture_1080.lock();
+    std::shared_ptr<ff::texture> texture = ::weak_texture_1080.lock();
     if (!texture)
     {
-        texture = std::make_shared<ff::dx11_texture>(::HIGH_SIZE, DXGI_FORMAT_R8G8B8A8_UNORM);
+        texture = std::make_shared<ff::texture>(::HIGH_SIZE, DXGI_FORMAT_R8G8B8A8_UNORM);
         ::weak_texture_1080 = texture;
     }
 
     return texture;
 }
 
-static std::shared_ptr<ff::dx11_target_base> get_target_1080()
+static std::shared_ptr<ff::target_base> get_target_1080()
 {
-    std::shared_ptr<ff::dx11_target_base> target = ::weak_target_1080.lock();
+    std::shared_ptr<ff::target_base> target = ::weak_target_1080.lock();
     if (!target)
     {
-        target = std::make_shared<ff::dx11_target_texture>(::get_texture_1080());
+        target = std::make_shared<ff::target_texture>(::get_texture_1080());
         ::weak_target_1080 = target;
     }
 
@@ -64,7 +64,7 @@ void retron::render_targets::clear()
     this->used_targets = retron::render_target_types::none;
 }
 
-void retron::render_targets::render(ff::dx11_target_base& target)
+void retron::render_targets::render(ff::target_base& target)
 {
     ff::point_int target_size = target.size().rotated_pixel_size();
     bool direct_to_target = (target_size == ::LOW_SIZE || target_size == ::HIGH_SIZE);
@@ -110,7 +110,7 @@ void retron::render_targets::render(ff::dx11_target_base& target)
     }
 }
 
-const std::shared_ptr<ff::dx11_texture>& retron::render_targets::texture(retron::render_target_types target)
+const std::shared_ptr<ff::texture>& retron::render_targets::texture(retron::render_target_types target)
 {
     this->used_targets = ff::flags::set(this->used_targets, target);
 
@@ -119,7 +119,7 @@ const std::shared_ptr<ff::dx11_texture>& retron::render_targets::texture(retron:
         case retron::render_target_types::palette_1:
             if (!this->texture_palette_1)
             {
-                this->texture_palette_1 = std::make_shared<ff::dx11_texture>(::LOW_SIZE, DXGI_FORMAT_R8_UINT);
+                this->texture_palette_1 = std::make_shared<ff::texture>(::LOW_SIZE, DXGI_FORMAT_R8_UINT);
             }
             return this->texture_palette_1;
 
@@ -127,13 +127,13 @@ const std::shared_ptr<ff::dx11_texture>& retron::render_targets::texture(retron:
         case retron::render_target_types::rgb_pma_2:
             if (!this->texture_rgb_pma_1)
             {
-                this->texture_rgb_pma_1 = std::make_shared<ff::dx11_texture>(::LOW_SIZE, DXGI_FORMAT_R8G8B8A8_UNORM);
+                this->texture_rgb_pma_1 = std::make_shared<ff::texture>(::LOW_SIZE, DXGI_FORMAT_R8G8B8A8_UNORM);
             }
             return this->texture_rgb_pma_1;
     }
 }
 
-const std::shared_ptr<ff::dx11_target_base>& retron::render_targets::target(retron::render_target_types target)
+const std::shared_ptr<ff::target_base>& retron::render_targets::target(retron::render_target_types target)
 {
     this->used_targets = ff::flags::set(this->used_targets, target);
 
@@ -142,7 +142,7 @@ const std::shared_ptr<ff::dx11_target_base>& retron::render_targets::target(retr
         case retron::render_target_types::palette_1:
             if (!this->target_palette_1)
             {
-                this->target_palette_1 = std::make_shared<ff::dx11_target_texture>(this->texture(target));
+                this->target_palette_1 = std::make_shared<ff::target_texture>(this->texture(target));
                 ff::graphics::dx11_device_state().clear_target(this->target_palette_1->view(), ff::color::none());
             }
             return this->target_palette_1;
@@ -151,14 +151,14 @@ const std::shared_ptr<ff::dx11_target_base>& retron::render_targets::target(retr
         case retron::render_target_types::rgb_pma_2:
             if (!this->target_rgb_pma_1)
             {
-                this->target_rgb_pma_1 = std::make_shared<ff::dx11_target_texture>(this->texture(target));
+                this->target_rgb_pma_1 = std::make_shared<ff::target_texture>(this->texture(target));
                 ff::graphics::dx11_device_state().clear_target(this->target_rgb_pma_1->view(), ff::color::none());
             }
             return this->target_rgb_pma_1;
     }
 }
 
-const std::shared_ptr<ff::dx11_depth>& retron::render_targets::depth(retron::render_target_types target)
+const std::shared_ptr<ff::depth>& retron::render_targets::depth(retron::render_target_types target)
 {
     if (!this->depth_)
     {

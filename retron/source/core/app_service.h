@@ -54,7 +54,7 @@ namespace retron
         virtual ff::draw_device& draw_device() const = 0;
         virtual retron::render_targets* render_targets() const = 0;
         virtual void push_render_targets(retron::render_targets& targets) = 0;
-        virtual void pop_render_targets(ff::dx11_target_base& final_target) = 0;
+        virtual void pop_render_targets(ff::target_base& final_target) = 0;
 
         // Debug
         virtual ff::signal_sink<>& reload_resources_sink() = 0;

@@ -15,20 +15,20 @@ namespace retron
         render_targets();
 
         void clear();
-        void render(ff::dx11_target_base& target);
-        const std::shared_ptr<ff::dx11_texture>& texture(render_target_types target);
-        const std::shared_ptr<ff::dx11_target_base>& target(render_target_types target);
-        const std::shared_ptr<ff::dx11_depth>& depth(render_target_types target);
+        void render(ff::target_base& target);
+        const std::shared_ptr<ff::texture>& texture(render_target_types target);
+        const std::shared_ptr<ff::target_base>& target(render_target_types target);
+        const std::shared_ptr<ff::depth>& depth(render_target_types target);
 
     private:
         render_target_types used_targets;
         ff::viewport viewport;
-        std::shared_ptr<ff::dx11_depth> depth_;
-        std::shared_ptr<ff::dx11_texture> texture_rgb_pma_1;
-        std::shared_ptr<ff::dx11_target_base> target_rgb_pma_1;
-        std::shared_ptr<ff::dx11_texture> texture_palette_1;
-        std::shared_ptr<ff::dx11_target_base> target_palette_1;
-        std::shared_ptr<ff::dx11_texture> texture_1080;
-        std::shared_ptr<ff::dx11_target_base> target_1080;
+        std::shared_ptr<ff::depth> depth_;
+        std::shared_ptr<ff::texture> texture_rgb_pma_1;
+        std::shared_ptr<ff::target_base> target_rgb_pma_1;
+        std::shared_ptr<ff::texture> texture_palette_1;
+        std::shared_ptr<ff::target_base> target_palette_1;
+        std::shared_ptr<ff::texture> texture_1080;
+        std::shared_ptr<ff::target_base> target_1080;
     };
 }
